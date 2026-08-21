@@ -12,16 +12,25 @@
         <SolidColorBrush x:Key="BorderBrush" Color="#E3E6EC" />
         <SolidColorBrush x:Key="ErrorBrush" Color="#B3261E" />
         <SolidColorBrush x:Key="FieldBackground" Color="#F7F8FA" />
+        <SolidColorBrush x:Key="TextBrush" Color="#1B2432" />
+        <SolidColorBrush x:Key="WatermarkBrush" Color="#8A93A6" />
+    </UserControl.Resources>
 
+    <UserControl.Styles>
         <Style Selector="TextBox">
             <Setter Property="Height" Value="44" />
             <Setter Property="Padding" Value="14,0" />
             <Setter Property="Background" Value="{StaticResource FieldBackground}" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="CaretBrush" Value="{StaticResource TextBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
+            <Setter Property="Foreground" Value="{StaticResource WatermarkBrush}" />
         </Style>
         <Style Selector="TextBox:focus">
             <Setter Property="BorderBrush" Value="{StaticResource NavyBrush}" />
@@ -65,18 +74,39 @@
         <Style Selector="Button.ghost:pointerover /template/ ContentPresenter">
             <Setter Property="TextBlock.Foreground" Value="{StaticResource NavyBrush}" />
         </Style>
-    </UserControl.Resources>
+
+        <Style Selector="Button.eye">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource NavyMutedBrush}" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.eye:pointerover /template/ ContentPresenter">
+            <Setter Property="TextBlock.Foreground" Value="{StaticResource NavyBrush}" />
+        </Style>
+    </UserControl.Styles>
 
     <Grid>
-        <!-- Quit button, top-right corner -->
-        <Button Classes="ghost"
-                Content="Quitter"
-                Command="{Binding QuitterCommand}"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="0,24,32,0" />
+        <StackPanel Orientation="Horizontal"
+                    Spacing="4"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,24,32,0">
+            <Button Name="FullScreenButton"
+                    Classes="ghost"
+                    Content="Plein écran"
+                    Click="OnToggleFullScreenClick" />
+            <TextBlock Text="•" Foreground="{StaticResource BorderBrush}" VerticalAlignment="Center" />
+            <Button Classes="ghost"
+                    Content="Quitter"
+                    Command="{Binding QuitterCommand}" />
+        </StackPanel>
 
-        <!-- Centered login card -->
         <Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Width="380"
@@ -89,7 +119,6 @@
 
             <StackPanel Spacing="0">
 
-                <!-- Signature accent: single thin gold rule above the title -->
                 <Rectangle Width="36" Height="3" Fill="{StaticResource GoldBrush}"
                            HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" Margin="0,0,0,20" />
 
@@ -110,11 +139,19 @@
 
                 <TextBlock Text="Mot de passe" FontSize="13" FontWeight="Medium"
                            Foreground="{StaticResource NavyBrush}" Margin="0,16,0,6" />
-                <TextBox Text="{Binding MotDePasse, Mode=TwoWay}"
-                         Watermark="Votre mot de passe"
-                         PasswordChar="•" />
 
-                <!-- Error message: visibility bound to IsErrorVisible -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBox Grid.Column="0"
+                             Text="{Binding MotDePasse, Mode=TwoWay}"
+                             Watermark="Votre mot de passe"
+                             PasswordChar="{Binding PasswordChar}" />
+                    <Button Grid.Column="1"
+                            Classes="eye"
+                            Content="{Binding EyeIcon}"
+                            Command="{Binding TogglePasswordVisibilityCommand}"
+                            Margin="6,0,0,0" />
+                </Grid>
+
                 <TextBlock Text="{Binding MessageErreur}"
                            IsVisible="{Binding IsErrorVisible}"
                            Foreground="{StaticResource ErrorBrush}"

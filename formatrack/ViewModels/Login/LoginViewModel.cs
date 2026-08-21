@@ -14,9 +14,29 @@ public partial class LoginViewModel : ViewModelBase
     [ObservableProperty]
     private string _messageErreur = string.Empty;
 
-    // Bind this to the error TextBlock's IsVisible in the view.
     [ObservableProperty]
     private bool _isErrorVisible;
+
+    [ObservableProperty]
+    private bool _isPasswordVisible;
+
+    // Default masked with "*"; becomes '\0' (no masking) when toggled.
+    public char PasswordChar => IsPasswordVisible ? '\0' : '*';
+
+    // Simple text glyph for the toggle button (swap for an icon font/SVG later if you want).
+    public string EyeIcon => IsPasswordVisible ? "🙈" : "👁";
+
+    partial void OnIsPasswordVisibleChanged(bool value)
+    {
+        OnPropertyChanged(nameof(PasswordChar));
+        OnPropertyChanged(nameof(EyeIcon));
+    }
+
+    [RelayCommand]
+    private void TogglePasswordVisibility()
+    {
+        IsPasswordVisible = !IsPasswordVisible;
+    }
 
     [RelayCommand]
     private void SeConnecter()
