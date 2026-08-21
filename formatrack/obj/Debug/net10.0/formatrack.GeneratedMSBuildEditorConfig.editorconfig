@@ -31,5 +31,62 @@ build_property.EnableCodeStyleSeverity =
 [/home/bro/my-creations/formatrack/formatrack/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[/home/bro/my-creations/formatrack/formatrack/Views/Dashboard/DashboardView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Evaluations/EvaluationPasserView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Evaluations/EvaluationResultatView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Evaluations/EvaluationsListView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Formations/FormationDetailView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Formations/FormationFormView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Formations/FormationsListView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Login/LoginView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [/home/bro/my-creations/formatrack/formatrack/Views/MainWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Questionnaires/QuestionEditorView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Questionnaires/QuestionnaireEditorView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Questionnaires/QuestionnairesListView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Sessions/SessionDetailView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Sessions/SessionFormView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Sessions/SessionsListView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Statistiques/RapportView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Statistiques/StatistiquesView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Utilisateurs/UtilisateurDetailView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Utilisateurs/UtilisateurFormView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/bro/my-creations/formatrack/formatrack/Views/Utilisateurs/UtilisateursListView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
