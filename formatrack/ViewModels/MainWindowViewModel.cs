@@ -1,6 +1,13 @@
 ﻿namespace formatrack.ViewModels;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-public partial class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel  : ViewModelBase
 {
-    public string Greeting { get; } = "Welcome to Avalonia!";
+    [ObservableProperty] private ViewModelBase current_page;
+    [ObservableProperty] private MainWindowViewModel _main;
+
+    public MainWindowViewModel()
+    {
+        Current_page = new LoginViewModel();
+    }
 }

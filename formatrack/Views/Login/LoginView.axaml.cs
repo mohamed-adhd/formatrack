@@ -1,6 +1,11 @@
-namespace formatrack.Views.Login;
+using Avalonia.Controls;
 
-public class LoginView_axaml
+namespace formatrack.Views;
+
+public partial class LoginView : UserControl
 {
-    
+    public LoginView()
+    {
+        InitializeComponent();
+    }
 }

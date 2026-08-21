@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("formatrack")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+34fa1d2cf9ad736d0a1249eed4f734da3464ebcd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f92a0a91fc6a880a131c5dbef398cec974852134")]
 [assembly: System.Reflection.AssemblyProductAttribute("formatrack")]
 [assembly: System.Reflection.AssemblyTitleAttribute("formatrack")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,0 +1,8 @@
+/home/bro/my-creations/formatrack/formatrack/obj/Debug/net10.0/formatrack.csproj.AssemblyReference.cache
+/home/bro/my-creations/formatrack/formatrack/obj/Debug/net10.0/Avalonia/Resources.Inputs.cache
+/home/bro/my-creations/formatrack/formatrack/obj/Debug/net10.0/Avalonia/resources
+/home/bro/my-creations/formatrack/formatrack/obj/Debug/net10.0/formatrack.GeneratedMSBuildEditorConfig.editorconfig
+/home/bro/my-creations/formatrack/formatrack/obj/Debug/net10.0/formatrack.AssemblyInfoInputs.cache
+/home/bro/my-creations/formatrack/formatrack/obj/Debug/net10.0/formatrack.AssemblyInfo.cs
+/home/bro/my-creations/formatrack/formatrack/obj/Debug/net10.0/formatrack.csproj.CoreCompileInputs.cache
+/home/bro/my-creations/formatrack/formatrack/obj/Debug/net10.0/formatrack.sourcelink.json
