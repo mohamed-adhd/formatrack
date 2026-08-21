@@ -1,0 +1,7 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:formatrack.ViewModels.Questionnaires"
+             x:Class="formatrack.Views.Questionnaires.QuestionnaireEditorView"
+             x:DataType="vm:QuestionnaireEditorViewModel">
+
+</UserControl>
