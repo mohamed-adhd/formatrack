@@ -1,7 +1,102 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Dashboard"
+             xmlns:models="using:formatrack.Models"
              x:Class="formatrack.Views.Dashboard.DashboardView"
-             x:DataType="vm:DashboardViewModel">
+             x:DataType="vm:DashboardViewModel"
+             Background="#F5F7FA">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="NavyBrush" Color="#1B2A4A" />
+        <SolidColorBrush x:Key="MutedBrush" Color="#5A6B8C" />
+        <SolidColorBrush x:Key="GoldBrush" Color="#B8935F" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#E3E6EC" />
+    </UserControl.Resources>
 
+    <Grid ColumnDefinitions="240,*">
+        <Border Grid.Column="0" Background="#1B2A4A" Padding="22">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top" Spacing="22">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="SEFAD" Foreground="White" FontSize="24" FontWeight="Bold" />
+                        <TextBlock Text="{Binding Role}" Foreground="#C8D1E3" FontSize="13" />
+                    </StackPanel>
+                    <Button Content="Tableau de bord" HorizontalContentAlignment="Left" IsEnabled="False" />
+                    <Button Content="Formations" HorizontalContentAlignment="Left" Command="{Binding OpenFormationsCommand}" />
+                    <Button Content="Sessions" HorizontalContentAlignment="Left" IsEnabled="False" />
+                    <Button Content="Evaluations" HorizontalContentAlignment="Left" IsEnabled="False" />
+                </StackPanel>
+                <Button DockPanel.Dock="Bottom" Content="Deconnexion" Command="{Binding LogoutCommand}" />
+            </DockPanel>
+        </Border>
+
+        <ScrollViewer Grid.Column="1">
+            <StackPanel Margin="34" Spacing="24">
+                <StackPanel>
+                    <Rectangle Width="42" Height="3" Fill="{StaticResource GoldBrush}" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" />
+                    <TextBlock Text="Tableau de bord" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="Bold" Margin="0,14,0,0" />
+                    <TextBlock Text="Vue generale du suivi des formations et evaluations." Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                </StackPanel>
+
+                <UniformGrid Columns="4">
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,12,0">
+                        <StackPanel>
+                            <TextBlock Text="{Binding FormationsCount}" FontSize="30" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                            <TextBlock Text="Formations" Foreground="{StaticResource MutedBrush}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,12,0">
+                        <StackPanel>
+                            <TextBlock Text="{Binding SessionsCount}" FontSize="30" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                            <TextBlock Text="Sessions" Foreground="{StaticResource MutedBrush}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,12,0">
+                        <StackPanel>
+                            <TextBlock Text="{Binding UtilisateursCount}" FontSize="30" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                            <TextBlock Text="Utilisateurs" Foreground="{StaticResource MutedBrush}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="18">
+                        <StackPanel>
+                            <TextBlock Text="{Binding QuestionnairesCount}" FontSize="30" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
+                            <TextBlock Text="Questionnaires" Foreground="{StaticResource MutedBrush}" />
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <Grid ColumnDefinitions="2*,*">
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                        <StackPanel Spacing="14">
+                            <TextBlock Text="{Binding Message}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                            <ItemsControl ItemsSource="{Binding ProchainesSessions}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Session">
+                                        <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,10">
+                                            <Grid ColumnDefinitions="*,150,90">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding TitreFormation}" FontWeight="SemiBold" Foreground="#1B2432" />
+                                                    <TextBlock Text="{Binding Lieu}" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="1" Text="{Binding Periode}" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="2" Text="{Binding Statut}" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="18,0,0,0">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Aide a la decision" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                            <TextBlock Text="Taux moyen" Foreground="{StaticResource MutedBrush}" />
+                            <TextBlock Text="{Binding TauxReussite}" FontSize="34" FontWeight="Bold" Foreground="{StaticResource GoldBrush}" />
+                            <Button Content="Gerer les formations" Command="{Binding OpenFormationsCommand}" Margin="0,18,0,0" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

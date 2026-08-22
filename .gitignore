@@ -1,0 +1,30 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build and publish outputs
+Debug/
+Release/
+publish/
+artifacts/
+
+# Local runtime/database artifacts
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Large packaged outputs
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
+*.msi
+*.dmg
+*.pkg
+*.AppImage

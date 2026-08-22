@@ -1,30 +1,30 @@
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using formatrack.Services.Interfaces;
 
 namespace formatrack.ViewModels;
 
 public partial class LoginViewModel : ViewModelBase
 {
-    [ObservableProperty]
-    private string _identifiant = string.Empty;
+    private readonly IAuthService _authService;
+    private readonly Action<string> _onLoginSuccess;
 
-    [ObservableProperty]
-    private string _motDePasse = string.Empty;
+    [ObservableProperty] private string _identifiant = string.Empty;
+    [ObservableProperty] private string _motDePasse = string.Empty;
+    [ObservableProperty] private string _messageErreur = string.Empty;
+    [ObservableProperty] private bool _isErrorVisible;
+    [ObservableProperty] private bool _isPasswordVisible;
 
-    [ObservableProperty]
-    private string _messageErreur = string.Empty;
-
-    [ObservableProperty]
-    private bool _isErrorVisible;
-
-    [ObservableProperty]
-    private bool _isPasswordVisible;
-
-    // Default masked with "*"; becomes '\0' (no masking) when toggled.
     public char PasswordChar => IsPasswordVisible ? '\0' : '*';
+    public string EyeIcon => IsPasswordVisible ? "Masquer" : "Voir";
 
-    // Simple text glyph for the toggle button (swap for an icon font/SVG later if you want).
-    public string EyeIcon => IsPasswordVisible ? "🙈" : "👁";
+    public LoginViewModel(IAuthService authService, Action<string>? onLoginSuccess = null)
+    {
+        _authService = authService;
+        _onLoginSuccess = onLoginSuccess ?? (_ => { });
+    }
 
     partial void OnIsPasswordVisibleChanged(bool value)
     {
@@ -33,28 +33,31 @@ public partial class LoginViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void TogglePasswordVisibility()
-    {
-        IsPasswordVisible = !IsPasswordVisible;
-    }
+    private void TogglePasswordVisibility() => IsPasswordVisible = !IsPasswordVisible;
 
     [RelayCommand]
-    private void SeConnecter()
+    private async Task SeConnecterAsync()
     {
-        // TODO: brancher sur AuthService.
-        IsErrorVisible = true;
-        MessageErreur = "Identifiant ou mot de passe incorrect.";
+        IsErrorVisible = false;
+        var role = await _authService.AuthentifierAsync(Identifiant, MotDePasse);
+
+        if (role is null)
+        {
+            MessageErreur = "Identifiant ou mot de passe incorrect.";
+            IsErrorVisible = true;
+            return;
+        }
+
+        _onLoginSuccess(role);
     }
 
     [RelayCommand]
     private void CreerCompte()
     {
-        // TODO: naviguer vers l'écran d'inscription.
+        MessageErreur = "Creation de compte a finaliser dans le module utilisateurs.";
+        IsErrorVisible = true;
     }
 
     [RelayCommand]
-    private void Quitter()
-    {
-        // TODO: fermer l'application (ex: Environment.Exit(0) ou fermeture de la fenêtre).
-    }
+    private void Quitter() => Environment.Exit(0);
 }

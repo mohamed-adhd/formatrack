@@ -166,12 +166,6 @@
                         HorizontalContentAlignment="Center"
                         Margin="0,22,0,10" />
 
-                <Button Classes="secondary"
-                        Content="Créer un compte"
-                        Command="{Binding CreerCompteCommand}"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center" />
-
             </StackPanel>
         </Border>
     </Grid>

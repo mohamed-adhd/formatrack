@@ -1,7 +1,75 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Formations"
+             xmlns:models="using:formatrack.Models"
              x:Class="formatrack.Views.Formations.FormationsListView"
-             x:DataType="vm:FormationsListViewModel">
+             x:DataType="vm:FormationsListViewModel"
+             Background="#F5F7FA">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="NavyBrush" Color="#1B2A4A" />
+        <SolidColorBrush x:Key="MutedBrush" Color="#5A6B8C" />
+        <SolidColorBrush x:Key="GoldBrush" Color="#B8935F" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#E3E6EC" />
+    </UserControl.Resources>
 
+    <Grid ColumnDefinitions="240,*">
+        <Border Grid.Column="0" Background="#1B2A4A" Padding="22">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top" Spacing="22">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="SEFAD" Foreground="White" FontSize="24" FontWeight="Bold" />
+                        <TextBlock Text="Gestion formations" Foreground="#C8D1E3" FontSize="13" />
+                    </StackPanel>
+                    <Button Content="Tableau de bord" HorizontalContentAlignment="Left" Command="{Binding BackToDashboardCommand}" />
+                    <Button Content="Formations" HorizontalContentAlignment="Left" IsEnabled="False" />
+                    <Button Content="Sessions" HorizontalContentAlignment="Left" IsEnabled="False" />
+                    <Button Content="Evaluations" HorizontalContentAlignment="Left" IsEnabled="False" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="1" RowDefinitions="Auto,*" Margin="34">
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+                <StackPanel>
+                    <Rectangle Width="42" Height="3" Fill="{StaticResource GoldBrush}" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" />
+                    <TextBlock Text="Formations" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="Bold" Margin="0,14,0,0" />
+                    <TextBlock Text="{Binding Message}" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Bottom" Margin="12,0,0,0">
+                    <TextBox Width="260" Height="40" Watermark="Rechercher" Text="{Binding Recherche, Mode=TwoWay}" />
+                    <Button Content="Actualiser" Command="{Binding RefreshCommand}" Height="40" />
+                </StackPanel>
+            </Grid>
+
+            <ScrollViewer Grid.Row="1">
+                <ItemsControl ItemsSource="{Binding Formations}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:Formation">
+                            <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,0,12">
+                                <Grid ColumnDefinitions="*,120,120,120">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="{Binding Titre}" FontSize="17" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                                        <TextBlock Text="{Binding Description}" Foreground="#1B2432" TextWrapping="Wrap" MaxLines="2" />
+                                        <TextBlock Text="{Binding Objectifs}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" MaxLines="2" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,0,0">
+                                        <TextBlock Text="Duree" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                                        <TextBlock Text="{Binding Duree}" Foreground="#1B2432" FontWeight="SemiBold" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="14,0,0,0">
+                                        <TextBlock Text="Type" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                                        <TextBlock Text="{Binding TypeFormation}" Foreground="#1B2432" FontWeight="SemiBold" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="14,0,0,0">
+                                        <TextBlock Text="Statut" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                                        <TextBlock Text="{Binding Statut}" Foreground="{StaticResource GoldBrush}" FontWeight="SemiBold" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
 </UserControl>
