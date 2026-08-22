@@ -1,5 +1,10 @@
+using System.Threading.Tasks;
+using formatrack.Models;
+
 namespace formatrack.Data.Repositories;
 
-public interface IUtilisateurRepository
+public interface IUtilisateurRepository : IRepository<Utilisateur>
 {
+    Task<Utilisateur?> GetByEmailAsync(string email);
+    Task<bool> SetActifAsync(int idUtilisateur, bool actif);
 }

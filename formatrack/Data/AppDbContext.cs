@@ -33,12 +33,29 @@ CREATE TABLE IF NOT EXISTS questionnaires (
  id_questionnaire INTEGER PRIMARY KEY AUTOINCREMENT, id_session INTEGER NOT NULL,
  titre TEXT NOT NULL, description TEXT, type_evaluation TEXT, date_creation TEXT NOT NULL DEFAULT (datetime('now')),
  statut TEXT NOT NULL DEFAULT 'Brouillon');
+CREATE TABLE IF NOT EXISTS criteres (
+ id_critere INTEGER PRIMARY KEY AUTOINCREMENT, id_questionnaire INTEGER NOT NULL,
+ libelle TEXT NOT NULL, description TEXT, coefficient REAL NOT NULL DEFAULT 1.0);
+CREATE TABLE IF NOT EXISTS questions (
+ id_question INTEGER PRIMARY KEY AUTOINCREMENT, id_questionnaire INTEGER NOT NULL, id_critere INTEGER,
+ enonce TEXT NOT NULL, type_question TEXT NOT NULL, bareme REAL NOT NULL DEFAULT 0, ordre INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS evaluations (
  id_evaluation INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER NOT NULL, id_questionnaire INTEGER NOT NULL,
  date_passage TEXT, score_total REAL, pourcentage REAL, statut TEXT NOT NULL DEFAULT 'EnCours');
+CREATE TABLE IF NOT EXISTS reponses (
+ id_reponse INTEGER PRIMARY KEY AUTOINCREMENT, id_evaluation INTEGER NOT NULL, id_question INTEGER NOT NULL,
+ contenu TEXT, est_correcte INTEGER, score_obtenu REAL);
 CREATE TABLE IF NOT EXISTS participation (
  id_participation INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER NOT NULL, id_session INTEGER NOT NULL,
- role_participation TEXT NOT NULL, date_inscription TEXT NOT NULL DEFAULT (datetime('now')));";
+ role_participation TEXT NOT NULL, date_inscription TEXT NOT NULL DEFAULT (datetime('now')));
+CREATE INDEX IF NOT EXISTS idx_sessions_formation ON sessions (id_formation);
+CREATE INDEX IF NOT EXISTS idx_questionnaires_session ON questionnaires (id_session);
+CREATE INDEX IF NOT EXISTS idx_questions_questionnaire ON questions (id_questionnaire);
+CREATE INDEX IF NOT EXISTS idx_evaluations_utilisateur ON evaluations (id_utilisateur);
+CREATE INDEX IF NOT EXISTS idx_evaluations_questionnaire ON evaluations (id_questionnaire);
+CREATE INDEX IF NOT EXISTS idx_reponses_evaluation ON reponses (id_evaluation);
+CREATE INDEX IF NOT EXISTS idx_participation_utilisateur ON participation (id_utilisateur);
+CREATE INDEX IF NOT EXISTS idx_participation_session ON participation (id_session);";
         await using (var command = new SqliteCommand(sql, connection))
             await command.ExecuteNonQueryAsync();
 
@@ -68,6 +85,13 @@ INSERT INTO sessions (id_formation, date_debut, date_fin, lieu, capacite, statut
 INSERT INTO questionnaires (id_session, titre, description, type_evaluation, statut) VALUES
  (1,'Evaluation a chaud ASP.NET','Satisfaction et comprehension immediate.','AChaud','Publie'),
  (2,'Evaluation Agile','Preparation du questionnaire.','AChaud','Brouillon');
+INSERT INTO criteres (id_questionnaire, libelle, description, coefficient) VALUES
+ (1,'Contenu','Pertinence du contenu pedagogique.',1.2),
+ (1,'Animation','Qualite de l animation et des supports.',1.0);
+INSERT INTO questions (id_questionnaire, id_critere, enonce, type_question, bareme, ordre) VALUES
+ (1,1,'Le contenu repond-il aux objectifs annonces ?','Echelle',5,1),
+ (1,2,'Le formateur explique clairement les notions ?','Echelle',5,2),
+ (1,NULL,'Commentaires et suggestions','TexteLibre',0,3);
 INSERT INTO participation (id_utilisateur, id_session, role_participation) VALUES
  (2,1,'Formateur'), (3,1,'Stagiaire');";
         await using var seed = new SqliteCommand(sql, connection);
