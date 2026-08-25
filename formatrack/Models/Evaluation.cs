@@ -9,6 +9,7 @@ public class Evaluation
     public int IdQuestionnaire { get; set; }
     public DateTime? DatePassage { get; set; }
     public double? ScoreTotal { get; set; }
+    public double? ScoreMaximum { get; set; }
     public double? Pourcentage { get; set; }
     public string Statut { get; set; } = "EnCours";
     public string UtilisateurNom { get; set; } = string.Empty;

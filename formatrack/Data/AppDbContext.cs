@@ -55,11 +55,49 @@ CREATE INDEX IF NOT EXISTS idx_evaluations_utilisateur ON evaluations (id_utilis
 CREATE INDEX IF NOT EXISTS idx_evaluations_questionnaire ON evaluations (id_questionnaire);
 CREATE INDEX IF NOT EXISTS idx_reponses_evaluation ON reponses (id_evaluation);
 CREATE INDEX IF NOT EXISTS idx_participation_utilisateur ON participation (id_utilisateur);
-CREATE INDEX IF NOT EXISTS idx_participation_session ON participation (id_session);";
+CREATE INDEX IF NOT EXISTS idx_participation_session ON participation (id_session);
+CREATE TABLE IF NOT EXISTS rapports (
+ id_rapport INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER,
+ titre TEXT NOT NULL, type_rapport TEXT NOT NULL, format TEXT NOT NULL DEFAULT 'CSV',
+ chemin_fichier TEXT, date_generation TEXT NOT NULL DEFAULT (datetime('now')));
+CREATE TABLE IF NOT EXISTS journal_activite (
+ id_journal INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER,
+ action TEXT NOT NULL, details TEXT, date_action TEXT NOT NULL DEFAULT (datetime('now')));
+CREATE TABLE IF NOT EXISTS notifications (
+ id_notification INTEGER PRIMARY KEY AUTOINCREMENT, id_utilisateur INTEGER NOT NULL,
+ message TEXT NOT NULL, lue INTEGER NOT NULL DEFAULT 0, date_creation TEXT NOT NULL DEFAULT (datetime('now')));
+CREATE INDEX IF NOT EXISTS idx_journal_utilisateur ON journal_activite (id_utilisateur);
+CREATE INDEX IF NOT EXISTS idx_notifications_utilisateur ON notifications (id_utilisateur);";
         await using (var command = new SqliteCommand(sql, connection))
             await command.ExecuteNonQueryAsync();
 
+        await EnsureColumnsAsync(connection);
         await SeedAsync(connection);
+    }
+
+    // Migrations "a chaud" : ajoute les colonnes manquantes aux tables deja creees.
+    private static async Task EnsureColumnsAsync(SqliteConnection connection)
+    {
+        await EnsureColumnAsync(connection, "questionnaires", "note_maximale",
+            "ALTER TABLE questionnaires ADD COLUMN note_maximale REAL NOT NULL DEFAULT 20.0;");
+        await EnsureColumnAsync(connection, "questionnaires", "duree_minutes",
+            "ALTER TABLE questionnaires ADD COLUMN duree_minutes INTEGER;");
+        await EnsureColumnAsync(connection, "evaluations", "score_maximum",
+            "ALTER TABLE evaluations ADD COLUMN score_maximum REAL;");
+    }
+
+    private static async Task EnsureColumnAsync(SqliteConnection connection, string table, string column, string alterSql)
+    {
+        await using var pragma = new SqliteCommand($"PRAGMA table_info({table});", connection);
+        await using var reader = await pragma.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            if (string.Equals(reader.GetString(1), column, StringComparison.OrdinalIgnoreCase))
+                return;
+        }
+
+        await using var alter = new SqliteCommand(alterSql, connection);
+        await alter.ExecuteNonQueryAsync();
     }
 
     private static async Task SeedAsync(SqliteConnection connection)

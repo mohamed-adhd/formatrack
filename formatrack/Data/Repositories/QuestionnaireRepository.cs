@@ -11,10 +11,10 @@ public class QuestionnaireRepository : Repository<Questionnaire>, IQuestionnaire
 {
     protected override string TableName => "questionnaires";
     protected override string IdColumn => "id_questionnaire";
-    protected override string InsertSql => @"INSERT INTO questionnaires (id_session, titre, description, type_evaluation, statut)
-VALUES ($session, $titre, $description, $type, $statut)";
+    protected override string InsertSql => @"INSERT INTO questionnaires (id_session, titre, description, type_evaluation, note_maximale, duree_minutes, statut)
+VALUES ($session, $titre, $description, $type, $note_maximale, $duree_minutes, $statut)";
     protected override string UpdateSql => @"UPDATE questionnaires SET id_session=$session, titre=$titre, description=$description,
-type_evaluation=$type, statut=$statut WHERE id_questionnaire=$id";
+type_evaluation=$type, note_maximale=$note_maximale, duree_minutes=$duree_minutes, statut=$statut WHERE id_questionnaire=$id";
 
     protected override Questionnaire Map(SqliteDataReader r) => new()
     {
@@ -23,6 +23,8 @@ type_evaluation=$type, statut=$statut WHERE id_questionnaire=$id";
         Titre = Text(r, "titre"),
         Description = Text(r, "description"),
         TypeEvaluation = Text(r, "type_evaluation"),
+        NoteMaximale = Has(r, "note_maximale") ? Double(r, "note_maximale") : 20d,
+        DureeMinutes = Has(r, "duree_minutes") && r["duree_minutes"] != DBNull.Value ? Int(r, "duree_minutes") : null,
         DateCreation = Date(r, "date_creation"),
         Statut = Text(r, "statut"),
         SessionTitre = Has(r, "session_titre") ? Text(r, "session_titre") : string.Empty,
@@ -37,6 +39,8 @@ type_evaluation=$type, statut=$statut WHERE id_questionnaire=$id";
         c.Parameters.AddWithValue("$titre", q.Titre);
         c.Parameters.AddWithValue("$description", Db(q.Description));
         c.Parameters.AddWithValue("$type", Db(q.TypeEvaluation));
+        c.Parameters.AddWithValue("$note_maximale", q.NoteMaximale);
+        c.Parameters.AddWithValue("$duree_minutes", Db(q.DureeMinutes));
         c.Parameters.AddWithValue("$statut", string.IsNullOrWhiteSpace(q.Statut) ? "Brouillon" : q.Statut);
     }
 

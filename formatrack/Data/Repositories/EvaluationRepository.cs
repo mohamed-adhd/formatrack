@@ -11,10 +11,10 @@ public class EvaluationRepository : Repository<Evaluation>, IEvaluationRepositor
 {
     protected override string TableName => "evaluations";
     protected override string IdColumn => "id_evaluation";
-    protected override string InsertSql => @"INSERT INTO evaluations (id_utilisateur, id_questionnaire, date_passage, score_total, pourcentage, statut)
-VALUES ($utilisateur, $questionnaire, $date, $score, $pourcentage, $statut)";
+    protected override string InsertSql => @"INSERT INTO evaluations (id_utilisateur, id_questionnaire, date_passage, score_total, score_maximum, pourcentage, statut)
+VALUES ($utilisateur, $questionnaire, $date, $score, $score_maximum, $pourcentage, $statut)";
     protected override string UpdateSql => @"UPDATE evaluations SET id_utilisateur=$utilisateur, id_questionnaire=$questionnaire,
-date_passage=$date, score_total=$score, pourcentage=$pourcentage, statut=$statut WHERE id_evaluation=$id";
+date_passage=$date, score_total=$score, score_maximum=$score_maximum, pourcentage=$pourcentage, statut=$statut WHERE id_evaluation=$id";
 
     protected override Evaluation Map(SqliteDataReader r) => new()
     {
@@ -23,6 +23,7 @@ date_passage=$date, score_total=$score, pourcentage=$pourcentage, statut=$statut
         IdQuestionnaire = Int(r, "id_questionnaire"),
         DatePassage = NullableDate(r, "date_passage"),
         ScoreTotal = NullableDouble(r, "score_total"),
+        ScoreMaximum = Has(r, "score_maximum") ? NullableDouble(r, "score_maximum") : null,
         Pourcentage = NullableDouble(r, "pourcentage"),
         Statut = Text(r, "statut"),
         UtilisateurNom = Has(r, "utilisateur_nom") ? Text(r, "utilisateur_nom") : string.Empty,
@@ -37,6 +38,7 @@ date_passage=$date, score_total=$score, pourcentage=$pourcentage, statut=$statut
         c.Parameters.AddWithValue("$questionnaire", e.IdQuestionnaire);
         c.Parameters.AddWithValue("$date", e.DatePassage?.ToString("yyyy-MM-dd HH:mm:ss") ?? DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
         c.Parameters.AddWithValue("$score", Db(e.ScoreTotal));
+        c.Parameters.AddWithValue("$score_maximum", Db(e.ScoreMaximum));
         c.Parameters.AddWithValue("$pourcentage", Db(e.Pourcentage));
         c.Parameters.AddWithValue("$statut", string.IsNullOrWhiteSpace(e.Statut) ? "EnCours" : e.Statut);
     }

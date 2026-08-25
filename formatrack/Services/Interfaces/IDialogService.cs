@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace formatrack.Services.Interfaces;
 
 public interface IDialogService

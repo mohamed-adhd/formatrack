@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
-using formatrack.Data;
+using formatrack.Data.Repositories;
 using formatrack.Models;
 using formatrack.Services.Interfaces;
 
@@ -10,38 +8,45 @@ namespace formatrack.Services;
 
 public class SessionService : ISessionService
 {
-    public async Task<IReadOnlyList<Session>> GetProchainesSessionsAsync(int limite = 5)
+    private readonly ISessionRepository _sessions;
+    private readonly IParticipationRepository _participations;
+
+    public SessionService(ISessionRepository? sessions = null, IParticipationRepository? participations = null)
     {
-        await AppDbContext.InitializeAsync();
-        var sessions = new List<Session>();
-        await using var connection = new SqliteConnection(AppDbContext.ConnectionString);
-        await connection.OpenAsync();
-
-        const string sql = @"
-SELECT s.id_session, s.id_formation, f.titre, s.date_debut, s.date_fin,
-       COALESCE(s.lieu,''), COALESCE(s.capacite,0), s.statut
-FROM sessions s
-JOIN formations f ON f.id_formation = s.id_formation
-ORDER BY date(s.date_debut) ASC
-LIMIT $limite;";
-        await using var command = new SqliteCommand(sql, connection);
-        command.Parameters.AddWithValue("$limite", limite);
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            sessions.Add(new Session
-            {
-                IdSession = reader.GetInt32(0),
-                IdFormation = reader.GetInt32(1),
-                TitreFormation = reader.GetString(2),
-                DateDebut = DateTime.Parse(reader.GetString(3)),
-                DateFin = DateTime.Parse(reader.GetString(4)),
-                Lieu = reader.GetString(5),
-                Capacite = reader.GetInt32(6),
-                Statut = reader.GetString(7)
-            });
-        }
-
-        return sessions;
+        _sessions = sessions ?? new SessionRepository();
+        _participations = participations ?? new ParticipationRepository();
     }
+
+    public async Task<IReadOnlyList<Session>> GetSessionsAsync()
+        => await _sessions.GetAllAsync();
+
+    public async Task<IReadOnlyList<Session>> GetSessionsFormationAsync(int idFormation)
+        => await _sessions.GetByFormationAsync(idFormation);
+
+    public async Task<IReadOnlyList<Session>> GetProchainesSessionsAsync(int limite = 5)
+        => await _sessions.GetUpcomingAsync(limite);
+
+    public async Task<Session?> GetSessionAsync(int idSession)
+        => await _sessions.GetByIdAsync(idSession);
+
+    public async Task<int> EnregistrerSessionAsync(Session session)
+        => session.IdSession > 0
+            ? await _sessions.UpdateAsync(session) ? session.IdSession : 0
+            : await _sessions.AddAsync(session);
+
+    public async Task<bool> SupprimerSessionAsync(int idSession)
+    {
+        foreach (var participation in await GetParticipationsSessionAsync(idSession))
+            await _participations.DeleteAsync(participation.IdParticipation);
+        return await _sessions.DeleteAsync(idSession);
+    }
+
+    public async Task<IReadOnlyList<Participation>> GetParticipationsSessionAsync(int idSession)
+        => await _participations.GetBySessionAsync(idSession);
+
+    public async Task<int> InscrireParticipantAsync(Participation participation)
+        => await _participations.AddAsync(participation);
+
+    public async Task<bool> RetirerParticipantAsync(int idParticipation)
+        => await _participations.DeleteAsync(idParticipation);
 }

@@ -9,6 +9,8 @@ public class Questionnaire
     public string Titre { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string TypeEvaluation { get; set; } = "AChaud";
+    public double NoteMaximale { get; set; } = 20d;
+    public int? DureeMinutes { get; set; }
     public DateTime DateCreation { get; set; } = DateTime.Now;
     public string Statut { get; set; } = "Brouillon";
     public string SessionTitre { get; set; } = string.Empty;
