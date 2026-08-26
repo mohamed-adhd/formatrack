@@ -2,6 +2,98 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Sessions"
              x:Class="formatrack.Views.Sessions.SessionDetailView"
-             x:DataType="vm:SessionDetailViewModel">
+             x:DataType="vm:SessionDetailViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <ScrollViewer Padding="32,24,32,32">
+        <StackPanel Spacing="24" MaxWidth="960" HorizontalAlignment="Left">
+
+            <!-- Top Header & Actions -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="4">
+                    <Button Classes="ghost" Command="{Binding BackToListCommand}" Padding="0" Margin="0,0,0,4">
+                        <TextBlock Text="← Retour aux sessions" Foreground="{StaticResource GoldDarkBrush}" FontSize="14" FontWeight="SemiBold" />
+                    </Button>
+                    <TextBlock Text="{Binding Session.TitreFormation, FallbackValue='Détail de la Session'}"
+                               Foreground="{StaticResource NavyPrimaryBrush}" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Message}" Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Bottom">
+                    <Button Classes="outline" Content="✏️ Modifier" Command="{Binding EditCommand}" Height="40" Padding="16,0" />
+                    <Button Classes="danger" Content="Supprimer" Command="{Binding DeleteCommand}" Height="40" Padding="16,0" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Main Overview Card -->
+            <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="12" Padding="28" BoxShadow="0 2 8 0 #0A000000">
+                <StackPanel Spacing="22">
+
+                    <!-- Status and Info Chips -->
+                    <WrapPanel>
+                        <Border Background="#FEF3C7" BorderBrush="#FDE68A" BorderThickness="1" CornerRadius="6" Padding="10,4" Margin="0,0,10,6">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <PathIcon Data="{StaticResource IconClock}" Width="13" Height="13" Foreground="{StaticResource GoldDarkBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Session.Periode}" Foreground="{StaticResource GoldDarkBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#EBF3FC" BorderBrush="#BFDBFE" BorderThickness="1" CornerRadius="6" Padding="10,4" Margin="0,0,10,6">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <PathIcon Data="{StaticResource IconLocation}" Width="13" Height="13" Foreground="{StaticResource NavyPrimaryBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Session.Lieu}" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#ECFDF5" BorderBrush="#A7F3D0" BorderThickness="1" CornerRadius="6" Padding="10,4" Margin="0,0,10,6">
+                            <TextBlock Text="{Binding Session.Statut, StringFormat='Statut : {0}'}" Foreground="{StaticResource SuccessGreenBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
+                        </Border>
+                    </WrapPanel>
+
+                    <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" />
+
+                    <!-- Key Information Grid -->
+                    <Grid ColumnDefinitions="*,*,*,*">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="DATE DE DÉBUT" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                            <TextBlock Text="{Binding Session.DateDebut, StringFormat='{}{0:dd/MM/yyyy}'}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="DATE DE FIN" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                            <TextBlock Text="{Binding Session.DateFin, StringFormat='{}{0:dd/MM/yyyy}'}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="EFFECTIF MAXIMUM" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                            <TextBlock Text="{Binding Session.Capacite, StringFormat='{}{0} stagiaires'}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="3" Spacing="4">
+                            <TextBlock Text="SITE D'INSTRUCTION" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                            <TextBlock Text="{Binding Session.Lieu}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        </StackPanel>
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+            <!-- Military Guidance Card -->
+            <Border Background="#F8FAFC" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1" CornerRadius="12" Padding="20">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Width="40" Height="40" CornerRadius="10" Background="{StaticResource NavyPrimaryBrush}" VerticalAlignment="Top" Margin="0,0,16,0">
+                        <PathIcon Data="{StaticResource IconShield}" Width="18" Height="18" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Directives Pédagogiques &amp; Modalités d'Évaluation" FontSize="16" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                        <TextBlock Text="Les stagiaires inscrits à cette session doivent compléter les questionnaires à chaud dès la fin du dernier module et les restitutions d'exercices d'état-major sur simulateur."
+                                   FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
+

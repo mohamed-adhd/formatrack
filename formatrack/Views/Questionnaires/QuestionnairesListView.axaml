@@ -1,7 +1,83 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Questionnaires"
+             xmlns:models="using:formatrack.Models"
              x:Class="formatrack.Views.Questionnaires.QuestionnairesListView"
-             x:DataType="vm:QuestionnairesListViewModel">
+             x:DataType="vm:QuestionnairesListViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <Grid RowDefinitions="Auto,*" Margin="32,24,32,32">
+
+        <!-- Top Header & Actions -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,24">
+            <StackPanel Spacing="4">
+                <Rectangle Width="42" Height="3.5" Fill="{StaticResource GoldAccentBrush}" HorizontalAlignment="Left" RadiusX="2" RadiusY="2" />
+                <TextBlock Text="Banque des Questionnaires &amp; Évaluations" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="22" FontWeight="Bold" Margin="0,6,0,0" />
+                <TextBlock Text="{Binding Message}" Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Bottom">
+                <TextBox Width="280" Height="40" Watermark="Rechercher un questionnaire..." Text="{Binding Recherche, Mode=TwoWay}" />
+                <Button Classes="outline" Content="Actualiser" Command="{Binding RefreshCommand}" Height="40" Padding="14,0" />
+                <Button Classes="primary" Content="+ Créer un Questionnaire" Command="{Binding CreateNewCommand}" Height="40" Padding="16,0" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Questionnaires List Items -->
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding Questionnaires}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:Questionnaire" x:CompileBindings="False">
+                        <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                                CornerRadius="12" Padding="20" Margin="0,0,0,14" BoxShadow="0 2 8 0 #08000000">
+                            <Grid ColumnDefinitions="*,160,110,120,100">
+
+                                <!-- Title & Session Info -->
+                                <StackPanel Grid.Column="0" Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Border Background="#EBF3FC" CornerRadius="6" Padding="6,3" VerticalAlignment="Center">
+                                            <PathIcon Data="{StaticResource IconQuestionnaires}" Width="14" Height="14" Foreground="{StaticResource NavyPrimaryBrush}" />
+                                        </Border>
+                                        <TextBlock Text="{Binding Titre}" FontSize="16" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Description}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="16" TextWrapping="Wrap" MaxLines="2" />
+                                    <TextBlock Text="{Binding SessionTitre, StringFormat='Session rattachée : {0}'}" Foreground="{StaticResource TextMutedBrush}" FontSize="14" />
+                                </StackPanel>
+
+                                <!-- Type Evaluation -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,0,0" Spacing="2">
+                                    <TextBlock Text="Type d'évaluation" Foreground="{StaticResource TextMutedBrush}" FontSize="14" />
+                                    <Border Background="#F1F5F9" BorderBrush="{StaticResource BorderMediumBrush}" BorderThickness="1" CornerRadius="6" Padding="8,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="{Binding TypeEvaluation}" Foreground="{StaticResource NavyPrimaryBrush}" FontWeight="SemiBold" FontSize="14" />
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Question Count -->
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="14,0,0,0" Spacing="2">
+                                    <TextBlock Text="Questions" Foreground="{StaticResource TextMutedBrush}" FontSize="14" />
+                                    <TextBlock Text="{Binding NombreQuestions, StringFormat='{}{0} questions'}" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Bold" FontSize="16" />
+                                </StackPanel>
+
+                                <!-- Statut -->
+                                <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="14,0,0,0" Spacing="2">
+                                    <TextBlock Text="Statut" Foreground="{StaticResource TextMutedBrush}" FontSize="14" />
+                                    <Border Background="#ECFDF5" BorderBrush="#A7F3D0" BorderThickness="1" CornerRadius="6" Padding="8,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="{Binding Statut}" Foreground="{StaticResource SuccessGreenBrush}" FontWeight="Bold" FontSize="14" />
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Actions -->
+                                <Button Grid.Column="4" Classes="outline" Content="Éditer →"
+                                        Command="{Binding DataContext.OpenEditorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Height="34" Padding="12,0" FontSize="14" FontWeight="SemiBold"
+                                        VerticalAlignment="Center" HorizontalAlignment="Right" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+    </Grid>
 </UserControl>

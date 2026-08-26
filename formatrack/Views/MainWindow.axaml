@@ -1,23 +1,160 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:formatrack.ViewModels"
+        xmlns:shared="using:formatrack.Views.Shared"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="760"
         x:Class="formatrack.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="SEFAD - FormaTrack"
+        Title="SEFAD - École d'État-Major (FormaTrack)"
         Width="1280"
-        Height="720"
-        MinWidth="980"
-        MinHeight="620"
+        Height="760"
+        MinWidth="380"
+        MinHeight="550"
         WindowStartupLocation="CenterScreen">
+
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <ContentControl Content="{Binding CurrentPage}" />
+    <Grid>
+        <!-- Unauthenticated State: Fullscreen Login View -->
+        <ContentControl Content="{Binding CurrentPage}"
+                        IsVisible="{Binding !IsLoggedIn}" />
+
+        <!-- Authenticated State: Application Main Shell -->
+        <Grid IsVisible="{Binding IsLoggedIn}">
+            <!-- Desktop Layout (width >= 850px) -->
+            <Grid ColumnDefinitions="260,*" IsVisible="{Binding !IsMobile}">
+                <!-- Left Navigation Sidebar -->
+                <shared:SidebarView Grid.Column="0" DataContext="{Binding Sidebar}" />
+
+                <!-- Right Main Area -->
+                <Grid Grid.Column="1" RowDefinitions="Auto,*" Background="{StaticResource BackgroundPageBrush}">
+                    <!-- Top App Bar Header -->
+                    <Border Grid.Row="0"
+                            Background="White"
+                            BorderBrush="{StaticResource BorderLightBrush}"
+                            BorderThickness="0,0,0,1"
+                            Padding="28,14,28,14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <!-- Left: Breadcrumb & Title -->
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Text="{Binding CurrentBreadcrumb}"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           FontSize="16" FontWeight="Medium" />
+                                <TextBlock Text="{Binding CurrentPageTitle}"
+                                           Foreground="{StaticResource NavyPrimaryBrush}"
+                                           FontSize="20" FontWeight="SemiBold" />
+                            </StackPanel>
+
+                            <!-- Right: Military Promo Badge & User Tag -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <!-- Institution Promotion Tag -->
+                                <Border Background="#F1F5F9" CornerRadius="6" Padding="10,6" BorderBrush="{StaticResource BorderMediumBrush}" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <PathIcon Data="{StaticResource IconShield}" Width="13" Height="13" Foreground="{StaticResource GoldAccentBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="École d'État-Major • 2026" Foreground="{StaticResource TextSecondaryBrush}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- User Info Badge -->
+                                <Border Background="#EBF3FC" CornerRadius="6" Padding="10,6" BorderBrush="#BFDBFE" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding CurrentUserName}" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                        <Border Background="{StaticResource NavyPrimaryBrush}" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="{Binding CurrentUserRole}" Foreground="{StaticResource GoldAccentBrush}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Center Content Page Host -->
+                    <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" />
+                </Grid>
+            </Grid>
+
+            <!-- Mobile Layout (width < 850px) -->
+            <Grid RowDefinitions="*,Auto" IsVisible="{Binding IsMobile}">
+                <!-- Mobile Content Area -->
+                <Grid Grid.Row="0" RowDefinitions="Auto,*" Background="{StaticResource BackgroundPageBrush}">
+                    <!-- Top Mobile Header -->
+                    <Border Grid.Row="0"
+                            Background="White"
+                            BorderBrush="{StaticResource BorderLightBrush}"
+                            BorderThickness="0,0,0,1"
+                            Padding="16,12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
+                                <TextBlock Text="{Binding CurrentBreadcrumb}"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           FontSize="14" FontWeight="Medium" />
+                                <TextBlock Text="{Binding CurrentPageTitle}"
+                                           Foreground="{StaticResource NavyPrimaryBrush}"
+                                           FontSize="16" FontWeight="SemiBold" />
+                            </StackPanel>
+                            <!-- Logout Button -->
+                            <Button Grid.Column="1" Classes="ghost" Command="{Binding Sidebar.LogoutCommand}" Padding="8" MinWidth="44" MinHeight="44">
+                                <PathIcon Data="{StaticResource IconLogout}" Width="18" Height="18" Foreground="#FF6B6B" />
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" />
+                </Grid>
+
+                <!-- Bottom Navigation Bar -->
+                <Border Grid.Row="1" Background="{StaticResource NavyDarkBrush}" BorderBrush="#1E3355" BorderThickness="0,1,0,0" Padding="4,4">
+                    <Grid ColumnDefinitions="*,*,*,*,*,*">
+                        <!-- Dashboard -->
+                        <Button Grid.Column="0" Classes="ghost" Command="{Binding Sidebar.NavigateDashboardCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                            <StackPanel Spacing="2">
+                                <PathIcon Data="{StaticResource IconDashboard}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Accueil" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Formations -->
+                        <Button Grid.Column="1" Classes="ghost" Command="{Binding Sidebar.NavigateFormationsCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                            <StackPanel Spacing="2">
+                                <PathIcon Data="{StaticResource IconFormations}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Cours" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Sessions -->
+                        <Button Grid.Column="2" Classes="ghost" Command="{Binding Sidebar.NavigateSessionsCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                            <StackPanel Spacing="2">
+                                <PathIcon Data="{StaticResource IconSessions}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Sessions" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Questionnaires -->
+                        <Button Grid.Column="3" Classes="ghost" Command="{Binding Sidebar.NavigateQuestionnairesCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                            <StackPanel Spacing="2">
+                                <PathIcon Data="{StaticResource IconQuestionnaires}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Quests" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Evaluations -->
+                        <Button Grid.Column="4" Classes="ghost" Command="{Binding Sidebar.NavigateEvaluationsCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                            <StackPanel Spacing="2">
+                                <PathIcon Data="{StaticResource IconEvaluations}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Évals" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Statistiques -->
+                        <Button Grid.Column="5" Classes="ghost" Command="{Binding Sidebar.NavigateStatistiquesCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                            <StackPanel Spacing="2">
+                                <PathIcon Data="{StaticResource IconStatistiques}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Stats" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
 </Window>

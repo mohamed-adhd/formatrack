@@ -1,7 +1,163 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Questionnaires"
+             xmlns:models="using:formatrack.Models"
              x:Class="formatrack.Views.Questionnaires.QuestionnaireEditorView"
-             x:DataType="vm:QuestionnaireEditorViewModel">
+             x:DataType="vm:QuestionnaireEditorViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <ScrollViewer Padding="32,24,32,32">
+        <StackPanel Spacing="24" MaxWidth="900" HorizontalAlignment="Left">
+
+            <!-- Header -->
+            <StackPanel Spacing="4">
+                <Button Classes="ghost" Command="{Binding CancelCommand}" Padding="0" Margin="0,0,0,4">
+                    <TextBlock Text="← Retour" Foreground="{StaticResource GoldDarkBrush}" FontSize="14" FontWeight="SemiBold" />
+                </Button>
+                <Rectangle Width="42" Height="3.5" Fill="{StaticResource GoldAccentBrush}" HorizontalAlignment="Left" RadiusX="2" RadiusY="2" />
+                <TextBlock Text="{Binding Message, FallbackValue='Éditeur de Questionnaire'}"
+                           Foreground="{StaticResource NavyPrimaryBrush}" FontSize="22" FontWeight="Bold" Margin="0,6,0,0" />
+                <TextBlock Text="Définissez les paramètres de l'évaluation et composez les critères / questions." Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+            </StackPanel>
+
+            <!-- Card 1: Questionnaire Metadata -->
+            <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="12" Padding="28" BoxShadow="0 2 8 0 #0A000000">
+                <StackPanel Spacing="18">
+
+                    <TextBlock Text="PARAMÈTRES GÉNÉRAUX" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+
+                    <!-- Titre -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Intitulé du questionnaire *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding Titre, Mode=TwoWay}" Watermark="ex: Évaluation à Chaud - Module Stratégie Opérationnelle" />
+                    </StackPanel>
+
+                    <!-- Description -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Consignes &amp; Contexte d'évaluation" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding Description, Mode=TwoWay}" Watermark="Instructions à destination des stagiaires..." AcceptsReturn="True" Height="70" />
+                    </StackPanel>
+
+                    <!-- Session, Type & Statut Grid -->
+                    <Grid ColumnDefinitions="*,*,*">
+                        <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,10,0">
+                            <TextBlock Text="Session d'enseignement *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <ComboBox ItemsSource="{Binding Sessions}"
+                                      SelectedItem="{Binding SelectedSession, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch"
+                                      x:CompileBindings="False">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Session">
+                                        <TextBlock Text="{Binding TitreFormation}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6" Margin="5,0,5,0">
+                            <TextBlock Text="Type d'évaluation" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <ComboBox ItemsSource="{Binding TypeEvaluationOptions}"
+                                      SelectedItem="{Binding TypeEvaluation, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="6" Margin="10,0,0,0">
+                            <TextBlock Text="Statut de publication" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <ComboBox ItemsSource="{Binding StatutOptions}"
+                                      SelectedItem="{Binding Statut, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Note Max & Durée Grid -->
+                    <Grid ColumnDefinitions="*,*">
+                        <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,10,0">
+                            <TextBlock Text="Barème / Note maximale" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBox Text="{Binding NoteMaximale, Mode=TwoWay}" Watermark="20" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6" Margin="10,0,0,0">
+                            <TextBlock Text="Durée allouée (minutes)" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBox Text="{Binding DureeMinutes, Mode=TwoWay}" Watermark="30" />
+                        </StackPanel>
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+            <!-- Card 2: Questions & Criteria Builder -->
+            <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="12" Padding="28" BoxShadow="0 2 8 0 #0A000000">
+                <StackPanel Spacing="18">
+
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="QUESTIONS &amp; CRITÈRES D'ÉVALUATION" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                            <TextBlock Text="Ajoutez les questions soumises aux stagiaires lors de la passation." FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" />
+                        </StackPanel>
+                        <Border Grid.Column="1" Background="#EBF3FC" CornerRadius="6" Padding="10,4">
+                            <TextBlock Text="{Binding Questions.Count, StringFormat='{}{0} question(s) enregistrée(s)'}" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="14" FontWeight="Bold" />
+                        </Border>
+                    </Grid>
+
+                    <!-- Existing Questions List -->
+                    <ItemsControl ItemsSource="{Binding Questions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:Question" x:CompileBindings="False">
+                                <Border Background="#F8FAFC" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                                        CornerRadius="8" Padding="14,10" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="30,*,120,80,Auto">
+                                        <TextBlock Grid.Column="0" Text="{Binding Ordre, StringFormat='Q{0}.'}" FontWeight="Bold" Foreground="{StaticResource GoldDarkBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Enonce}" FontSize="16" FontWeight="Medium" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                        <Border Grid.Column="2" Background="#E2E8F0" CornerRadius="4" Padding="6,2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding TypeQuestion}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                                        </Border>
+                                        <TextBlock Grid.Column="3" Text="{Binding Bareme, StringFormat='/{0} pts'}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                        <Button Grid.Column="4" Classes="danger" Content="✕"
+                                                Command="{Binding DataContext.DeleteQuestionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Height="28" Padding="8,0" FontSize="14" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" Margin="0,4" />
+
+                    <!-- In-Place Question Adder Form -->
+                    <StackPanel Spacing="10" Background="#F1F5F9" Margin="0,4,0,0">
+                        <Border CornerRadius="8" Padding="16" BorderBrush="{StaticResource BorderMediumBrush}" BorderThickness="1">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Ajouter une nouvelle question :" FontSize="14" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" />
+
+                                <TextBox Text="{Binding NewQuestionEnonce, Mode=TwoWay}" Watermark="Énoncé ou critère d'évaluation (ex: Clarté des exposés doctrinaux et manœuvres tactiques)" />
+
+                                <Grid ColumnDefinitions="*,120,Auto">
+                                    <ComboBox Grid.Column="0" ItemsSource="{Binding TypeQuestionOptions}"
+                                              SelectedItem="{Binding NewQuestionType, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch" Margin="0,0,10,0" />
+
+                                    <TextBox Grid.Column="1" Text="{Binding NewQuestionBareme, Mode=TwoWay}" Watermark="Points (ex: 5)" Margin="0,0,10,0" />
+
+                                    <Button Grid.Column="2" Classes="gold" Content="+ Ajouter la Question"
+                                            Command="{Binding AddQuestionCommand}" Height="40" Padding="16,0" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                </StackPanel>
+            </Border>
+
+            <!-- Bottom Actions -->
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <Button Grid.Column="1" Classes="outline" Content="Fermer / Annuler" Command="{Binding CancelCommand}" Height="40" Padding="18,0" Margin="0,0,10,0" />
+                <Button Grid.Column="2" Classes="primary" Content="Enregistrer le Questionnaire" Command="{Binding SaveCommand}" Height="40" Padding="20,0" />
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
+

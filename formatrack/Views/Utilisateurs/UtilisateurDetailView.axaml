@@ -2,6 +2,76 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Utilisateurs"
              x:Class="formatrack.Views.Utilisateurs.UtilisateurDetailView"
-             x:DataType="vm:UtilisateurDetailViewModel">
+             x:DataType="vm:UtilisateurDetailViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <ScrollViewer Padding="32,24,32,32">
+        <StackPanel Spacing="24" MaxWidth="960" HorizontalAlignment="Left">
+
+            <!-- Top Header & Action Bar -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="4">
+                    <Button Classes="ghost" Command="{Binding BackToListCommand}" Padding="0" Margin="0,0,0,4">
+                        <TextBlock Text="← Retour à l'annuaire" Foreground="{StaticResource GoldDarkBrush}" FontSize="14" FontWeight="SemiBold" />
+                    </Button>
+                    <TextBlock Text="{Binding Utilisateur.NomComplet, FallbackValue='Fiche Utilisateur'}"
+                               Foreground="{StaticResource NavyPrimaryBrush}" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Message}" Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Bottom">
+                    <Button Classes="outline" Content="✏️ Modifier" Command="{Binding EditCommand}" Height="40" Padding="16,0" />
+                    <Button Classes="danger" Content="Supprimer" Command="{Binding DeleteCommand}" Height="40" Padding="16,0" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Main Profile Card -->
+            <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="12" Padding="28" BoxShadow="0 2 8 0 #0A000000">
+                <StackPanel Spacing="22">
+
+                    <!-- Profile Header with Big Avatar -->
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Border Grid.Column="0" Width="64" Height="64" CornerRadius="32"
+                                Background="{StaticResource NavyPrimaryBrush}" BorderBrush="{StaticResource GoldAccentBrush}" BorderThickness="2"
+                                VerticalAlignment="Center" Margin="0,0,20,0">
+                            <PathIcon Data="{StaticResource IconUtilisateurs}" Width="28" Height="28" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                            <TextBlock Text="{Binding Utilisateur.NomComplet}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                            <TextBlock Text="{Binding Utilisateur.Email}" FontSize="16" Foreground="{StaticResource TextSecondaryBrush}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" />
+
+                    <!-- User Metadata Grid -->
+                    <Grid ColumnDefinitions="*,*,*">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="RÔLE INSTITUTIONNEL" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                            <Border Background="#EBF3FC" BorderBrush="#BFDBFE" BorderThickness="1" CornerRadius="6" Padding="8,4" HorizontalAlignment="Left">
+                                <TextBlock Text="{Binding Utilisateur.Role}" FontSize="16" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="STATUT DU COMPTE" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                            <Border Background="#ECFDF5" BorderBrush="#A7F3D0" BorderThickness="1" CornerRadius="6" Padding="8,4" HorizontalAlignment="Left">
+                                <TextBlock Text="Compte Actif" FontSize="16" FontWeight="Bold" Foreground="{StaticResource SuccessGreenBrush}" />
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="DATE DE CRÉATION" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                            <TextBlock Text="{Binding Utilisateur.DateCreation, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
+

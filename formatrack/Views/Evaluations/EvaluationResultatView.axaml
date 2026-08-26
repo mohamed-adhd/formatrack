@@ -2,6 +2,98 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Evaluations"
              x:Class="formatrack.Views.Evaluations.EvaluationResultatView"
-             x:DataType="vm:EvaluationResultatViewModel">
+             x:DataType="vm:EvaluationResultatViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <ScrollViewer Padding="32,24,32,32">
+        <StackPanel Spacing="24" MaxWidth="800" HorizontalAlignment="Left">
+
+            <!-- Top Header & Action Bar -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="4">
+                    <Button Classes="ghost" Command="{Binding OpenDashboardCommand}" Padding="0" Margin="0,0,0,4">
+                        <TextBlock Text="← Retour aux évaluations" Foreground="{StaticResource GoldDarkBrush}" FontSize="14" FontWeight="SemiBold" />
+                    </Button>
+                    <TextBlock Text="Résultat de l'Évaluation" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Message}" Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+                </StackPanel>
+
+                <Button Grid.Column="1" Classes="primary" Content="Tableau de bord →" Command="{Binding OpenDashboardCommand}" Height="40" Padding="18,0" VerticalAlignment="Bottom" />
+            </Grid>
+
+            <!-- Main Score Certificate Card -->
+            <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="12" Padding="32" BoxShadow="0 4 16 0 #0C000000">
+                <StackPanel Spacing="24">
+
+                    <!-- Big Achievement Medal Header -->
+                    <StackPanel HorizontalAlignment="Center" Spacing="8">
+                        <Border Width="64" Height="64" CornerRadius="32"
+                                Background="#ECFDF5" BorderBrush="{StaticResource SuccessGreenBrush}" BorderThickness="2"
+                                HorizontalAlignment="Center">
+                            <PathIcon Data="{StaticResource IconAward}" Width="32" Height="32"
+                                      Foreground="{StaticResource SuccessGreenBrush}"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+
+                        <TextBlock Text="Épreuve Terminée &amp; Validée" FontSize="20" FontWeight="Bold"
+                                   Foreground="{StaticResource NavyPrimaryBrush}" HorizontalAlignment="Center" />
+
+                        <TextBlock Text="{Binding Evaluation.QuestionnaireTitre}" FontSize="16" FontWeight="Medium"
+                                   Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" />
+
+                    <!-- Key Score Metrics Row -->
+                    <Grid ColumnDefinitions="*,*">
+
+                        <Border Grid.Column="0" Background="#F8FAFC" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                                CornerRadius="10" Padding="20" Margin="0,0,10,0">
+                            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                <TextBlock Text="NOTE OBTENUE" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding Evaluation.ScoreTotal, StringFormat='{}{0:F1} / 20'}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Total des points" FontSize="14" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1" Background="#FEF3C7" BorderBrush="#FDE68A" BorderThickness="1"
+                                CornerRadius="10" Padding="20" Margin="10,0,0,0">
+                            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                <TextBlock Text="TAUX DE RÉUSSITE" FontSize="14" FontWeight="Bold" Foreground="{StaticResource GoldDarkBrush}" LetterSpacing="1" HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding Evaluation.Pourcentage, StringFormat='{}{0:F1} %'}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource GoldDarkBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Mention : Très Satisfaisant" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource GoldDarkBrush}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+
+                    <!-- Evaluation Metadata Details -->
+                    <Border Background="#F8FAFC" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1" CornerRadius="10" Padding="20">
+                        <Grid ColumnDefinitions="*,*,*">
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock Text="OFFICIER ÉVALUÉ" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                                <TextBlock Text="{Binding Evaluation.UtilisateurNom}" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Spacing="4">
+                                <TextBlock Text="DATE DE PASSATION" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                                <TextBlock Text="{Binding Evaluation.DatePassage, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" Spacing="4">
+                                <TextBlock Text="STATUT DE L'ÉPREUVE" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                                <Border Background="#ECFDF5" BorderBrush="#A7F3D0" BorderThickness="1" CornerRadius="6" Padding="8,3" HorizontalAlignment="Left">
+                                    <TextBlock Text="{Binding Evaluation.Statut}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource SuccessGreenBrush}" />
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
+

@@ -2,6 +2,149 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Statistiques"
              x:Class="formatrack.Views.Statistiques.StatistiquesView"
-             x:DataType="vm:StatistiquesViewModel">
+             x:DataType="vm:StatistiquesViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <ScrollViewer Padding="32,24,32,32">
+        <StackPanel Spacing="24">
+
+            <!-- Top Header & Rapport Action -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="4">
+                    <Rectangle Width="42" Height="3.5" Fill="{StaticResource GoldAccentBrush}" HorizontalAlignment="Left" RadiusX="2" RadiusY="2" />
+                    <TextBlock Text="Statistiques &amp; Aide à la Décision (AHP)" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="22" FontWeight="Bold" Margin="0,6,0,0" />
+                    <TextBlock Text="{Binding Message}" Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+                </StackPanel>
+
+                <Button Grid.Column="1" Classes="gold" Content="📄 Générer le Rapport Officiel" Command="{Binding OpenRapportCommand}" Height="42" Padding="20,0" VerticalAlignment="Bottom" />
+            </Grid>
+
+            <!-- 4 Key Metric Cards -->
+            <Grid ColumnDefinitions="*,*,*,*">
+                <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1" CornerRadius="12" Padding="20" Margin="0,0,12,0" BoxShadow="0 2 8 0 #0A000000">
+                    <Grid RowDefinitions="Auto,Auto,Auto">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="MODULES FORMATION" Foreground="{StaticResource TextMutedBrush}" FontSize="14" FontWeight="Bold" LetterSpacing="1" />
+                            <Border Grid.Column="1" Width="36" Height="36" CornerRadius="8" Background="#EBF3FC">
+                                <PathIcon Data="{StaticResource IconFormations}" Width="18" Height="18" Foreground="{StaticResource NavyPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </Grid>
+                        <TextBlock Grid.Row="1" Text="{Binding FormationsCount}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" Margin="0,8,0,2" />
+                        <TextBlock Grid.Row="2" Text="Formations enregistrées" Foreground="{StaticResource TextSecondaryBrush}" FontSize="14" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1" CornerRadius="12" Padding="20" Margin="0,0,12,0" BoxShadow="0 2 8 0 #0A000000">
+                    <Grid RowDefinitions="Auto,Auto,Auto">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="SESSIONS D'ÉTUDES" Foreground="{StaticResource TextMutedBrush}" FontSize="14" FontWeight="Bold" LetterSpacing="1" />
+                            <Border Grid.Column="1" Width="36" Height="36" CornerRadius="8" Background="#FEF3C7">
+                                <PathIcon Data="{StaticResource IconSessions}" Width="18" Height="18" Foreground="{StaticResource GoldDarkBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </Grid>
+                        <TextBlock Grid.Row="1" Text="{Binding SessionsCount}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" Margin="0,8,0,2" />
+                        <TextBlock Grid.Row="2" Text="Sessions en cours ou closes" Foreground="{StaticResource TextSecondaryBrush}" FontSize="14" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2" Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1" CornerRadius="12" Padding="20" Margin="0,0,12,0" BoxShadow="0 2 8 0 #0A000000">
+                    <Grid RowDefinitions="Auto,Auto,Auto">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="EFFECTIF TOTAL" Foreground="{StaticResource TextMutedBrush}" FontSize="14" FontWeight="Bold" LetterSpacing="1" />
+                            <Border Grid.Column="1" Width="36" Height="36" CornerRadius="8" Background="#E0E7FF">
+                                <PathIcon Data="{StaticResource IconUtilisateurs}" Width="18" Height="18" Foreground="#4F46E5" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </Grid>
+                        <TextBlock Grid.Row="1" Text="{Binding UtilisateursCount}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" Margin="0,8,0,2" />
+                        <TextBlock Grid.Row="2" Text="Stagiaires &amp; Enseignants" Foreground="{StaticResource TextSecondaryBrush}" FontSize="14" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="3" Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1" CornerRadius="12" Padding="20" BoxShadow="0 2 8 0 #0A000000">
+                    <Grid RowDefinitions="Auto,Auto,Auto">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="TAUX DE VALIDATION" Foreground="{StaticResource TextMutedBrush}" FontSize="14" FontWeight="Bold" LetterSpacing="1" />
+                            <Border Grid.Column="1" Width="36" Height="36" CornerRadius="8" Background="#ECFDF5">
+                                <PathIcon Data="{StaticResource IconAward}" Width="18" Height="18" Foreground="{StaticResource SuccessGreenBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </Grid>
+                        <TextBlock Grid.Row="1" Text="{Binding TauxReussite}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource GoldDarkBrush}" Margin="0,8,0,2" />
+                        <TextBlock Grid.Row="2" Text="Moyenne globale des épreuves" Foreground="{StaticResource SuccessGreenBrush}" FontSize="14" FontWeight="SemiBold" />
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- AHP Multi-criteria Decision Support System Section -->
+            <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="12" Padding="28" BoxShadow="0 2 8 0 #0A000000">
+                <StackPanel Spacing="20">
+
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Système d'Aide à la Décision multicritères (Méthode AHP Saaty)" FontSize="17" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                            <TextBlock Text="Pondération hiérarchique des critères d'efficacité de l'École d'État-Major pour le pilotage pédagogique." FontSize="16" Foreground="{StaticResource TextSecondaryBrush}" />
+                        </StackPanel>
+                        <Border Grid.Column="1" Background="{StaticResource NavyPrimaryBrush}" CornerRadius="8" Padding="14,8" VerticalAlignment="Center">
+                            <TextBlock Text="Score Global AHP : 88.6 / 100" Foreground="{StaticResource GoldAccentBrush}" FontSize="16" FontWeight="Bold" />
+                        </Border>
+                    </Grid>
+
+                    <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" />
+
+                    <!-- 4 Criteria Breakdown Rows -->
+                    <StackPanel Spacing="16">
+                        <Grid ColumnDefinitions="260,*,70">
+                            <StackPanel>
+                                <TextBlock Text="Qualité des Enseignements (Pondération 35%)" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="16" />
+                                <TextBlock Text="Rigueur méthodologique et clarté des cours" FontSize="14" Foreground="{StaticResource TextMutedBrush}" />
+                            </StackPanel>
+                            <ProgressBar Grid.Column="1" Value="92.4" Maximum="100" Height="10" CornerRadius="5" Foreground="{StaticResource SuccessGreenBrush}" Background="#E2E8F0" VerticalAlignment="Center" Margin="14,0" />
+                            <TextBlock Grid.Column="2" Text="92.4 %" FontWeight="Bold" Foreground="{StaticResource SuccessGreenBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="260,*,70">
+                            <StackPanel>
+                                <TextBlock Text="Atteinte des Objectifs Doctrinaux (Pondération 25%)" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="16" />
+                                <TextBlock Text="Acquisition des savoir-faire d'état-major" FontSize="14" Foreground="{StaticResource TextMutedBrush}" />
+                            </StackPanel>
+                            <ProgressBar Grid.Column="1" Value="89.1" Maximum="100" Height="10" CornerRadius="5" Foreground="{StaticResource SuccessGreenBrush}" Background="#E2E8F0" VerticalAlignment="Center" Margin="14,0" />
+                            <TextBlock Grid.Column="2" Text="89.1 %" FontWeight="Bold" Foreground="{StaticResource SuccessGreenBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="260,*,70">
+                            <StackPanel>
+                                <TextBlock Text="Moyens Pédagogiques &amp; Simulateurs (Pondération 20%)" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="16" />
+                                <TextBlock Text="Disponibilité des salles tactiques et outils" FontSize="14" Foreground="{StaticResource TextMutedBrush}" />
+                            </StackPanel>
+                            <ProgressBar Grid.Column="1" Value="85.0" Maximum="100" Height="10" CornerRadius="5" Foreground="{StaticResource GoldDarkBrush}" Background="#E2E8F0" VerticalAlignment="Center" Margin="14,0" />
+                            <TextBlock Grid.Column="2" Text="85.0 %" FontWeight="Bold" Foreground="{StaticResource GoldDarkBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                        </Grid>
+
+                        <Grid ColumnDefinitions="260,*,70">
+                            <StackPanel>
+                                <TextBlock Text="Applicabilité Opérationnelle (Pondération 20%)" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="16" />
+                                <TextBlock Text="Pertinence en situation de commandement" FontSize="14" Foreground="{StaticResource TextMutedBrush}" />
+                            </StackPanel>
+                            <ProgressBar Grid.Column="1" Value="84.5" Maximum="100" Height="10" CornerRadius="5" Foreground="{StaticResource GoldDarkBrush}" Background="#E2E8F0" VerticalAlignment="Center" Margin="14,0" />
+                            <TextBlock Grid.Column="2" Text="84.5 %" FontWeight="Bold" Foreground="{StaticResource GoldDarkBrush}" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Strategic Synthesis Card -->
+                    <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,8,0,0">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="{StaticResource IconShield}" Width="20" Height="20" Foreground="{StaticResource GoldAccentBrush}" VerticalAlignment="Top" Margin="0,2,14,0" />
+                            <StackPanel Grid.Column="1" Spacing="4">
+                                <TextBlock Text="Synthèse Décisionnelle pour le Commandement de l'École :" FontSize="16" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                                <TextBlock Text="Les évaluations confirment l'excellence de la transmission doctrinale. La priorité d'investissement pour la prochaine promotion doit porter sur l'accroissement des créneaux de travail collaboratif sur simulateurs tactiques."
+                                           FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

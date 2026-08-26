@@ -1,7 +1,89 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Questionnaires"
+             xmlns:models="using:formatrack.Models"
              x:Class="formatrack.Views.Questionnaires.QuestionEditorView"
              x:DataType="vm:QuestionEditorViewModel">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="NavyBrush" Color="#1B2A4A" />
+        <SolidColorBrush x:Key="MutedBrush" Color="#5A6B8C" />
+        <SolidColorBrush x:Key="GoldBrush" Color="#B8935F" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#E3E6EC" />
+    </UserControl.Resources>
 
+    <Grid Margin="34" RowDefinitions="Auto,Auto,*">
+        <StackPanel>
+            <Rectangle Width="42" Height="3" Fill="{StaticResource GoldBrush}" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" />
+            <TextBlock Text="Gestion des questions" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="Bold" Margin="0,14,0,0" />
+            <TextBlock Text="{Binding Message}" Foreground="{StaticResource MutedBrush}" FontSize="16" />
+        </StackPanel>
+
+        <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,20">
+            <StackPanel Spacing="16">
+                <TextBlock Text="Ajouter une question" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+
+                <Grid ColumnDefinitions="*,150,100">
+                    <StackPanel>
+                        <TextBlock Text="Enonce" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                        <TextBox Text="{Binding Enonce, Mode=TwoWay}" Watermark="Entrez l'ennoncé de la question" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Type" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                        <ComboBox ItemsSource="{Binding TypeQuestionOptions}"
+                                  SelectedItem="{Binding TypeQuestion, Mode=TwoWay}"
+                                  Width="140" HorizontalAlignment="Left">
+                            <ComboBox.Items>
+                                <x:String>TexteLibre</x:String>
+                                <x:String>QCM</x:String>
+                                <x:String>VraiFaux</x:String>
+                                <x:String>Notation</x:String>
+                            </ComboBox.Items>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Bareme" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                        <TextBox Text="{Binding Bareme, Mode=TwoWay}" Watermark="Points" Width="80" HorizontalAlignment="Left" />
+                    </StackPanel>
+                </Grid>
+
+                <Button Content="Ajouter la question"
+                        Command="{Binding AddQuestionCommand}"
+                        Width="160" Height="35"
+                        Background="{StaticResource GoldBrush}" Foreground="White"
+                        HorizontalAlignment="Right" />
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="2">
+            <ItemsControl ItemsSource="{Binding Questions}" Margin="0,12,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:Question" x:CompileBindings="False">
+                        <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,0,12">
+                            <Grid ColumnDefinitions="*,100,100,80">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="{Binding Enonce}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding TypeQuestion}" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,0,0">
+                                    <TextBlock Text="Bareme" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                                    <TextBlock Text="{Binding Bareme}" Foreground="#1B2432" FontWeight="SemiBold" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="14,0,0,0">
+                                    <TextBlock Text="Ordre" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                                    <TextBlock Text="{Binding Ordre}" Foreground="#1B2432" FontWeight="SemiBold" />
+                                </StackPanel>
+                                <Button Grid.Column="3"
+                                        Content="Supprimer"
+                                        Command="{Binding DataContext.DeleteQuestionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Width="70" Height="30"
+                                        Background="#FF6B6B" Foreground="White"
+                                        VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

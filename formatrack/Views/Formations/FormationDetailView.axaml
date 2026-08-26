@@ -2,6 +2,88 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Formations"
              x:Class="formatrack.Views.Formations.FormationDetailView"
-             x:DataType="vm:FormationDetailViewModel">
+             x:DataType="vm:FormationDetailViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <ScrollViewer Padding="32,24,32,32">
+        <StackPanel Spacing="24" MaxWidth="960" HorizontalAlignment="Left">
+
+            <!-- Top Navigation & Actions Bar -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="4">
+                    <Button Classes="ghost" Command="{Binding BackToDashboardCommand}" Padding="0" Margin="0,0,0,4">
+                        <TextBlock Text="← Retour au répertoire des formations" Foreground="{StaticResource GoldDarkBrush}" FontSize="14" FontWeight="SemiBold" />
+                    </Button>
+                    <TextBlock Text="{Binding Formation.Titre, FallbackValue='Détail de la Formation'}"
+                               Foreground="{StaticResource NavyPrimaryBrush}" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Message}" Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Bottom">
+                    <Button Classes="outline" Content="✏️ Modifier" Command="{Binding EditCommand}" Height="40" Padding="16,0" />
+                    <Button Classes="danger" Content="Supprimer" Command="{Binding DeleteCommand}" Height="40" Padding="16,0" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Main Formation Overview Card -->
+            <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="12" Padding="28" BoxShadow="0 2 8 0 #0A000000">
+                <StackPanel Spacing="20">
+
+                    <!-- Metadata Header Chips -->
+                    <WrapPanel Margin="0,0,0,4">
+                        <Border Background="#EBF3FC" BorderBrush="#BFDBFE" BorderThickness="1" CornerRadius="6" Padding="10,4" Margin="0,0,10,6">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <PathIcon Data="{StaticResource IconFormations}" Width="13" Height="13" Foreground="{StaticResource NavyPrimaryBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Formation.TypeFormation, StringFormat='Domaine : {0}'}" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#FEF3C7" BorderBrush="#FDE68A" BorderThickness="1" CornerRadius="6" Padding="10,4" Margin="0,0,10,6">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <PathIcon Data="{StaticResource IconClock}" Width="13" Height="13" Foreground="{StaticResource GoldDarkBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Formation.DureeHeures, StringFormat='Volume : {0} heures'}" Foreground="{StaticResource GoldDarkBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#ECFDF5" BorderBrush="#A7F3D0" BorderThickness="1" CornerRadius="6" Padding="10,4" Margin="0,0,10,6">
+                            <TextBlock Text="{Binding Formation.Statut, StringFormat='Statut : {0}'}" Foreground="{StaticResource SuccessGreenBrush}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" />
+                        </Border>
+                    </WrapPanel>
+
+                    <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" />
+
+                    <!-- Section: Description -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="DESCRIPTION &amp; CONTEXTE DOCTRINAL" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                        <TextBlock Text="{Binding Formation.Description}" FontSize="16" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" />
+
+                    <!-- Section: Objectifs -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="OBJECTIFS PÉDAGOGIQUES &amp; COMPÉTENCES OPÉRATIONNELLES" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" LetterSpacing="1" />
+                        <TextBlock Text="{Binding Formation.Objectifs}" FontSize="16" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                </StackPanel>
+            </Border>
+
+            <!-- Institutional Information & Quality Metrics -->
+            <Border Background="#F8FAFC" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1" CornerRadius="12" Padding="20">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Width="40" Height="40" CornerRadius="10" Background="{StaticResource NavyPrimaryBrush}" VerticalAlignment="Top" Margin="0,0,16,0">
+                        <PathIcon Data="{StaticResource IconShield}" Width="18" Height="18" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Contrôle Pédagogique &amp; Assurance Qualité SEFAD" FontSize="16" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                        <TextBlock Text="Ce module de formation est soumis aux questionnaires d'évaluation à chaud et à froid, et est pris en compte dans le scoring multicritères AHP pour les décisions de reconduction."
+                                   FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

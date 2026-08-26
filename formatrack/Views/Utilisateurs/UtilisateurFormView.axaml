@@ -2,6 +2,79 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Utilisateurs"
              x:Class="formatrack.Views.Utilisateurs.UtilisateurFormView"
-             x:DataType="vm:UtilisateurFormViewModel">
+             x:DataType="vm:UtilisateurFormViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <ScrollViewer Padding="32,24,32,32">
+        <StackPanel Spacing="24" MaxWidth="800" HorizontalAlignment="Left">
+
+            <!-- Header -->
+            <StackPanel Spacing="4">
+                <Button Classes="ghost" Command="{Binding CancelCommand}" Padding="0" Margin="0,0,0,4">
+                    <TextBlock Text="← Retour" Foreground="{StaticResource GoldDarkBrush}" FontSize="14" FontWeight="SemiBold" />
+                </Button>
+                <Rectangle Width="42" Height="3.5" Fill="{StaticResource GoldAccentBrush}" HorizontalAlignment="Left" RadiusX="2" RadiusY="2" />
+                <TextBlock Text="{Binding Message, FallbackValue='Fiche Utilisateur'}"
+                           Foreground="{StaticResource NavyPrimaryBrush}" FontSize="22" FontWeight="Bold" Margin="0,6,0,0" />
+                <TextBlock Text="Gestion des accès, coordonnées et permissions institutionnelles." Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+            </StackPanel>
+
+            <!-- Form Card -->
+            <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="12" Padding="28" BoxShadow="0 2 8 0 #0A000000">
+                <StackPanel Spacing="18">
+
+                    <!-- Nom & Prenom Grid -->
+                    <Grid ColumnDefinitions="*,*">
+                        <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,10,0">
+                            <TextBlock Text="Nom de famille *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBox Text="{Binding Nom, Mode=TwoWay}" Watermark="ex: Mansour" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6" Margin="10,0,0,0">
+                            <TextBlock Text="Prénom *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBox Text="{Binding Prenom, Mode=TwoWay}" Watermark="ex: Hédi" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Email -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Email institutionnel *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding Email, Mode=TwoWay}" Watermark="ex: h.mansour@sefad.local" />
+                    </StackPanel>
+
+                    <!-- Mot de passe -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Mot de passe" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding MotDePasse, Mode=TwoWay}" Watermark="Laissez vide pour conserver l'actuel lors d'une modification" PasswordChar="●" />
+                    </StackPanel>
+
+                    <!-- Role & Actif Grid -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,16,0">
+                            <TextBlock Text="Rôle dans l'institution *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <ComboBox ItemsSource="{Binding RoleOptions}"
+                                      SelectedItem="{Binding Role, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Margin="0,0,0,8">
+                            <CheckBox Content="Compte actif" IsChecked="{Binding Actif}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" Margin="0,8" />
+
+                    <!-- Buttons -->
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                        <Button Grid.Column="1" Classes="outline" Content="Annuler" Command="{Binding CancelCommand}" Height="40" Padding="18,0" Margin="0,0,10,0" />
+                        <Button Grid.Column="2" Classes="primary" Content="Enregistrer l'Utilisateur" Command="{Binding SaveCommand}" Height="40" Padding="20,0" />
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
+

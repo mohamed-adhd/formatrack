@@ -2,6 +2,82 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Formations"
              x:Class="formatrack.Views.Formations.FormationFormView"
-             x:DataType="vm:FormationFormViewModel">
+             x:DataType="vm:FormationFormViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <ScrollViewer Padding="32,24,32,32">
+        <StackPanel Spacing="24" MaxWidth="800" HorizontalAlignment="Left">
+
+            <!-- Form Header Banner -->
+            <StackPanel Spacing="4">
+                <Button Classes="ghost" Command="{Binding CancelCommand}" Padding="0" Margin="0,0,0,4">
+                    <TextBlock Text="← Retour" Foreground="{StaticResource GoldDarkBrush}" FontSize="14" FontWeight="SemiBold" />
+                </Button>
+                <Rectangle Width="42" Height="3.5" Fill="{StaticResource GoldAccentBrush}" HorizontalAlignment="Left" RadiusX="2" RadiusY="2" />
+                <TextBlock Text="{Binding Message, FallbackValue='Fiche Formation'}"
+                           Foreground="{StaticResource NavyPrimaryBrush}" FontSize="22" FontWeight="Bold" Margin="0,6,0,0" />
+                <TextBlock Text="Remplissez les informations relatives au module d'enseignement militaire." Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+            </StackPanel>
+
+            <!-- Form Body Card -->
+            <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="12" Padding="28" BoxShadow="0 2 8 0 #0A000000">
+                <StackPanel Spacing="18">
+
+                    <!-- Titre -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Intitulé de la formation *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding Titre, Mode=TwoWay}" Watermark="ex: Tactique Générale &amp; État-Major Niveau 2" />
+                    </StackPanel>
+
+                    <!-- Description -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Description doctrinale &amp; contexte pédagogique" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding Description, Mode=TwoWay}" Watermark="Description détaillée du module d'enseignement..." AcceptsReturn="True" Height="85" />
+                    </StackPanel>
+
+                    <!-- Objectifs -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Objectifs pédagogiques &amp; compétences opérationnelles" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding Objectifs, Mode=TwoWay}" Watermark="Compétences visées, livrables attendus..." AcceptsReturn="True" Height="85" />
+                    </StackPanel>
+
+                    <!-- 3 Column Row: Volume, Type, Statut -->
+                    <Grid ColumnDefinitions="*,*,*">
+
+                        <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,10,0">
+                            <TextBlock Text="Volume horaire (heures)" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBox Text="{Binding DureeHeures, Mode=TwoWay}" Watermark="ex: 40" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6" Margin="5,0,5,0">
+                            <TextBlock Text="Modalité / Domaine" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <ComboBox ItemsSource="{Binding TypeFormationOptions}"
+                                      SelectedItem="{Binding TypeFormation, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="6" Margin="10,0,0,0">
+                            <TextBlock Text="Statut" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <ComboBox ItemsSource="{Binding StatutOptions}"
+                                      SelectedItem="{Binding Statut, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                    </Grid>
+
+                    <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" Margin="0,8" />
+
+                    <!-- Form Action Buttons -->
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                        <Button Grid.Column="1" Classes="outline" Content="Annuler" Command="{Binding CancelCommand}" Height="40" Padding="18,0" Margin="0,0,10,0" />
+                        <Button Grid.Column="2" Classes="primary" Content="Enregistrer la Formation" Command="{Binding SaveCommand}" Height="40" Padding="20,0" />
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
+

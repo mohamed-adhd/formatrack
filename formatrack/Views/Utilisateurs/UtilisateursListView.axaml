@@ -1,7 +1,89 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Utilisateurs"
+             xmlns:models="using:formatrack.Models"
              x:Class="formatrack.Views.Utilisateurs.UtilisateursListView"
-             x:DataType="vm:UtilisateursListViewModel">
+             x:DataType="vm:UtilisateursListViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <Grid RowDefinitions="Auto,*" Margin="32,24,32,32">
+
+        <!-- Top Header & Search/Action Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,24">
+            <StackPanel Spacing="4">
+                <Rectangle Width="42" Height="3.5" Fill="{StaticResource GoldAccentBrush}" HorizontalAlignment="Left" RadiusX="2" RadiusY="2" />
+                <TextBlock Text="Annuaire des Utilisateurs" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="22" FontWeight="Bold" Margin="0,6,0,0" />
+                <TextBlock Text="{Binding Message}" Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Bottom">
+                <TextBox Width="280" Height="40" Watermark="Rechercher par nom, email, rôle..." Text="{Binding Recherche, Mode=TwoWay}" />
+                <Button Classes="outline" Content="Actualiser" Command="{Binding RefreshCommand}" Height="40" Padding="14,0" />
+                <Button Classes="primary" Content="+ Nouvel Utilisateur" Command="{Binding AddUtilisateurCommand}" Height="40" Padding="16,0" />
+            </StackPanel>
+        </Grid>
+
+        <!-- User Cards List -->
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding Utilisateurs}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:Utilisateur" x:CompileBindings="False">
+                        <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                                CornerRadius="12" Padding="18" Margin="0,0,0,12" BoxShadow="0 2 8 0 #08000000">
+                            <Grid ColumnDefinitions="Auto,*,170,120,Auto">
+
+                                <!-- Avatar Initials Badge -->
+                                <Border Grid.Column="0" Width="44" Height="44" CornerRadius="22"
+                                        Background="#EBF3FC" BorderBrush="{StaticResource NavyPrimaryBrush}" BorderThickness="1.5"
+                                        VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <PathIcon Data="{StaticResource IconUtilisateurs}" Width="20" Height="20" Foreground="{StaticResource NavyPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+
+                                <!-- Identity & Contact -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding NomComplet}" FontSize="15" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Email}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="14" />
+                                </StackPanel>
+
+                                <!-- Role Badge -->
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="14,0,0,0" Spacing="2">
+                                    <TextBlock Text="Rôle attribué" Foreground="{StaticResource TextMutedBrush}" FontSize="14" />
+                                    <Border Background="#F1F5F9" BorderBrush="{StaticResource BorderMediumBrush}" BorderThickness="1" CornerRadius="6" Padding="8,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="{Binding Role}" Foreground="{StaticResource NavyPrimaryBrush}" FontWeight="SemiBold" FontSize="14" />
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Active Status -->
+                                <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="14,0,0,0" Spacing="2">
+                                    <TextBlock Text="État du compte" Foreground="{StaticResource TextMutedBrush}" FontSize="14" />
+                                    <Border Background="#ECFDF5" BorderBrush="#A7F3D0" BorderThickness="1" CornerRadius="6" Padding="8,3" HorizontalAlignment="Left">
+                                        <TextBlock Text="Actif" Foreground="{StaticResource SuccessGreenBrush}" FontWeight="Bold" FontSize="14" />
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Actions -->
+                                <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <Button Classes="outline" Content="Fiche"
+                                            Command="{Binding DataContext.OpenUtilisateurDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Height="34" Padding="12,0" FontSize="14" />
+                                    <Button Classes="outline" Content="✏️"
+                                            Command="{Binding DataContext.EditUtilisateurCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Height="34" Padding="10,0" FontSize="14" ToolTip.Tip="Modifier" />
+                                    <Button Classes="danger" Content="🗑️"
+                                            Command="{Binding DataContext.DeleteUtilisateurCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Height="34" Padding="10,0" FontSize="14" ToolTip.Tip="Supprimer" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+    </Grid>
 </UserControl>

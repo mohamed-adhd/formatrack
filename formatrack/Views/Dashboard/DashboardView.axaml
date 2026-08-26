@@ -12,73 +12,108 @@
         <SolidColorBrush x:Key="BorderBrush" Color="#E3E6EC" />
     </UserControl.Resources>
 
-    <Grid ColumnDefinitions="240,*">
-        <Border Grid.Column="0" Background="#1B2A4A" Padding="22">
-            <DockPanel LastChildFill="True">
-                <StackPanel DockPanel.Dock="Top" Spacing="22">
-                    <StackPanel Spacing="2">
-                        <TextBlock Text="SEFAD" Foreground="White" FontSize="24" FontWeight="Bold" />
-                        <TextBlock Text="{Binding Role}" Foreground="#C8D1E3" FontSize="13" />
-                    </StackPanel>
-                    <Button Content="Tableau de bord" HorizontalContentAlignment="Left" IsEnabled="False" />
-                    <Button Content="Formations" HorizontalContentAlignment="Left" Command="{Binding OpenFormationsCommand}" />
-                    <Button Content="Sessions" HorizontalContentAlignment="Left" IsEnabled="False" />
-                    <Button Content="Evaluations" HorizontalContentAlignment="Left" IsEnabled="False" />
-                </StackPanel>
-                <Button DockPanel.Dock="Bottom" Content="Deconnexion" Command="{Binding LogoutCommand}" />
-            </DockPanel>
-        </Border>
+    <UserControl.Styles>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="16,10" />
+        </Style>
+        <Style Selector="TabItem:selected">
+            <Setter Property="Foreground" Value="{StaticResource NavyPrimaryBrush}" />
+        </Style>
+        <Style Selector="Border.badge">
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
 
-        <ScrollViewer Grid.Column="1">
-            <StackPanel Margin="34" Spacing="24">
-                <StackPanel>
-                    <Rectangle Width="42" Height="3" Fill="{StaticResource GoldBrush}" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" />
-                    <TextBlock Text="Tableau de bord" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="Bold" Margin="0,14,0,0" />
-                    <TextBlock Text="Vue generale du suivi des formations et evaluations." Foreground="{StaticResource MutedBrush}" FontSize="14" />
-                </StackPanel>
+    <ScrollViewer>
+        <StackPanel Margin="34" Spacing="24">
+            <!-- Header Section -->
+            <StackPanel>
+                <Rectangle Width="42" Height="3" Fill="{StaticResource GoldBrush}" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" />
+                <TextBlock Text="Tableau de bord" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="SemiBold" Margin="0,14,0,0" />
+                <TextBlock Text="Vue générale du suivi des formations, évaluations et aide à la décision." Foreground="{StaticResource MutedBrush}" FontSize="16" />
+            </StackPanel>
 
-                <UniformGrid Columns="4">
-                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,12,0">
+            <!-- Upper Performance & KPI Section -->
+            <Grid ColumnDefinitions="3*,2*" Margin="0,0,0,10">
+                <!-- KPI Indicators -->
+                <UniformGrid Grid.Column="0" Columns="2" Rows="2" Margin="0,0,16,0">
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,8,8">
                         <StackPanel>
-                            <TextBlock Text="{Binding FormationsCount}" FontSize="30" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                            <TextBlock Text="Formations" Foreground="{StaticResource MutedBrush}" />
+                            <TextBlock Text="{Binding FormationsCount}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                            <TextBlock Text="Formations actives" Foreground="{StaticResource MutedBrush}" FontSize="14" />
                         </StackPanel>
                     </Border>
-                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,12,0">
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="8,0,0,8">
                         <StackPanel>
-                            <TextBlock Text="{Binding SessionsCount}" FontSize="30" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                            <TextBlock Text="Sessions" Foreground="{StaticResource MutedBrush}" />
+                            <TextBlock Text="{Binding SessionsCount}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                            <TextBlock Text="Sessions programmées" Foreground="{StaticResource MutedBrush}" FontSize="14" />
                         </StackPanel>
                     </Border>
-                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,0,12,0">
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,8,8,0">
                         <StackPanel>
-                            <TextBlock Text="{Binding UtilisateursCount}" FontSize="30" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                            <TextBlock Text="Utilisateurs" Foreground="{StaticResource MutedBrush}" />
+                            <TextBlock Text="{Binding UtilisateursCount}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                            <TextBlock Text="Utilisateurs enregistrés" Foreground="{StaticResource MutedBrush}" FontSize="14" />
                         </StackPanel>
                     </Border>
-                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="18">
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="8,8,0,0">
                         <StackPanel>
-                            <TextBlock Text="{Binding QuestionnairesCount}" FontSize="30" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" />
-                            <TextBlock Text="Questionnaires" Foreground="{StaticResource MutedBrush}" />
+                            <TextBlock Text="{Binding QuestionnairesCount}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                            <TextBlock Text="Questionnaires actifs" Foreground="{StaticResource MutedBrush}" FontSize="14" />
                         </StackPanel>
                     </Border>
                 </UniformGrid>
 
-                <Grid ColumnDefinitions="2*,*">
-                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                <!-- Aide à la décision (AHP & Recommendations) -->
+                <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Aide à la décision (AHP)" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Score composite :" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                                <TextBlock Text="{Binding AhpCompositeScore}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource GoldBrush}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="Taux réussite :" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                                <TextBlock Text="{Binding TauxReussite}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                            </StackPanel>
+                        </Grid>
+                        <Separator Height="1" Background="{StaticResource BorderBrush}" Margin="0,4" />
+                        <TextBlock Text="Recommandation automatique :" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                        <TextBlock Text="{Binding RecommendationText}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="14" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Logical Modules Navigation Tabs -->
+            <TabControl Background="Transparent" BorderThickness="0" Padding="0,12,0,0">
+                <!-- Tab 1: Emploi du temps -->
+                <TabItem Header="📅 Emploi du temps">
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,10,0,0">
                         <StackPanel Spacing="14">
                             <TextBlock Text="{Binding Message}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
                             <ItemsControl ItemsSource="{Binding ProchainesSessions}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="models:Session">
-                                        <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,10">
-                                            <Grid ColumnDefinitions="*,150,90">
-                                                <StackPanel>
-                                                    <TextBlock Text="{Binding TitreFormation}" FontWeight="SemiBold" Foreground="#1B2432" />
-                                                    <TextBlock Text="{Binding Lieu}" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                                        <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,12">
+                                            <Grid ColumnDefinitions="*,150,120">
+                                                <StackPanel Spacing="4">
+                                                    <TextBlock Text="{Binding TitreFormation}" FontWeight="SemiBold" Foreground="#1B2432" FontSize="16" />
+                                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                                        <TextBlock Text="{Binding Lieu}" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                                                        <TextBlock Text="•" Foreground="{StaticResource BorderMediumBrush}" />
+                                                        <TextBlock Text="{Binding Statut}" Foreground="{StaticResource GoldBrush}" FontSize="14" FontWeight="Medium" />
+                                                    </StackPanel>
                                                 </StackPanel>
-                                                <TextBlock Grid.Column="1" Text="{Binding Periode}" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                                                <TextBlock Grid.Column="2" Text="{Binding Statut}" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1" Text="{Binding Periode}" Foreground="{StaticResource MutedBrush}" FontSize="14" VerticalAlignment="Center" />
+                                                <Button Grid.Column="2" Classes="outline" Content="Détails" MinHeight="36" Padding="12,6" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
@@ -86,17 +121,197 @@
                             </ItemsControl>
                         </StackPanel>
                     </Border>
+                </TabItem>
 
-                    <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="18,0,0,0">
-                        <StackPanel Spacing="10">
-                            <TextBlock Text="Aide a la decision" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
-                            <TextBlock Text="Taux moyen" Foreground="{StaticResource MutedBrush}" />
-                            <TextBlock Text="{Binding TauxReussite}" FontSize="34" FontWeight="Bold" Foreground="{StaticResource GoldBrush}" />
-                            <Button Content="Gerer les formations" Command="{Binding OpenFormationsCommand}" Margin="0,18,0,0" />
+                <!-- Tab 2: Notes & Évaluations -->
+                <TabItem Header="📝 Notes &amp; Évaluations">
+                    <Grid ColumnDefinitions="2*,*" Margin="0,10,0,0" RowDefinitions="Auto,*">
+                        <!-- Search Filters -->
+                        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,14">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="Filtrer les notes :" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBox Width="300" Height="36" Watermark="Rechercher par stagiaire ou matière..." Text="{Binding StudentFilter, Mode=TwoWay}" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="Contextualisation des performances par rapport à la classe" FontSize="12" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" FontStyle="Italic" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Evaluations List -->
+                        <Border Grid.Row="1" Grid.Column="0" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,16,0">
+                            <ScrollViewer MaxHeight="450">
+                                <ItemsControl ItemsSource="{Binding FilteredEvaluations}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Evaluation">
+                                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,12">
+                                                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
+                                                    <StackPanel Grid.Row="0" Grid.Column="0" Spacing="2">
+                                                        <TextBlock Text="{Binding QuestionnaireTitre}" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="16" />
+                                                        <TextBlock Text="{Binding UtilisateurNom, StringFormat='Stagiaire : {0}'}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="14" />
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding ScoreTotal, StringFormat='{}{0}/20'}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" HorizontalAlignment="Right" />
+                                                        <TextBlock Text="{Binding Pourcentage, StringFormat='{}{0:0.0}%'}" FontSize="12" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Right" />
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,6,0,0" Spacing="12">
+                                                        <Border Background="#F1F5F9" CornerRadius="4" Padding="6,2">
+                                                            <TextBlock Text="{Binding MoyenneClasse, StringFormat='Moyenne classe: {0:0.0}/20'}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" />
+                                                        </Border>
+                                                        <Border Background="#FEF2F2" CornerRadius="4" Padding="6,2">
+                                                            <TextBlock Text="{Binding NoteMin, StringFormat='Note Min: {0:0.0}/20'}" FontSize="12" Foreground="{StaticResource DangerRedBrush}" />
+                                                        </Border>
+                                                        <Border Background="#ECFDF5" CornerRadius="4" Padding="6,2">
+                                                            <TextBlock Text="{Binding NoteMax, StringFormat='Note Max: {0:0.0}/20'}" FontSize="12" Foreground="{StaticResource SuccessGreenBrush}" />
+                                                        </Border>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+
+                        <!-- Add Note Form -->
+                        <Border Grid.Row="1" Grid.Column="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Saisie de note (Formateur/Admin)" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" Margin="0,0,0,4" />
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Nom du Stagiaire" FontSize="14" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBox Text="{Binding NewGradeStudent, Mode=TwoWay}" Watermark="ex: Cpt. K. Ben Ali" />
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Matière / Évaluation" FontSize="14" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBox Text="{Binding NewGradeSubject, Mode=TwoWay}" Watermark="ex: Logistique Opérationnelle" />
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Note (sur 20)" FontSize="14" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBox Text="{Binding NewGradeValueString, Mode=TwoWay}" Watermark="ex: 15.5" />
+                                </StackPanel>
+                                <Border Background="#FEE2E2" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="6" Padding="10,6" IsVisible="{Binding IsNewGradeErrorVisible}">
+                                    <TextBlock Text="{Binding NewGradeError}" Foreground="{StaticResource DangerRedBrush}" FontSize="13" TextWrapping="Wrap" />
+                                </Border>
+                                <TextBlock Text="{Binding NewGradeAutoSaveStatus}" Foreground="{StaticResource SuccessGreenBrush}" FontSize="12" FontStyle="Italic" HorizontalAlignment="Right" />
+                                <Button Classes="primary" Content="Publier la note" Command="{Binding EnregistrerNouvelleNoteCommand}" HorizontalAlignment="Stretch" Margin="0,10,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                <!-- Tab 3: Absences & Retards -->
+                <TabItem Header="⚠️ Absences &amp; Retards">
+                    <Grid ColumnDefinitions="2*,*" Margin="0,10,0,0">
+                        <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,16,0">
+                            <StackPanel Spacing="14">
+                                <TextBlock Text="Historique des Absences &amp; Retards" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                                <ItemsControl ItemsSource="{Binding AbsenceRetardList}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:AbsenceRetardItem">
+                                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,12">
+                                                <Grid ColumnDefinitions="*,Auto,Auto">
+                                                    <StackPanel Grid.Column="0" Spacing="4">
+                                                        <TextBlock Text="{Binding Cours}" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="15" />
+                                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                                            <TextBlock Text="{Binding Date}" Foreground="{StaticResource TextMutedBrush}" FontSize="13" />
+                                                            <TextBlock Text="•" Foreground="{StaticResource BorderMediumBrush}" />
+                                                            <TextBlock Text="{Binding Duree}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" />
+                                                        </StackPanel>
+                                                        <TextBlock Text="{Binding Justification, StringFormat='Justification : {0}'}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="13" FontStyle="Italic" IsVisible="{Binding Justifiee}" />
+                                                    </StackPanel>
+
+                                                    <!-- Justified Badge -->
+                                                    <Border Grid.Column="1" Background="#ECFDF5" BorderBrush="#A7F3D0" BorderThickness="1" CornerRadius="6" Padding="8,4" VerticalAlignment="Center" Margin="0,0,12,0" IsVisible="{Binding IsAbsenceJustified}">
+                                                        <TextBlock Text="Justifiée" Foreground="{StaticResource SuccessGreenBrush}" FontSize="13" FontWeight="SemiBold" />
+                                                    </Border>
+                                                    <!-- Non Justified Badge -->
+                                                    <Border Grid.Column="1" Background="#FEF2F2" BorderBrush="#FCA5A5" BorderThickness="1" CornerRadius="6" Padding="8,4" VerticalAlignment="Center" Margin="0,0,12,0" IsVisible="{Binding IsAbsenceUnjustified}">
+                                                        <TextBlock Text="Non justifiée" Foreground="{StaticResource DangerRedBrush}" FontSize="13" FontWeight="SemiBold" />
+                                                    </Border>
+                                                    <!-- Retard Badge -->
+                                                    <Border Grid.Column="1" Background="#FFFBEB" BorderBrush="#FDE68A" BorderThickness="1" CornerRadius="6" Padding="8,4" VerticalAlignment="Center" Margin="0,0,12,0" IsVisible="{Binding IsRetard}">
+                                                        <TextBlock Text="Retard (Signalé)" Foreground="{StaticResource WarningAmberBrush}" FontSize="13" FontWeight="SemiBold" />
+                                                    </Border>
+
+                                                    <Button Grid.Column="2" Classes="outline" Content="Justifier" 
+                                                            Command="{Binding $parent[UserControl].DataContext.SetSelectedAbsenceCommand}" 
+                                                            CommandParameter="{Binding}"
+                                                            MinHeight="32" Padding="10,4" FontSize="13" VerticalAlignment="Center"
+                                                            IsVisible="{Binding !Justifiee}"
+                                                            x:CompileBindings="False" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Justification Editor Form -->
+                        <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                            <StackPanel Spacing="12">
+                                <TextBlock Text="Justifier une Absence" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                                
+                                <StackPanel Spacing="8" IsVisible="{Binding SelectedAbsence, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                    <Border Background="#F8FAFC" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,4">
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="Session sélectionnée :" FontSize="12" Foreground="{StaticResource TextMutedBrush}" />
+                                            <TextBlock Text="{Binding SelectedAbsence.Cours}" FontWeight="SemiBold" FontSize="13" Foreground="{StaticResource NavyPrimaryBrush}" TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding SelectedAbsence.Date}" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" />
+                                        </StackPanel>
+                                    </Border>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Motif réglementaire" FontSize="14" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
+                                        <ComboBox ItemsSource="{Binding Motifs}" SelectedItem="{Binding SelectedMotif}" HorizontalAlignment="Stretch" />
+                                    </StackPanel>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="Détails de la justification" FontSize="14" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
+                                        <TextBox Text="{Binding JustificationText, Mode=TwoWay}" Watermark="Saisir la justification officielle..." AcceptsReturn="True" Height="100" />
+                                    </StackPanel>
+                                    <Border Background="#FEE2E2" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="6" Padding="10,6" IsVisible="{Binding IsErrorVisible}">
+                                        <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource DangerRedBrush}" FontSize="13" TextWrapping="Wrap" />
+                                    </Border>
+                                    <TextBlock Text="{Binding AutoSaveStatus}" Foreground="{StaticResource SuccessGreenBrush}" FontSize="12" FontStyle="Italic" HorizontalAlignment="Right" />
+                                    <Button Classes="primary" Content="Enregistrer" Command="{Binding JustifierCommand}" HorizontalAlignment="Stretch" Margin="0,10,0,0" />
+                                </StackPanel>
+
+                                <TextBlock Text="Sélectionnez une absence non justifiée dans la liste pour saisir son motif."
+                                           Foreground="{StaticResource TextMutedBrush}" FontSize="14" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,40,0,0"
+                                           IsVisible="{Binding SelectedAbsence, Converter={x:Static ObjectConverters.IsNull}}" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                <!-- Tab 4: Messagerie & Alertes -->
+                <TabItem Header="✉️ Messagerie &amp; Alertes">
+                    <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,10,0,0">
+                        <StackPanel Spacing="16">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="Filtrer les messages :" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBox Width="300" Height="36" Watermark="Rechercher par mot-clé..." Text="{Binding SearchText, Mode=TwoWay}" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="Notifications du jour &amp; Alertes système" FontSize="12" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" FontStyle="Italic" />
+                            </Grid>
+                            <Separator Height="1" Background="{StaticResource BorderBrush}" />
+                            <ScrollViewer MaxHeight="400">
+                                <ItemsControl ItemsSource="{Binding FilteredNotifications}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Notification">
+                                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,12">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <TextBlock Text="{Binding Message}" FontSize="14" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap" />
+                                                    <TextBlock Grid.Column="1" Text="{Binding DateCreation, StringFormat='{}{0:g}'}" FontSize="12" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" Margin="14,0,0,0" />
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
                         </StackPanel>
                     </Border>
-                </Grid>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+                </TabItem>
+            </TabControl>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

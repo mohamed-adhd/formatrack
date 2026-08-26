@@ -3,170 +3,176 @@
              xmlns:vm="using:formatrack.ViewModels"
              x:Class="formatrack.Views.LoginView"
              x:DataType="vm:LoginViewModel"
-             Background="#FFFFFF">
-
-    <UserControl.Resources>
-        <SolidColorBrush x:Key="NavyBrush" Color="#1B2A4A" />
-        <SolidColorBrush x:Key="NavyMutedBrush" Color="#5A6B8C" />
-        <SolidColorBrush x:Key="GoldBrush" Color="#B8935F" />
-        <SolidColorBrush x:Key="BorderBrush" Color="#E3E6EC" />
-        <SolidColorBrush x:Key="ErrorBrush" Color="#B3261E" />
-        <SolidColorBrush x:Key="FieldBackground" Color="#F7F8FA" />
-        <SolidColorBrush x:Key="TextBrush" Color="#1B2432" />
-        <SolidColorBrush x:Key="WatermarkBrush" Color="#8A93A6" />
-    </UserControl.Resources>
-
-    <UserControl.Styles>
-        <Style Selector="TextBox">
-            <Setter Property="Height" Value="44" />
-            <Setter Property="Padding" Value="14,0" />
-            <Setter Property="Background" Value="{StaticResource FieldBackground}" />
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-            <Setter Property="CaretBrush" Value="{StaticResource TextBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-        </Style>
-        <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
-            <Setter Property="Foreground" Value="{StaticResource WatermarkBrush}" />
-        </Style>
-        <Style Selector="TextBox:focus">
-            <Setter Property="BorderBrush" Value="{StaticResource NavyBrush}" />
-        </Style>
-
-        <Style Selector="Button.primary">
-            <Setter Property="Height" Value="44" />
-            <Setter Property="Background" Value="{StaticResource NavyBrush}" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Cursor" Value="Hand" />
-        </Style>
-        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#243458" />
-        </Style>
-
-        <Style Selector="Button.secondary">
-            <Setter Property="Height" Value="44" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{StaticResource NavyBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="Medium" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Cursor" Value="Hand" />
-        </Style>
-        <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#F7F8FA" />
-        </Style>
-
-        <Style Selector="Button.ghost">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{StaticResource NavyMutedBrush}" />
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-        <Style Selector="Button.ghost:pointerover /template/ ContentPresenter">
-            <Setter Property="TextBlock.Foreground" Value="{StaticResource NavyBrush}" />
-        </Style>
-
-        <Style Selector="Button.eye">
-            <Setter Property="Width" Value="32" />
-            <Setter Property="Height" Value="32" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="{StaticResource NavyMutedBrush}" />
-            <Setter Property="FontSize" Value="15" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-        </Style>
-        <Style Selector="Button.eye:pointerover /template/ ContentPresenter">
-            <Setter Property="TextBlock.Foreground" Value="{StaticResource NavyBrush}" />
-        </Style>
-    </UserControl.Styles>
+             Background="{StaticResource BackgroundPageBrush}">
 
     <Grid>
+        <!-- Background Decorative Tone -->
+        <Border Background="{StaticResource BackgroundPageBrush}" />
+
+        <!-- Top Right Window Actions -->
         <StackPanel Orientation="Horizontal"
-                    Spacing="4"
+                    Spacing="8"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    Margin="0,24,32,0">
+                    Margin="0,20,24,0"
+                    ZIndex="10">
             <Button Name="FullScreenButton"
                     Classes="ghost"
                     Content="Plein écran"
                     Click="OnToggleFullScreenClick" />
-            <TextBlock Text="•" Foreground="{StaticResource BorderBrush}" VerticalAlignment="Center" />
+            <TextBlock Text="|" Foreground="{StaticResource BorderMediumBrush}" VerticalAlignment="Center" />
             <Button Classes="ghost"
                     Content="Quitter"
                     Command="{Binding QuitterCommand}" />
         </StackPanel>
 
+        <!-- Centered Main Login Container Card -->
         <Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Width="380"
-                Padding="40,40,40,32"
+                Width="860"
+                MinHeight="500"
                 Background="White"
-                BorderBrush="{StaticResource BorderBrush}"
+                BorderBrush="{StaticResource BorderLightBrush}"
                 BorderThickness="1"
-                CornerRadius="10"
-                BoxShadow="0 8 24 -6 #14000000">
+                CornerRadius="16"
+                BoxShadow="0 16 48 -12 #20000000">
 
-            <StackPanel Spacing="0">
+            <Grid ColumnDefinitions="360,*">
 
-                <Rectangle Width="36" Height="3" Fill="{StaticResource GoldBrush}"
-                           HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" Margin="0,0,0,20" />
+                <!-- Left Panel: Institutional Brand & Mission -->
+                <Border Grid.Column="0"
+                        Background="{StaticResource NavyDarkBrush}"
+                        CornerRadius="15,0,0,15"
+                        Padding="36">
+                    <Grid RowDefinitions="Auto,*,Auto">
 
-                <TextBlock Text="Bienvenue sur SEFAD"
-                           FontSize="22" FontWeight="Bold"
-                           Foreground="{StaticResource NavyBrush}" />
+                        <!-- Top Brand Header -->
+                        <StackPanel Grid.Row="0" Spacing="14">
+                            <Border Width="52" Height="52" CornerRadius="12"
+                                    Background="{StaticResource NavyPrimaryBrush}"
+                                    BorderBrush="{StaticResource GoldAccentBrush}"
+                                    BorderThickness="2"
+                                    HorizontalAlignment="Left">
+                                <PathIcon Data="{StaticResource IconShield}" Width="26" Height="26"
+                                          Foreground="{StaticResource GoldAccentBrush}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
 
-                <TextBlock Text="Système d'Évaluation de la Formation et d'Aide à la Décision"
-                           FontSize="13"
-                           Foreground="{StaticResource NavyMutedBrush}"
-                           TextWrapping="Wrap"
-                           Margin="0,4,0,28" />
+                            <StackPanel Spacing="3">
+                                <TextBlock Text="SEFAD"
+                                           FontSize="26" FontWeight="SemiBold"
+                                           Foreground="White"
+                                           LetterSpacing="1.5" />
+                                <TextBlock Text="ÉCOLE D'ÉTAT-MAJOR"
+                                           FontSize="14" FontWeight="SemiBold"
+                                           Foreground="{StaticResource GoldAccentBrush}"
+                                           LetterSpacing="2" />
+                            </StackPanel>
+                        </StackPanel>
 
-                <TextBlock Text="Identifiant" FontSize="13" FontWeight="Medium"
-                           Foreground="{StaticResource NavyBrush}" Margin="0,0,0,6" />
-                <TextBox Text="{Binding Identifiant, Mode=TwoWay}"
-                         Watermark="Votre identifiant" />
+                        <!-- Center Info Points -->
+                        <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="16">
+                            <TextBlock Text="Système d'Évaluation de la Formation et d'Aide à la Décision"
+                                       FontSize="16"
+                                       Foreground="#B0C2DE"
+                                       TextWrapping="Wrap" />
 
-                <TextBlock Text="Mot de passe" FontSize="13" FontWeight="Medium"
-                           Foreground="{StaticResource NavyBrush}" Margin="0,16,0,6" />
+                            <Rectangle Height="1" Fill="#1E3A66" HorizontalAlignment="Stretch" Margin="0,4" />
 
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBox Grid.Column="0"
-                             Text="{Binding MotDePasse, Mode=TwoWay}"
-                             Watermark="Votre mot de passe"
-                             PasswordChar="{Binding PasswordChar}" />
-                    <Button Grid.Column="1"
-                            Classes="eye"
-                            Content="{Binding EyeIcon}"
-                            Command="{Binding TogglePasswordVisibilityCommand}"
-                            Margin="6,0,0,0" />
-                </Grid>
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <PathIcon Grid.Column="0" Data="{StaticResource IconAward}" Width="15" Height="15" Foreground="{StaticResource GoldAccentBrush}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="Évaluation multicritères &amp; scoring AHP" Margin="10,0,0,0" Foreground="#D5E2F5" FontSize="16" VerticalAlignment="Center" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <PathIcon Grid.Column="0" Data="{StaticResource IconFormations}" Width="15" Height="15" Foreground="{StaticResource GoldAccentBrush}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="Suivi pédagogique &amp; sessions d'études" Margin="10,0,0,0" Foreground="#D5E2F5" FontSize="16" VerticalAlignment="Center" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <PathIcon Grid.Column="0" Data="{StaticResource IconStatistiques}" Width="15" Height="15" Foreground="{StaticResource GoldAccentBrush}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="Pilotage stratégique pour le Commandement" Margin="10,0,0,0" Foreground="#D5E2F5" FontSize="16" VerticalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
 
-                <TextBlock Text="{Binding MessageErreur}"
-                           IsVisible="{Binding IsErrorVisible}"
-                           Foreground="{StaticResource ErrorBrush}"
-                           FontSize="12.5"
-                           TextWrapping="Wrap"
-                           Margin="0,10,0,0" />
+                        <!-- Bottom Institutional Footer -->
+                        <TextBlock Grid.Row="2"
+                                   Text="Direction des Études • Promotion 2026"
+                                   FontSize="16"
+                                   Foreground="#6B82A6" />
+                    </Grid>
+                </Border>
 
-                <Button Classes="primary"
-                        Content="Se connecter"
-                        Command="{Binding SeConnecterCommand}"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        Margin="0,22,0,10" />
+                <!-- Right Panel: Login Form -->
+                <Border Grid.Column="1" Padding="44,36">
+                    <StackPanel Spacing="0" VerticalAlignment="Center">
 
-            </StackPanel>
+                        <Rectangle Width="36" Height="3" Fill="{StaticResource GoldAccentBrush}"
+                                   HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" Margin="0,0,0,16" />
+
+                        <TextBlock Text="Espace de Connexion"
+                                   FontSize="22" FontWeight="SemiBold"
+                                   Foreground="{StaticResource NavyPrimaryBrush}" />
+
+                        <TextBlock Text="Veuillez vous authentifier pour accéder à la plateforme."
+                                   FontSize="16"
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   Margin="0,4,0,20" />
+
+                        <!-- Quick Demo Credentials Chips -->
+                        <TextBlock Text="COMPTES DE TEST (1 CLIC) :" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8" LetterSpacing="0.8" />
+                        <WrapPanel Margin="0,0,0,18">
+                            <Button Classes="outline" Content="👑 Admin" Command="{Binding FillAdminCommand}" Margin="0,0,6,6" FontSize="16" />
+                            <Button Classes="outline" Content="🎓 Formateur" Command="{Binding FillFormateurCommand}" Margin="0,0,6,6" FontSize="16" />
+                            <Button Classes="outline" Content="🎖️ Stagiaire" Command="{Binding FillStagiaireCommand}" Margin="0,0,6,6" FontSize="16" />
+                        </WrapPanel>
+
+                        <!-- Identifiant Input -->
+                        <TextBlock Text="Identifiant / Email institutionnel" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,6" />
+                        <TextBox Text="{Binding Identifiant, Mode=TwoWay}"
+                                 Watermark="ex: admin@sefad.local" />
+
+                        <!-- Mot de passe Input -->
+                        <TextBlock Text="Mot de passe" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}" Margin="0,14,0,6" />
+
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBox Grid.Column="0"
+                                     Text="{Binding MotDePasse, Mode=TwoWay}"
+                                     Watermark="Votre mot de passe"
+                                     PasswordChar="{Binding PasswordChar}" />
+                            <Button Grid.Column="1"
+                                    Classes="outline"
+                                    Content="{Binding EyeIcon}"
+                                    Command="{Binding TogglePasswordVisibilityCommand}"
+                                    Margin="6,0,0,0" />
+                        </Grid>
+
+                        <!-- Error Banner -->
+                        <Border Background="#FEE2E2" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="6"
+                                Padding="12,8" Margin="0,12,0,0"
+                                IsVisible="{Binding IsErrorVisible}">
+                            <TextBlock Text="{Binding MessageErreur}"
+                                       Foreground="{StaticResource DangerRedBrush}"
+                                       FontSize="16"
+                                       FontWeight="Medium"
+                                       TextWrapping="Wrap" />
+                        </Border>
+
+                        <!-- Submit Button -->
+                        <Button Classes="primary"
+                                Content="Se connecter à SEFAD"
+                                Command="{Binding SeConnecterCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                FontSize="16"
+                                Margin="0,20,0,0" />
+
+                    </StackPanel>
+                </Border>
+
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

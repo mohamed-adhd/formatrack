@@ -9,21 +9,27 @@ namespace formatrack.ViewModels;
 public partial class LoginViewModel : ViewModelBase
 {
     private readonly IAuthService _authService;
-    private readonly Action<string> _onLoginSuccess;
+    private readonly Action<string, string> _onLoginSuccess;
 
-    [ObservableProperty] private string _identifiant = string.Empty;
-    [ObservableProperty] private string _motDePasse = string.Empty;
+    [ObservableProperty] private string _identifiant = "admin@sefad.local";
+    [ObservableProperty] private string _motDePasse = "admin123";
     [ObservableProperty] private string _messageErreur = string.Empty;
     [ObservableProperty] private bool _isErrorVisible;
     [ObservableProperty] private bool _isPasswordVisible;
 
-    public char PasswordChar => IsPasswordVisible ? '\0' : '*';
-    public string EyeIcon => IsPasswordVisible ? "Masquer" : "Voir";
+    public char PasswordChar => IsPasswordVisible ? '\0' : '●';
+    public string EyeIcon => IsPasswordVisible ? "Masquer" : "Afficher";
 
-    public LoginViewModel(IAuthService authService, Action<string>? onLoginSuccess = null)
+    public LoginViewModel(IAuthService authService, Action<string, string>? onLoginSuccess = null)
     {
         _authService = authService;
-        _onLoginSuccess = onLoginSuccess ?? (_ => { });
+        _onLoginSuccess = onLoginSuccess ?? ((_, _) => { });
+    }
+
+    public LoginViewModel(IAuthService authService, Action<string> onLoginSuccessLegacy)
+    {
+        _authService = authService;
+        _onLoginSuccess = (role, _) => onLoginSuccessLegacy(role);
     }
 
     partial void OnIsPasswordVisibleChanged(bool value)
@@ -34,6 +40,30 @@ public partial class LoginViewModel : ViewModelBase
 
     [RelayCommand]
     private void TogglePasswordVisibility() => IsPasswordVisible = !IsPasswordVisible;
+
+    [RelayCommand]
+    private void FillAdmin()
+    {
+        Identifiant = "admin@sefad.local";
+        MotDePasse = "admin123";
+        IsErrorVisible = false;
+    }
+
+    [RelayCommand]
+    private void FillFormateur()
+    {
+        Identifiant = "formatrice@sefad.local";
+        MotDePasse = "admin123";
+        IsErrorVisible = false;
+    }
+
+    [RelayCommand]
+    private void FillStagiaire()
+    {
+        Identifiant = "stagiaire@sefad.local";
+        MotDePasse = "admin123";
+        IsErrorVisible = false;
+    }
 
     [RelayCommand]
     private async Task SeConnecterAsync()
@@ -48,16 +78,10 @@ public partial class LoginViewModel : ViewModelBase
             return;
         }
 
-        _onLoginSuccess(role);
-    }
-
-    [RelayCommand]
-    private void CreerCompte()
-    {
-        MessageErreur = "Creation de compte a finaliser dans le module utilisateurs.";
-        IsErrorVisible = true;
+        _onLoginSuccess(role, Identifiant);
     }
 
     [RelayCommand]
     private void Quitter() => Environment.Exit(0);
 }
+

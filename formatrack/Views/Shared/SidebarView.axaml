@@ -1,0 +1,151 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:formatrack.ViewModels.Shared"
+             x:Class="formatrack.Views.Shared.SidebarView"
+             x:DataType="vm:SidebarViewModel"
+             Width="260">
+
+    <Border Background="{StaticResource NavyDarkBrush}">
+        <Grid RowDefinitions="Auto,*,Auto">
+
+            <!-- Top Header & Brand Seal -->
+            <Border Grid.Row="0" Padding="20,24,20,20" BorderBrush="#1E3355" BorderThickness="0,0,0,1">
+                <Grid ColumnDefinitions="Auto,*">
+                    <!-- Military Crest Emblem -->
+                    <Border Grid.Column="0" Width="44" Height="44" CornerRadius="10"
+                            Background="#16294A" BorderBrush="{StaticResource GoldAccentBrush}" BorderThickness="1.5"
+                            VerticalAlignment="Center">
+                        <PathIcon Data="{StaticResource IconShield}" Width="22" Height="22"
+                                  Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="SEFAD" Foreground="White" FontSize="22" FontWeight="SemiBold" LetterSpacing="1" />
+                        <TextBlock Text="ÉCOLE D'ÉTAT-MAJOR" Foreground="{StaticResource GoldAccentBrush}" FontSize="14" FontWeight="SemiBold" LetterSpacing="1.2" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Navigation Links List -->
+            <ScrollViewer Grid.Row="1" Margin="0,12,0,12">
+                <StackPanel Spacing="3" Margin="12,0">
+
+                    <TextBlock Text="MENU PRINCIPAL" Foreground="#647C9E" FontSize="14" FontWeight="SemiBold" Margin="10,8,0,6" LetterSpacing="1" />
+                    <!-- 1. Tableau de bord -->
+                    <Button Classes="ghost" Command="{Binding NavigateDashboardCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                            Padding="12,10" CornerRadius="8"
+                            Background="{Binding IsDashboardActive, Converter={x:Null}}">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="{StaticResource IconDashboard}" Width="18" Height="18"
+                                      Foreground="{StaticResource GoldAccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="Tableau de bord" Margin="12,0,0,0"
+                                       Foreground="White" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
+
+                    <!-- 2. Formations -->
+                    <Button Classes="ghost" Command="{Binding NavigateFormationsCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                            Padding="12,10" CornerRadius="8">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="{StaticResource IconFormations}" Width="18" Height="18"
+                                      Foreground="{StaticResource GoldAccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="Formations" Margin="12,0,0,0"
+                                       Foreground="White" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
+
+                    <!-- 3. Sessions -->
+                    <Button Classes="ghost" Command="{Binding NavigateSessionsCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                            Padding="12,10" CornerRadius="8">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="{StaticResource IconSessions}" Width="18" Height="18"
+                                      Foreground="{StaticResource GoldAccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="Sessions" Margin="12,0,0,0"
+                                       Foreground="White" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
+
+                    <!-- 4. Utilisateurs (Admin & Resp) -->
+                    <Button Classes="ghost" Command="{Binding NavigateUtilisateursCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                            Padding="12,10" CornerRadius="8">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="{StaticResource IconUtilisateurs}" Width="18" Height="18"
+                                      Foreground="{StaticResource GoldAccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="Utilisateurs" Margin="12,0,0,0"
+                                       Foreground="White" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
+
+                    <!-- 5. Questionnaires -->
+                    <Button Classes="ghost" Command="{Binding NavigateQuestionnairesCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                            Padding="12,10" CornerRadius="8">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="{StaticResource IconQuestionnaires}" Width="18" Height="18"
+                                      Foreground="{StaticResource GoldAccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="Questionnaires" Margin="12,0,0,0"
+                                       Foreground="White" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
+
+                    <!-- 6. Evaluations -->
+                    <Button Classes="ghost" Command="{Binding NavigateEvaluationsCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                            Padding="12,10" CornerRadius="8">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="{StaticResource IconEvaluations}" Width="18" Height="18"
+                                      Foreground="{StaticResource GoldAccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="Évaluations" Margin="12,0,0,0"
+                                       Foreground="White" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
+
+                    <!-- 7. Statistiques & Aide à la décision -->
+                    <Button Classes="ghost" Command="{Binding NavigateStatistiquesCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                            Padding="12,10" CornerRadius="8">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="{StaticResource IconStatistiques}" Width="18" Height="18"
+                                      Foreground="{StaticResource GoldAccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="Statistiques &amp; Aide" Margin="12,0,0,0"
+                                       Foreground="White" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Bottom User Profile Footer & Logout -->
+            <Border Grid.Row="2" Padding="16,14" Background="#0A1522" BorderBrush="#1E3355" BorderThickness="0,1,0,0">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <!-- User Avatar Initials Badge -->
+                    <Border Grid.Column="0" Width="38" Height="38" CornerRadius="19"
+                            Background="#16294A" BorderBrush="{StaticResource GoldAccentBrush}" BorderThickness="1.5">
+                        <TextBlock Text="{Binding UserInitials}" Foreground="{StaticResource GoldAccentBrush}"
+                                   FontSize="16" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding UserName}" Foreground="White" FontSize="16" FontWeight="SemiBold"
+                                   TextTrimming="CharacterEllipsis" MaxWidth="110" />
+                        <Border Background="#16294A" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left" Margin="0,2,0,0">
+                            <TextBlock Text="{Binding Role}" Foreground="{StaticResource GoldAccentBrush}" FontSize="14" FontWeight="SemiBold" />
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Logout Button -->
+                    <Button Grid.Column="2" Classes="ghost" Command="{Binding LogoutCommand}"
+                            ToolTip.Tip="Se déconnecter" Padding="8" Width="34" Height="34" CornerRadius="6"
+                            VerticalAlignment="Center">
+                        <PathIcon Data="{StaticResource IconLogout}" Width="16" Height="16" Foreground="#FF6B6B" />
+                    </Button>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </Border>
+</UserControl>

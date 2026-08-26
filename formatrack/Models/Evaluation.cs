@@ -14,4 +14,9 @@ public class Evaluation
     public string Statut { get; set; } = "EnCours";
     public string UtilisateurNom { get; set; } = string.Empty;
     public string QuestionnaireTitre { get; set; } = string.Empty;
+    
+    // Performance Context Details
+    public double MoyenneClasse { get; set; } = 13.5;
+    public double NoteMin { get; set; } = 8.0;
+    public double NoteMax { get; set; } = 18.5;
 }

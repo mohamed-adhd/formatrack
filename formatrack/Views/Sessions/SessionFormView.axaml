@@ -1,7 +1,97 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:formatrack.ViewModels.Sessions"
+             xmlns:models="using:formatrack.Models"
              x:Class="formatrack.Views.Sessions.SessionFormView"
-             x:DataType="vm:SessionFormViewModel">
+             x:DataType="vm:SessionFormViewModel"
+             Background="{StaticResource BackgroundPageBrush}">
 
+    <ScrollViewer Padding="32,24,32,32">
+        <StackPanel Spacing="24" MaxWidth="800" HorizontalAlignment="Left">
+
+            <!-- Header -->
+            <StackPanel Spacing="4">
+                <Button Classes="ghost" Command="{Binding CancelCommand}" Padding="0" Margin="0,0,0,4">
+                    <TextBlock Text="← Retour" Foreground="{StaticResource GoldDarkBrush}" FontSize="14" FontWeight="SemiBold" />
+                </Button>
+                <Rectangle Width="42" Height="3.5" Fill="{StaticResource GoldAccentBrush}" HorizontalAlignment="Left" RadiusX="2" RadiusY="2" />
+                <TextBlock Text="{Binding Message, FallbackValue='Planification de Session'}"
+                           Foreground="{StaticResource NavyPrimaryBrush}" FontSize="22" FontWeight="Bold" Margin="0,6,0,0" />
+                <TextBlock Text="Paramétrez les dates, le site d'instruction et la capacité d'accueil pour cette promotion." Foreground="{StaticResource TextMutedBrush}" FontSize="16" />
+            </StackPanel>
+
+            <!-- Form Card -->
+            <Border Background="White" BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1"
+                    CornerRadius="12" Padding="28" BoxShadow="0 2 8 0 #0A000000">
+                <StackPanel Spacing="18">
+
+                    <!-- Formation Dropdown Selection -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Formation doctrinale associée *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <ComboBox ItemsSource="{Binding Formations}"
+                                  SelectedItem="{Binding SelectedFormation, Mode=TwoWay}"
+                                  HorizontalAlignment="Stretch"
+                                  x:CompileBindings="False">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:Formation">
+                                    <TextBlock Text="{Binding Titre}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Titre Session -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Libellé / Titre de la session" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <TextBox Text="{Binding TitreFormation, Mode=TwoWay}" Watermark="ex: Session Promotion 2026 - Module 1" />
+                    </StackPanel>
+
+                    <!-- Dates Selection Grid -->
+                    <Grid ColumnDefinitions="*,*">
+                        <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,10,0">
+                            <TextBlock Text="Date de début *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <DatePicker SelectedDate="{Binding DateDebutOffset, Mode=TwoWay}" HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6" Margin="10,0,0,0">
+                            <TextBlock Text="Date de clôture *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <DatePicker SelectedDate="{Binding DateFinOffset, Mode=TwoWay}" HorizontalAlignment="Stretch" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Lieu & Capacite Grid -->
+                    <Grid ColumnDefinitions="*,180">
+                        <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,10,0">
+                            <TextBlock Text="Lieu / Salle d'instruction" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBox Text="{Binding Lieu, Mode=TwoWay}" Watermark="ex: Salle Wagram / Amphithéâtre EMS" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6" Margin="10,0,0,0">
+                            <TextBlock Text="Capacité maximale" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBox Text="{Binding Capacite, Mode=TwoWay}" Watermark="ex: 30" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Statut -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Statut de la session" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                        <ComboBox ItemsSource="{Binding StatutOptions}"
+                                  SelectedItem="{Binding Statut, Mode=TwoWay}"
+                                  HorizontalAlignment="Stretch" />
+                    </StackPanel>
+
+                    <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" Margin="0,8" />
+
+                    <!-- Buttons -->
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                        <Button Grid.Column="1" Classes="outline" Content="Annuler" Command="{Binding CancelCommand}" Height="40" Padding="18,0" Margin="0,0,10,0" />
+                        <Button Grid.Column="2" Classes="primary" Content="Enregistrer la Session" Command="{Binding SaveCommand}" Height="40" Padding="20,0" />
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
+

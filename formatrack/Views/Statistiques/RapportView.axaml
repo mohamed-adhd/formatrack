@@ -3,5 +3,28 @@
              xmlns:vm="using:formatrack.ViewModels.Statistiques"
              x:Class="formatrack.Views.Statistiques.RapportView"
              x:DataType="vm:RapportViewModel">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="NavyBrush" Color="#1B2A4A" />
+        <SolidColorBrush x:Key="MutedBrush" Color="#5A6B8C" />
+        <SolidColorBrush x:Key="GoldBrush" Color="#B8935F" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#E3E6EC" />
+    </UserControl.Resources>
 
+    <Grid Margin="34" RowDefinitions="Auto,*">
+        <StackPanel>
+            <Rectangle Width="42" Height="3" Fill="{StaticResource GoldBrush}" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" />
+            <TextBlock Text="{Binding Titre}" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="Bold" Margin="0,14,0,0" />
+            <TextBlock Text="{Binding Message}" Foreground="{StaticResource MutedBrush}" FontSize="16" />
+        </StackPanel>
+
+        <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="24" Margin="0,20">
+            <ScrollViewer>
+                <TextBlock Text="{Binding RapportContenu}"
+                           FontSize="16"
+                           TextWrapping="Wrap"
+                           Foreground="#1B2432"
+                           FontFamily="Consolas" />
+            </ScrollViewer>
+        </Border>
+    </Grid>
 </UserControl>
