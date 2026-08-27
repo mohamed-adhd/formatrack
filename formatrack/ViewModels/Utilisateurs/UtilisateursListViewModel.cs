@@ -85,7 +85,11 @@ public partial class UtilisateursListViewModel : ViewModelBase
     [RelayCommand]
     private async Task DeleteUtilisateur(Utilisateur utilisateur)
     {
-        await _utilisateurService.SupprimerUtilisateurAsync(utilisateur.IdUtilisateur);
+        var ok = await _utilisateurService.SupprimerUtilisateurAsync(utilisateur.IdUtilisateur);
+        if (ok)
+        {
+            await formatrack.Services.CompositionRoot.Journal.JournalerAsync(null, $"Suppression de l'utilisateur {utilisateur.Prenom} {utilisateur.Nom}", $"ID: {utilisateur.IdUtilisateur}, Rôle: {utilisateur.Role}");
+        }
         await LoadAsync();
     }
 

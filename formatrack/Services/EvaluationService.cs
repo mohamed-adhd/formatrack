@@ -28,10 +28,44 @@ public class EvaluationService : IEvaluationService
     }
 
     public async Task<IReadOnlyList<Evaluation>> GetEvaluationsAsync()
-        => await _evaluations.GetAllAsync();
+    {
+        var evals = await _evaluations.GetAllAsync();
+        foreach (var e in evals)
+        {
+            var q = await _questionnaires.GetByIdAsync(e.IdQuestionnaire);
+            if (q != null)
+                e.TypeEvaluation = q.TypeEvaluation ?? "";
+        }
+        return evals;
+    }
 
     public async Task<IReadOnlyList<Evaluation>> GetEvaluationsUtilisateurAsync(int idUtilisateur)
-        => await _evaluations.GetByUtilisateurAsync(idUtilisateur);
+    {
+        var evals = await _evaluations.GetByUtilisateurAsync(idUtilisateur);
+        foreach (var e in evals)
+        {
+            var q = await _questionnaires.GetByIdAsync(e.IdQuestionnaire);
+            if (q != null)
+                e.TypeEvaluation = q.TypeEvaluation ?? "";
+        }
+        return evals;
+    }
+
+    public async Task<IReadOnlyList<Evaluation>> GetEvaluationsParSessionAsync(int idSession)
+    {
+        var questionnaires = await _questionnaires.GetBySessionAsync(idSession);
+        var allEvaluations = new List<Evaluation>();
+        foreach (var q in questionnaires)
+        {
+            var evals = await _evaluations.GetAllAsync();
+            foreach (var e in evals)
+            {
+                if (e.IdQuestionnaire == q.IdQuestionnaire)
+                    allEvaluations.Add(e);
+            }
+        }
+        return allEvaluations;
+    }
 
     public async Task<Evaluation?> GetEvaluationAsync(int idEvaluation)
         => await _evaluations.GetByIdAsync(idEvaluation);
@@ -48,6 +82,15 @@ public class EvaluationService : IEvaluationService
             ScoreTotal = 0,
             Pourcentage = 0
         });
+    }
+
+    public async Task<int> AjouterEvaluationAsync(Evaluation evaluation)
+    {
+        evaluation.DatePassage = DateTime.Now;
+        evaluation.Statut = "Terminee";
+        if (evaluation.ScoreMaximum > 0)
+            evaluation.Pourcentage = Math.Round((evaluation.ScoreTotal ?? 0) / evaluation.ScoreMaximum.Value * 100, 2);
+        return await _evaluations.AddAsync(evaluation);
     }
 
     public async Task<bool> EnregistrerReponsesAsync(int idEvaluation, IEnumerable<Reponse> reponses)

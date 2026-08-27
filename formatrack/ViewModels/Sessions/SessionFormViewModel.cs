@@ -130,9 +130,15 @@ public partial class SessionFormViewModel : ViewModelBase
 
             int result = await _sessionService.EnregistrerSessionAsync(session);
             if (result > 0)
+            {
+                var actionStr = _idSession.HasValue ? $"Modification de la session {session.TitreFormation}" : $"Création de la session {session.TitreFormation}";
+                await formatrack.Services.CompositionRoot.Journal.JournalerAsync(null, actionStr, $"ID: {result}, Lieu: {session.Lieu}, Début: {session.DateDebut:dd/MM/yyyy}");
                 _onCompleted?.Invoke(true);
+            }
             else
+            {
                 Message = "Erreur lors de l'enregistrement";
+            }
         }
         catch (Exception ex)
         {

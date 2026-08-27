@@ -1,0 +1,759 @@
+Mots-cles : Système d'évaluation, Formation, Aide a la décision, Python, PHP, MySQL, UML, Merise, Application Web.
+Table des matières
+Remerciements2
+Résumé3
+Introduction Generale7
+Contexte et Motivation7
+Objectifs du Projet7
+Structure du Rapport7
+Chapitre 1 : Analyse des Besoins9
+1.1 Etude de l'Existant9
+1.1.1 Présentation de l’école d’état major9
+1.1.2 Analyse du Systeme Actuel10
+1.1.3 Critique de l'Existant10
+1.2 Recueil des Besoins10
+1.2.1 Identification des Acteurs10
+1.2.2 Besoins Fonctionnels11
+1.2.3 Besoins Non Fonctionnels12
+1.3 Analyse et Formalisation des Besoins12
+1.3.1 Specification des Cas d'Utilisation12
+1.3.2 Diagramme de Contexte12
+1.4 Validation du Cahier des Charges12
+Chapitre 2 : Conception13
+2.1 Modelisation des Processus13
+2.1.1 Methodologie de Conception Adoptee13
+2.1.2 Diagramme de Flux13
+2.2 Conception UML13
+2.2.1 Diagramme de Cas d'Utilisation13
+2.2.2 Diagramme de Sequence16
+2.2.3 Diagramme de Classes17
+2.3 Conception de la Base de Donnees18
+2.3.1 Modele Conceptuel de Donnees (MCD) - Approche Merise18
+2.3.2 Modele Logique de Donnees (MLD)19
+2.3.3 Modele Physique de Donnees19
+2.4 Maquettage des Interfaces20
+2.4.1 Principes Ergonomiques Appliques20
+2.4.2 Description des Interfaces Principales20
+Chapitre 3 : Developpement21
+3.1 Environnement et Outils de Developpement21
+3.1.1 Technologies Utilisees21
+3.1.2 Architecture du Systeme21
+3.2 Developpement Back-end22
+3.2.1 Architecture PHP - Pattern MVC22
+3.2.2 Gestion de la Securite22
+3.2.3 Gestion de la Base de Donnees22
+3.3 Developpement Front-end23
+3.3.1 Structure des Interfaces23
+3.3.2 Visualisation des Donnees23
+3.3.3 Interactions Utilisateur23
+3.4 Module Python - Traitement Analytique et Aide a la Decision23
+3.4.1 Architecture du Module Python23
+3.4.2 Algorithmes d'Aide a la Decision24
+3.4.3 API REST Python24
+3.5 Integration et Communication Inter-modules24
+Chapitre 4 : Validation et Deploiement25
+4.1 Tests Unitaires25
+4.1.1 Strategie de Tests25
+4.1.2 Tests des Composants PHP25
+4.1.3 Tests des Composants Python25
+4.2 Tests d'Integration26
+4.2.1 Tests des Flux Applicatifs26
+4.2.2 Resultats des Tests d'Integration26
+4.3 Tests de Recette26
+4.3.1 Plan de Recette26
+4.4 Correction des Anomalies27
+4.4.1 Anomalies Identifiees et Corrections27
+4.5 Deploiement et Clôture27
+4.5.1 Mise en Production27
+4.5.2 Formation des Utilisateurs27
+4.5.3 Documentation27
+4.5.4 Bilan du Projet - Retour d'Experience27
+Conclusion Generale29
+Perspectives et Ameliorations Futures29
+References Bibliographiques30
+Ouvrages30
+Articles et Ressources en Ligne30
+Liste des Figures32
+Liste des Tableaux32
+Liste des Abreviations33
+Annexes34
+Annexe A : Scripts SQL de Creation de la Base de Donnees34
+Annexe B : Extrait du Code Python - Module de Scoring34
+Annexe C : Configuration Apache - Fichier .htaccess34
+Annexe D : Glossaire35
+Introduction Générale
+Dans un contexte de modernisation croissante des institutions publiques et militaires, la gestion efficace de la formation constitue un enjeu stratégique majeur. La formation du personnel représente un investissement conséquent qui nécessite une évaluation rigoureuse et systématique afin de mesurer son impact et son efficacité.
+Les méthodes traditionnelles d'évaluation de la formation, souvent manuelles et fragmentées, ne permettent plus de répondre aux exigences actuelles en termes de rapidité, de fiabilité et de capacité d'analyse. Face à cette réalité, le développement d'un système informatique dédié s'impose comme une solution pertinente et nécessaire.
+Ce projet s'inscrit dans cette dynamique en proposant la conception et le développement d'un Système d'Evaluation de la Formation et d'Aide à la Décision (SEFAD). Ce système ambitionne de digitaliser l'ensemble du cycle d'évaluation des formations, depuis la création des questionnaires jusqu'a la génération de rapports analytiques destinés aux décideurs.
+Contexte et Motivation
+L’école d’état-major fait face à plusieurs défis dans la gestion de ses formations : multiplicité des supports d'évaluation, difficulté de consolidation des données, absence d'outils d'analyse et lenteur dans la remontée d'informations. Ces lacunes impactent directement la qualité des décisions prises en matière de pilotage de la formation.
+Objectifs du Projet
+Ce projet vise a atteindre les objectifs suivants :
+Centraliser la gestion des évaluations de formation sur une plateforme unique
+Automatiser la collecte et le traitement des données d'évaluation
+Fournir des tableaux de bord et des indicateurs de performance aux responsables
+Mettre en place un module d'aide a la décision basé sur l'analyse des données
+Assurer une traçabilité complète du processus d'évaluation
+Structure du Rapport
+Ce rapport est organisé en quatre chapitres principaux :
+Chapitre 1 : Analyse des besoins - étude de l'existant et specification des besoins fonctionnels et non fonctionnels
+Chapitre 2 : Conception - modelisation UML et Merise du système
+Chapitre 3 : Développement - implémentation technique et choix technologiques
+Chapitre 4 : Validation et déploiement - tests et mise en production
+Chapitre 1 : Analyse des Besoins
+Ce chapitre présente l'étude de l'existant, l'identification des problématiques et la specification détaillées des besoins du système.
+1.1 Etude de l'Existant
+1.1.1 Présentation de l’école d’état-major
+D’après le Décret n° 2003-446 du 24 Février 2003 portant organisation de l’école d’état-major.
+Missions et attributions :
+L’école d’état-major est un établissement public à caractère administratif doté de la personnalité morale et de l’autonomie financière.
+L’école d’état-major est un établissement d’enseignement supérieur militaire qui a pour mission la formation des officiers des forces armées dans le but de :
+Développer leurs facultés intellectuelles et professionnelles en vue de leur permettre d’accomplir des missions au sein des forces armées,
+Les préparer à assumer des fonctions au sein d’un régiment ou d’un état – major ou des fonctions équivalentes.
+Dans le cadre des domaines de sa compétence, l’école peut :
+Organiser des cycles de formation selon des conditions fixées par arrêté du ministre de la défense nationale,
+Réaliser des études et des recherches qui lui sont confiées par arrêté du ministre de la défense nationale.
+L’école d’état-major relève du ministre de la défense nationale qui fixe :
+Les orientations générales en matière de formation,
+L’organisation générale des études,
+Les plans de développement de l’école.
+A cet effet, le ministre de la défense nationale est assisté par un conseil consultatif dénommé ‘le conseil de l’enseignement supérieur militaire”, dont la composition et la mission sont fixées par arrêté du ministre de la défense nationale.
+Organigramme :
+ [IMAGES: ['media/image1.png']]
+1.1.2 Analyse du Système Actuel
+L'analyse du système existant a révèle les caractéristiques suivantes :
+Gestion des évaluations sur supports papier ou fichiers Excel non centralises
+Absence de base de données unifiée pour le stockage des résultats
+Processus de compilation des résultats long et sujet aux erreurs
+Absence d'indicateurs de performance en temps réel
+Difficulté d'extraction de rapports consolides
+Aucune traçabilité des modifications apportées aux évaluations
+1.1.3 Critique de l'Existant
+Dysfonctionnements identifies
+L'absence d'un système informatise centralise engendre des pertes de temps significatives lors de la collecte et du traitement des données d'évaluation. La qualité des analyses s'en trouve dégradée, limitant la capacité des responsables à prendre des décisions basées sur des données fiables et actualisées.
+1.2 Recueil des Besoins
+1.2.1 Identification des Acteurs
+L'étude des processus métier a permis d'identifier les acteurs principaux du système :
+Acteur
+Rôle
+Privilèges
+Administrateur
+Gestion globale du système
+Accès total
+Responsable Formation
+Supervision des formations et évaluations
+Lecture/Ecriture/Rapports
+Chef Département
+Supervision des formations et évaluations au sein de leurs départements
+Lecture/Ecriture/Rapports
+Formateur
+Gestion de ses formations et évaluations
+Lecture/Ecriture partielle
+Stagiaire
+Participation aux évaluations
+Lecture/Réponse
+Décideur
+Consultation des tableaux de bord
+Lecture/Export
+1.2.2 Besoins Fonctionnels
+Les besoins fonctionnels ont été recueillis au cours d'entretiens avec les parties prenantes et de l'observation des processus existants. Ils sont structurés par module :
+Module Gestion des Utilisateurs :
+Authentification sécurisée avec gestion des rôles
+Création, modification et suppression des comptes utilisateurs
+Gestion des profils et des permissions
+Journal d'activité et traçabilité
+Module Gestion des Formations :
+Catalogue des formations avec description détaillée
+Planification des sessions de formation
+Affectation des formateurs et stagiaires
+Suivi de l'avancement des formations
+Module Evaluation :
+Paramétrage des critères et des coefficients de pondération
+Administration des évaluations en ligne
+Calcul automatique des scores et moyennes
+Gestion des évaluations à chaud et à froid
+Module Statistiques et Aide à la Décision :
+Génération de rapports statistiques personnalises
+Tableaux de bord avec indicateurs clés de performance (KPI)
+Visualisation graphique des données (histogrammes, courbes, camemberts)
+Module de recommandations base sur l'analyse des tendances
+Export des rapports en formats PDF et Excel
+1.2.3 Besoins Non Fonctionnels
+En complément des besoins fonctionnels, des exigences non fonctionnelles ont été identifiées :
+Catégorie
+Exigence
+Performance
+Temps de réponse < 2 secondes pour les requêtes standards
+Disponibilité
+Taux de disponibilité >= 99% durant les heures ouvrables
+Sécurité
+Chiffrement des données sensibles, protection CSRF et XSS
+Ergonomie
+Interface intuitive, responsive et accessible depuis mobile
+Maintenabilité
+Code documente, architecture modulaire et extensible
+Compatibilité
+Compatible avec les principaux navigateurs web modernes
+SCA labilité
+Architecture permettant l'ajout de modules futurs
+1.3 Analyse et Formalisation des Besoins
+1.3.1 Specification des Cas d'Utilisation
+La specification formelle des besoins s'appuie sur la notation UML. Les cas d'utilisation identifies couvrent l'ensemble des interactions entre les acteurs et le système. Les principaux cas d'utilisation sont :
+Authentification et gestion des sessions
+Gestion du référentiel des formations
+Planification et affectation des sessions
+Création et paramétrage des questionnaires
+Administration et participation aux évaluations
+Consultation et génération des rapports
+Configuration du module d'aide à la décision
+1.3.2 Diagramme de Contexte
+Le diagramme de contexte positionne le système SEFAD dans son environnement organisationnel. Il met en évidences les flux d'information entrants et sortants entre le système et les acteurs externes. Le système reçoit des données de formation, des réponses d'évaluation et des demandes de rapports. Il produit des évaluations calculées, des statistiques et des recommandations.
+1.4 Validation du Cahier des Charges
+Le cahier des charges a été soumis aux parties prenantes pour validation. Cette phase a permis de confirmer la complétude des besoins identifies et d'affiner certaines spécifications. Les critères de validation retenus sont l'exhaustivité, la cohérence, la faisabilité technique et le respect des contraintes budgétaires et temporelles.
+Chapitre 2 : Conception
+Ce chapitre détaille la phase de conception du système à travers les modélisations UML et Merise, ainsi que le maquettage des interfaces utilisateurs.
+2.1 Modelisation des Processus
+2.1.1 Méthodologie de Conception Adoptée
+La conception du système SEFAD s'appuie sur deux approches complémentaires :
+UML (Unified Modeling Language) pour la modelisation orientée objet de la dynamique et de la structure du système
+Merise pour la conception du système d'information et particulièrement la modelisation de la base de données
+Cette double approche permet d'appréhender le système sous ses aspects statiques et dynamiques, tout en assurant une conception rigoureuse de la structure de données.
+2.1.2 Diagramme de Flux
+Le diagramme de flux Merise modélise les échanges d'informations entre les différents acteurs et domaines d'activité. Il identifie les flux de données externes (entre acteurs et le système) et les flux internes (entre les sous-systèmes). Les flux principaux sont :
+Flux de gestion des formations : création, modification, suppression et consultation
+Flux d'évaluation : soumission des questionnaires, collecte des réponses, calcul des scores
+Flux de reporting : demande de rapports, génération, consultation et export
+Flux d'administration : gestion des utilisateurs, configuration du système
+2.2 Conception UML
+2.2.1 Diagramme de Cas d'Utilisation
+Le diagramme de cas d'utilisation (Use Case Diagram) représente l'ensemble des fonctionnalités du système du point de vue des acteurs. Il identifie les interactions possibles entre chaque type d'utilisateur et le système.
+Le système est représenté par un rectangle contenant les cas d'utilisation. Les acteurs sont positionnés à l'extérieur et relies aux cas d'utilisation par des associations. Des relations d'inclusion (include) et d'extension (extend) permettent de structurer les cas d'utilisation complexes.
+Les cas d'utilisation principaux sont :
+UC01 : Gérer les utilisateurs (Administrateur)
+UC02 : Gérer les formations (Responsable Formation, Formateur)
+UC03 : Participer à une évaluation (Stagiaire)
+UC04 : Consulter les résultats (Responsable Formation, Décideurs)
+UC05 : Générer des rapports (Responsable Formation, Administrateur)
+UC06 : Configurer les indicateurs (Administrateur)
+ [IMAGES: ['media/image2.png']]
+Figure 2.1a : UC01 – Gérer les utilisateurs
+ [IMAGES: ['media/image3.png']]
+Figure 2.1b : UC02 – Gérer les formations
+ [IMAGES: ['media/image4.png']]
+Figure 2.1c : UC03 – Participer à une évaluation
+ [IMAGES: ['media/image5.png']]
+Figure 2.1d : UC04 – Consulter les résultats
+ [IMAGES: ['media/image6.png']]
+Figure 2.1e : UC05 – Générer des rapports
+ [IMAGES: ['media/image7.png']]
+Figure 2.1f : UC06 – Configurer les indicateurs
+2.2.2 Diagramme de Séquence
+Les diagrammes de séquence décrivent les interactions chronologiques entre les objets du système pour réaliser un cas d'utilisation spécifique. Nous présentons ici les diagrammes de séquence pour les scenarios les plus représentatifs.
+Scenario : Processus complet d'évaluation
+Le formateur fournis les résultats des épreuves aux responsable de formation, la direction de formation fait la saisie des notes sur la plateforme gestion des notes, et les valide, ensuite une notification arrive aux chef de département concerné pour consulter les notes de ses stagiaires et les leur communique 
+Le système calcule automatiquement les scores et les moyennes
+Les résultats sont centralisés et disponibles pour les rapports
+ [IMAGES: ['media/image8.png']]
+Figure 2.2 : Diagramme de séquence – Processus complet d'évaluation
+2.2.3 Diagramme de Classes
+Le diagramme de classes représente la structure statique du système en identifiant les classes, leurs attributs, leurs méthodes et les relations entre elles. Les classes principales identifiées sont :
+Classe
+Attributs Principaux
+Méthodes Clés
+Utilisateur
+id, nom, prénom, email, rôle, motDePasse
+authentifier(), changerMotDePasse()
+Formation
+id, titre, description, durée, statut
+créer(), modifier(), archiver()
+Session
+id, dateDebut, dateFin, lieu, nbParticipants
+planifier(), annuler()
+Questionnaire
+id, titre, type, dateCreation, statut
+créer(), publier(), archiver()
+Question
+id, énonce, type, points, ordre
+ajouter(), modifier(), supprimer()
+Evaluation
+id, datePassage, score, statut
+calculerScore(), genererRapport()
+Rapport
+id, type, dateGeneration, format
+generer(), exporter()
+ [IMAGES: ['media/image9.jpeg']]
+2.3 Conception de la Base de Données
+2.3.1 Modelé Conceptuel de Données (MCD) - Approche Merise
+Le Modelé Conceptuel de Données (MCD) de Merise représente la structure des informations de manière abstraite, indépendamment de toute considération technique. Il identifie les entités, leurs propriétés et les associations entre elles.
+Les entités principales du MCD sont :
+UTILISATEUR : identifiant, nom, prénom, email, mot_de_passe_hash, rôle, date_creation, actif
+FORMATION : identifiant, titre, description, objectifs, duree_heures, type, statut
+SESSION : identifiant, date_debut, date_fin, lieu, capacite, statut
+QUESTIONNAIRE : identifiant, titre, description, type_evaluation, date_creation, statut
+QUESTION : identifiant, énonce, type_question, bareme, ordre
+REPONSE : identifiant, contenu, est_correcte, score_obtenu
+EVALUATION : identifiant, date_passage, score_total, pourcentage, statut
+CRITERE : identifiant, libelle, description, coefficient
+Les associations principales sont :
+PARTICIPE : UTILISATEUR (Stagiaire) - SESSION (n,n)
+ANIME : UTILISATEUR (Formateur) - SESSION (1,n)
+CONTIENT : SESSION - QUESTIONNAIRE (1,n)
+COMPOSE : QUESTIONNAIRE - QUESTION (1,n)
+REPOND : UTILISATEUR - EVALUATION - QUESTION (n,n,n)
+2.3.2 Modelé Logique de Données (MLD)
+Le passage du MCD au MLD permet de transcrire le modelé conceptuel en un modelé adapte aux SGBD relationnels. Les règles de passage appliquées sont :
+Chaque entité devient une table
+Chaque association n, n devient une table d'association
+Les clés étrangères matérialisent les associations 1, n
+Les tables principales du MLD sont les suivantes :
+Table
+Clé Primaire
+Clés Etrangères
+Colonnes Notables
+utilisateurs
+id_utilisateur
+-
+email UNIQUE, rôle, actif
+formations
+id_formation
+-
+type_formation, statut, duree_heures
+sessions
+id_session
+id_formation
+date_debut, date_fin, capacite
+questionnaires
+id_questionnaire
+id_session
+type_eval, statut
+questions
+id_question
+id_questionnaire
+type_question, bareme, ordre
+évaluations
+id_evaluation
+id_utilisateur, id_questionnaire
+score_total, pourcentage, statut
+réponses
+id_reponse
+id_evaluation, id_question
+contenu, score_obtenu
+participation
+id_participation
+id_utilisateur, id_session
+rôle, date_inscription
+2.3.3 Modelé Physique de Données
+Le modelé physique de données adapte le MLD aux spécificités du SGBD MySQL. Les optimisations appliquées incluent : la définition des types de données les plus appropriés, la création d'index sur les colonnes fréquemment interrogées, la définition des contraintes d'intégrité référentielle et la mise en place de vues pour les requetés analytiques complexes.
+2.4 Maquettage des Interfaces
+2.4.1 Principes Ergonomiques Appliques
+La conception des interfaces a été guidée par les principes ergonomiques suivants :
+Cohérence visuelle : charte graphique unifiée avec les couleurs institutionnelles
+Economie cognitive : regroupement logique des informations, hiérarchie visuelle claire
+Feedback utilisateur : messages de confirmation, indicateurs de progression
+Accessibilité : contrastes suffisants, textes alternatifs pour les éléments visuels
+Responsivité : adaptation aux différentes tailles d'écran
+2.4.2 Description des Interfaces Principales
+Les maquettes ont été élaborées pour les interfaces suivantes :
+Interface de connexion :
+Formulaire centralise avec champs login/mot de passe, option de réinitialisation du mot de passe et redirection automatique selon le rôle après authentification.
+Tableau de bord principal :
+Vue d'ensemble avec widgets statistiques (nombre de formations actives, taux de complétion, scores moyens), graphiques de tendances et accès rapide aux fonctions principales selon le profil de l'utilisateur.
+Interface de gestion des formations :
+Liste des formations avec filtres et recherche, formulaire de création/modification et vue détaillées avec historique.
+Interface d'évaluation :
+Formulaire de questionnaire avec barre de progression, navigation entre les questions, sauvegarde automatique et soumission avec confirmation.
+Interface de reporting :
+Sélection des paramètres du rapport, visualisation des graphiques en temps réel et options d'export (PDF, Excel, CSV).
+Chapitre 3 : Développement
+Ce chapitre présente les choix technologiques, l'architecture du système et les détails de l'implémentation des différents modules.
+3.1 Environnement et Outils de Développement
+3.1.1 Technologies Utilisées
+Technologie
+Version
+Rôle
+Justification
+Python
+3.11
+Traitement données, IA/ML, API REST
+Richesse écosystème data science, biblio th. script/pandas
+PHP
+8.2
+Back-end web, logique metier
+Maturité, performance, intégration serveur web native
+MySQL
+8.0
+SGBD relationnel
+Robustesse, performance, conformité ACID
+HTML5/CSS3
+5/3
+Structure et style des interfaces
+Standards web, compatibilité maximale
+JavaScript
+ES2022
+Interactions front-end, graphiques
+Dynamisme IHM, visualisations Chart.js
+Bootstrap
+5.3
+Framework CSS responsive
+Rapidité de Dev, composants UI préconstruits
+Apache
+2.4
+Serveur web
+Performance, fiabilité, configuration .htaccess
+Git
+2.x
+Gestion de version
+Traçabilité, collaboration, gestion des branches
+3.1.2 Architecture du Système
+Le système SEFAD adopte une architecture en couches (n-tiers) qui sépare les responsabilités et facilite la maintenance :
+Couche Présentation : interfaces HTML/CSS/JavaScript generees par PHP (pattern MVC)
+Couche Logique Métier : PHP pour la gestion des requetés HTTP et la logique applicative
+Couche Traitement Analytique : micro services Python exposes via API REST pour les calculs statistiques et l'aide à la décision
+Couche Données : MySQL avec un modelé relationnel optimise et des procédures stockées
+Architecture hybride PHP + Python
+Le choix d'une architecture hybride combinant PHP et Python permet de tirer parti des points forts de chaque langage. PHP assure la rapidité de développement des interfaces et la gestion des sessions, tandis que Python offre une puissance de calcul supérieure pour l'analyse de données et les algorithmes d'aide à la décision via des bibliothèques comme pandas, numpy et scikit-learn.
+3.2 Developpement Back-end
+3.2.1 Architecture PHP - Pattern MVC
+Le back-end PHP est structure selon le patron de conception MVC (Modelé-Vue-Contrôleur) :
+Modelé (Model) :
+Les modelés encapsulent la logique d'accès aux données et les règles métier. Chaque entité du domaine possède sa classe modelée correspondante avec des méthodes CRUD optimisées et l'utilisation de requetés préparées pour la sécurité.
+Vue (View) :
+Les vues sont des templates PHP generer du HTML dynamique. Elles sont organisées par module et utilisent un système d'héritage de templates pour garantir la cohérence visuelle. Les données sont passées aux vues via le contrôleur.
+Contrôleur (Controller) :
+Les contrôleurs reçoivent les requetés HTTP, invoquent les modelés pour récupérer ou modifier les données, et choisissent la vue appropriée pour afficher la réponse. Un routeur central redirige les requetés vers le contrôleur compètent.
+3.2.2 Gestion de la Sécurité
+La sécurité a été une préoccupation centrale tout au long du développement :
+Hachage des mots de passe avec bcrypt (PHP password_hash)
+Protection CSRF avec tokens generes par session
+Prévention des injections SQL par l'utilisation exclusive de requetés préparées (PDO)
+Protection XSS par l'échappement systématique des sorties (htmlspecialchars)
+Gestion des sessions avec régénération de l'identifiant après connexion
+Contrôle d'accès base sur les rôles (RBAC) vérifie à chaque requête
+Logs de sécurité pour la détection d'activités suspectes
+3.2.3 Gestion de la Base de Données
+La couche d'accès aux données utilise PHP Data Object (PDO) pour une abstraction de la base de données. Les transactions MySQL sont utilisées pour garantir l'intégrité des données lors des opérations complexes.
+Extrait de la structure de la table évaluations :
+Structure SQL : Table évaluations
+CREATE TABLE évaluations (  id_evaluation INT AUTO_INCREMENT PRIMARY KEY,  id_utilisateur INT NOT NULL,  id_questionnaire INT NOT NULL,  date_passage DATETIME DEFAULT CURRENT_TIMESTAMP,  score_total DECIMAL(5,2),  score_maximum DECIMAL(5,2),  pourcentage DECIMAL(5,2),  statut ENUM('en_cours','termine','annule') DEFAULT 'en_cours',  FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id_utilisateur),  FOREIGN KEY (id_questionnaire) REFERENCES questionnaires(id_questionnaire));
+3.3 Développement Front-end
+3.3.1 Structure des Interfaces
+Les interfaces utilisateurs ont été développées avec HTML5, CSS3 et JavaScript, en utilisant le framework Bootstrap 5 pour la mise en page responsive. La structure suit un gabarit commun avec :
+Barre de navigation supérieure avec logo, menu principal et informations utilisateur
+Barre latérale avec menu contextuel selon le module actif
+Zone de contenu principale avec le fil d'Ariane
+Pied de page avec informations institutionnelles
+3.3.2 Visualisation des Données
+La visualisation des données statistiques est réalisée avec la bibliothèque Chart.js. Les types de graphiques implémentes sont :
+Histogrammes pour la distribution des scores par formation
+Graphiques linéaires pour l'évolution des performances dans le temps
+Graphiques radar pour la comparaison multicritère des formations
+Camemberts pour la répartition des niveaux d'appréciation
+Jauges pour les indicateurs de performance clés (KPI)
+3.3.3 Interactions Utilisateur
+Les interactions dynamiques sont implémentées en JavaScript pur et jQuery pour la compatibilité. Les fonctionnalités incluent : la validation des formulaires cote client, le chargement dynamique des données (AJAX), la sauvegarde automatique des évaluations en cours, la pagination dynamique des listes et les notifications en temps réel.
+3.4 Module Python - Traitement Analytique et Aide à la Décision
+3.4.1 Architecture du Module Python
+Le module Python est deployed comme un service REST indépendant accessible via HTTP. Il est développé avec le micro Framework Flask et expose une API documentée consommée par le back-end PHP.
+Les bibliothèques Python utilisées sont :
+Flask: micro Framework web pour l'API REST
+Pandas : manipulation et analyse des données
+Numpy : calculs numériques et statistiques
+Scikit-learn : algorithmes de machine Learning pour les recommandations
+Matplotlib / seaborn : génération des graphiques exportables
+Mysql-connector-python : connexion directe à la base de données
+Reportlab : génération de rapports PDF
+3.4.2 Algorithmes d'Aide à la Décision
+Le module d'aide à la décision est le cœur analytique du système SEFAD. Il met en œuvre plusieurs algorithmes :
+Analyse des performances :
+Calcul des indicateurs statistiques (moyenne, médiane, écart-type, percentiles) pour chaque formation et formateur. Détection automatique des anomalies et des écarts significatifs par rapport aux normes établies.
+Système de scoring multicritères :
+Implémentation d'un modelé de scoring base sur la méthode AHP (Analytic Hierarchy Process) permettant de pondérer différents critères d'évaluation et de produire un score global composite.
+Analyse des tendances :
+Utilisation de modelés de régression linéaire (scikit-learn) pour identifier les tendances d'évolution des performances et projeter les résultats futurs sur la base de l'historique.
+Recommandations automatiques :
+Génération automatique de recommandations d'amélioration basées sur les patterns identifies dans les données d'évaluation. Le système compare les performances de chaque formation a des benchmarks établis et suggère des actions correctrices.
+3.4.3 API REST Python
+Les endpoints principaux de l'API Python sont :
+Endpoint
+Méthodes
+Description
+/api/stats/formation/{id}
+GET
+Statistiques détaillées d'une formation
+/api/stats/global
+GET
+Indicateurs globaux du système
+/api/analyse/tendances
+POST
+Analyse des tendances sur une période
+/api/recommandations/{id}
+GET
+Recommandations pour une formation
+/api/rapport/generer
+POST
+Génération d'un rapport PDF analytique
+/api/scoring/multicritères
+POST
+Calcul du score AHP multicritères
+3.5 Intégration et Communication Intermodulés
+La communication entre le back-end PHP et le module Python se fait via des requetés HTTP authentifiées par des tokens JWT (JSON Web Tokens). Un token est génère par le serveur PHP à chaque session d'analyse et transmis dans les en-têtes HTTP des requetés vers le service Python.
+Un mécanisme de cache Redis (optionnel) peut être active pour les calculs analytiques fréquents et non volatile, réduisant ainsi les temps de réponse pour les tableaux de bord.
+Chapitre 4 : Validation et Déploiement
+Ce chapitre présente la stratégie de tests adoptée, les résultats obtenus et les modalités de déploiement du système en production.
+4.1 Tests Unitaires
+4.1.1 Stratégie de Tests
+La stratégie de test adoptée suit une approche pyramidale : les tests unitaires constituent la base et valident le comportement individuel de chaque composant. Les tests d'intégration verident ensuite les interactions entre composants, et les tests fonctionnels valident le système de bout en bout.
+Les outils de test utilises sont :
+PHPUnit : framework de tests unitaires pour PHP
+pytest : framework de tests pour Python
+Selenium WebDriver : tests d'interface automatises
+Postman : tests des API REST
+4.1.2 Tests des Composants PHP
+Les tests unitaires PHP couvrent les classes modelées et les méthodes utilitaires. Les cas de test privilégies sont :
+Composant Teste
+Cas de Test
+Résultat
+Classe Utilisateur
+Authentification valide / invalide
+PASSE
+Classe Utilisateur
+Hachage et vérification mot de passe
+PASSE
+Classe Formation
+Création avec données valides
+PASSE
+Classe Formation
+Validation contraintes d'intégrité
+PASSE
+Classe Evaluation
+Calcul score - questions QCM
+PASSE
+Classe Evaluation
+Calcul score - questions notation
+PASSE
+Classe Questionnaire
+Publication et désactivation
+PASSE
+Routeur http
+Redirection selon le rôle
+PASSE
+4.1.3 Tests des Composants Python
+Les tests Python se concentrent sur les fonctions analytiques et les endpoints de l'API :
+Test de calcul statistique : vérification des résultats sur jeux de données connus
+Test des algorithmes AHP : validation de la somme des poids et de la cohérence
+Test de génération de rapports : vérification de l'intégrité des fichiers produits
+Test de performance : vérification des temps de réponse sous charge
+4.2 Tests d'Intégration
+4.2.1 Tests des Flux Applicatifs
+Les tests d'intégration valident les interactions entre les différents composants du système. Les scenarios de test principaux sont :
+Intégration PHP - MySQL : vérification de la persistance et du rappel des données
+Intégration PHP - Python API : test de la communication inter-services et de la gestion des erreurs
+Intégration Front-end - Back-end : validation des échanges AJAX et du rendu dynamique
+Intégration système de fichiers : test de la génération et du stockage des rapports
+4.2.2 Résultats des Tests d'Intégration
+Bilan des tests d'intégration
+L'ensemble des tests d'intégration ont été conduits avec succès. Les quelques anomalies détectées lors de la phase initiale ont été corrigées avant la recette finale. Le temps de réponse moyen pour les opérations les plus complexes (génération de rapport analytique) se situe à 1,8 secondes, en deçà de l'objectif fixe à 2 secondes.
+4.3 Tests de Recette
+4.3.1 Plan de Recette
+Les tests de recette ont été réalisés avec la participation des utilisateurs clés identifies lors de la phase d'analyse. Chaque cas d'utilisation principal a fait l'objet d'un scenario de test détaille exécute en présence du maître d'ouvrage.
+Cas d'Utilisation
+Scenario Teste
+Acteur
+Résultat
+UC01 - Auth.
+Connexion valide avec rôle admin
+Administrateur
+CONFORME
+UC01 - Auth.
+Tentative avec mot de passe erroné (3x)
+Administrateur
+CONFORME
+UC02 - Formations
+Création d'une nouvelle formation
+Resp. Formation
+CONFORME
+UC03 - Questionnaire
+Création questionnaire 15 questions
+Formateur
+CONFORME
+UC04 - Evaluation
+Participation et soumission évaluation
+Stagiaire
+CONFORME
+UC05 - Résultats
+Consultation résultats par formation
+Décideurs
+CONFORME
+UC06 - Rapports
+Génération rapport PDF mensuel
+Resp. Formation
+CONFORME
+4.4 Correction des Anomalies
+4.4.1 Anomalies Identifiées et Corrections
+La phase de tests a permis d'identifier et de corriger plusieurs anomalies :
+Anomalie A01 (CRITIQUE) : Perte de session lors de la soumission de l'évaluation en cas de timeout - Corrigée par un mécanisme de sauvegarde automatique toutes les 2 minutes
+Anomalie A02 (MAJEURE) : Erreur de calcul du score pour les questions à réponses multiples avec pondération - Corrigée par révision de l'algorithme de calcul
+Anomalie A03 (MINEURE) : Affichage incorrect des graphiques sur Safari mobile - Corrigée par adaptation du code Chart.js
+Anomalie A04 (MINEURE) : Délai de génération des rapports PDF volumineux (> 30 pages) - Optimise par mise en cache partielle
+4.5 Déploiement et Clôture
+4.5.1 Mise en Production
+Le déploiement en production a suivi une procédure rigoureuse en plusieurs étapes :
+Préparation de l'environnement de production (configuration serveur Apache, MySQL, Python)
+Migration de la base de données avec scripts SQL de création et d'initialisation
+Déploiement des fichiers PHP et Python sur le serveur
+Configuration des variables d'environnement et des paramètres de sécurité
+Tests de fumée sur l'environnement de production
+Formation des administrateurs système
+Mise en service progressive avec monitoring renforce
+4.5.2 Formation des Utilisateurs
+Un programme de formation a été mis en place pour accompagner le changement :
+Formation des administrateurs système (1 journée) : administration, sauvegarde, monitoring
+Formation des responsables et formateurs (demi-journée) : utilisation quotidienne, création d'évaluations
+Guides d'utilisation interactifs intègres à l'application (aide contextuelle)
+Support utilisateur avec ticket d'assistance en ligne
+4.5.3 Documentation
+La documentation produite comprend :
+Documentation technique : architecture du système, diagrammes, spécifications de l'API
+Documentation utilisateur : guide d'utilisation illustre par rôle
+Documentation d'administration : procédures de maintenance, sauvegarde et restauration
+Changelog : historique des versions et des corrections
+4.5.4 Bilan du Projet - Retour d'Expérience
+Le projet SEFAD a été mené a bien dans les délais et le périmètre fonctionnel définis. Le bilan final fait ressortir les points suivants :
+Critère
+Objectif
+Réalise
+Ecart
+Fonctionnalités livrées
+100%
+97%
+-3% (1 sous-fonction différée)
+Délai de réalisation
+4 mois
+4,5 mois
++2 semaines
+Performance (temps réponse)
+< 2s
+1,8s
+Dans objectif
+Taux de tests réussis
+> 95%
+98,5%
+Depasse l'objectif
+Satisfaction utilisateurs
+> 80%
+87%
+Depasse l'objectif
+Conclusion Générale
+Ce projet de fin d'études a permis de concevoir et de développer un Système d'Evaluation de la Formation et d'Aide à la Décision (SEFAD) répondant aux besoins identifies au sein de l'institution d'accueil. La solution développée offre une réponse complète aux problématiques de gestion manuelle et fragmentée des évaluations de formation.
+Sur le plan technique, ce projet a été l'occasion de mettre en œuvre une architecture moderne et hybride, combinant les forces du PHP pour la gestion web et du Python pour le traitement analytique des données. La démarche de conception rigoureuse, s'appuyant sur les méthodes UML et Merise, a permis de produire un système bien structure, maintenable et évolutif.
+Les résultats des tests et de la recette fonctionnelle ont confirmé la qualité de la solution livrée, avec un taux de satisfaction utilisateur de 87% et des performances dépassant les objectifs fixes. Le déploiement s'est effectué sans interruption majeure grâce a la préparation rigoureuse de la procédure de mise en production.
+Sur le plan personnel et pédagogique, ce projet a constitué une expérience enrichissante a plusieurs titres. Il a permis d'appliquer et de consolider les connaissances acquises durant la formation en génie logiciel, en bases de données et en développement web. La confrontation aux contraintes réelles d'un projet institutionnel a développé des compétences en gestion de projet, en communication avec les parties prenantes et en résolution de problèmes complexes.
+Perspectives et Améliorations Futures
+Plusieurs axes d'amélioration et d'évolution ont été identifiés pour les versions futures du système :
+Intégration de l'intelligence artificielle pour des recommandations plus personnalisées et prédictives (Machine Learning sur les profils d'apprentissage)
+Développement d'une application mobile native (iOS/Android) pour faciliter la participation aux évaluations
+Ajout d'un module de gestion des compétences (référentiel de compétences, cartographie et suivi des acquis)
+Intégration avec les systèmes d'information RH existants via des API standardisées
+Module de visioconférence intègre pour les évaluations orales à distance
+Tableau de bord stratégique pour la direction avec indicateurs de pilotage de la politique de formation
+Ce système constitue une première brique d'une transformation digitale plus large de la gestion de la formation au sein de l'institution, ouvrant la voie à une culture de l'évaluation continue et de l'amélioration perpétuelle de la qualité des formations.
+Références Bibliographiques
+Ouvrages
+RUMBAUGH J., JACOBSON I., BOOCH G. - The Unified Modeling Language Reference Manual, 2nd Edition. Addison-Wesley, 2004.
+GABAY J., GABAY D. - UML 2 : Analyser et Concevoir des Applications. Dunod, 2008.
+MERISE - TARDIEU H., ROCHFELD A., COLLETTI R. - La Méthodes Merise, Tome 1 : Principes et Outils. Les Editions d'Organisation, 2003.
+DUCKETT J. - PHP & MySQL : Server-side Web Development. John Wiley & Sons, 2022.
+MCKINNEY W. - Python for Data Analysis, 3rd Edition. O'Reilly Media, 2022.
+CODD E.F. - A Relational Model of Data for Large Shared Data Banks. Communications of the ACM, 1970.
+Articles et Ressources en Ligne
+Documentation officielle PHP : https://www.php.net/docs.php
+Documentation Python : https://docs.python.org/3/
+MySQL Reference Manual : https://dev.mysql.com/doc/
+Bootstrap Documentation : https://getdocs.getbootstrap.com/5.3/
+Flask Documentation : https://flask.palletsprojects.com/
+Chart.js Documentation : https://www.chartjs.org/docs/
+OWASP Security Guidelines : https://owasp.org/www-project-top-ten/
+Liste des Figures
+Figure 1.1 : Architecture generale du système d'évaluation ...................................... 10
+Figure 2.1 : Diagramme de cas d'utilisation global ................................................ 15
+Figure 2.2 : Diagramme de séquence - Processus d'évaluation ..................................... 16
+Figure 2.3 : Diagramme de classe du système ........................................................ 17
+Figure 2.4 : Modelé Conceptuel de Données (MCD) ................................................... 18
+Figure 2.5 : Modelé Logique de Données (MLD) ...................................................... 19
+Figure 2.6 : Maquettage - Interface Tableau de Bord ............................................... 20
+Figure 3.1 : Diagramme d'activité - Flux d'évaluation ............................................ 22
+Figure 4.1 : Capture d'écran - Interface de connexion ............................................. 26
+Figure 4.2 : Capture d'écran - Tableau de bord administrateur ................................... 27
+Figure 4.3 : Capture d'écran - Formulaire d'évaluation ........................................... 28
+Figure 4.4 : Capture d'écran - Rapport statistique ............................................... 29
+Liste des Tableaux
+Tableau 1.1 : Comparaison des solutions existantes ................................................. 9
+Tableau 2.1 : Identification des acteurs du système ............................................... 14
+Tableau 2.2 : Description des cas d'utilisation principaux ....................................... 15
+Tableau 3.1 : Technologies et outils utilises ..................................................... 21
+Tableau 3.2 : Structure de la base de données - Table Formations .................................. 23
+Tableau 3.3 : Structure de la base de données - Table Evaluations ................................ 23
+Tableau 4.1 : Plan de tests fonctionnels ........................................................... 28
+Tableau 4.2 : Résultats des tests d'intégration ................................................... 29
+Liste des Abreviations
+Abreviation
+Signification
+API
+Application Programming Interface
+BD
+Base de Données
+CRUD
+Create, Read, Update, Delete
+HTML
+HyperText Markup Language
+HTTP
+HyperText Transfer Protocol
+IHM
+Interface Homme-Machine
+JSON
+JavaScript Object Notation
+MCD
+Modelé Conceptuel de Données
+MLD
+Modelé Logique de Données
+MVC
+Modelé-Vue-Contrôleur
+PHP
+PHP : Hypertext Preprocessor
+REST
+Representational State Transfer
+SGBD
+Système de Gestion de Base de Données
+SQL
+Structured Query Language
+UML
+Unified Modeling Language
+WBS
+Work Breakdown Structure
+Annexes
+Annexe A : Scripts SQL de Création de la Base de Données
+Script SQL - Création de la table questionnaires
+CREATE TABLE questionnaires (  id_questionnaire INT AUTO_INCREMENT PRIMARY KEY,  id_session INT NOT NULL,  titre VARCHAR(255) NOT NULL,  description TEXT,  type_evaluation ENUM('a_chaud','a_froid','competences') NOT NULL,  note_maximale DECIMAL(5,2) DEFAULT 20.00,  duree_minutes INT,  date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,  statut ENUM('brouillon','publie','archive') DEFAULT 'brouillon',  FOREIGN KEY (id_session) REFERENCES sessions(id_session)  ON DELETE RESTRICT ON UPDATE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+Annexe B : Extrait du Code Python - Module de Scoring
+Code Python - Calcul du score AHP multicritères
+import numpy as npimport pandas as pddef calculate_ahp_score(criteria_weights: dict, evaluation_scores: dict) -> float:    """    Calcule le score composite AHP pour une évaluation multicritères.    Args:        criteria_weights: dict {critere: poids_normalise}        evaluation_scores: dict {critere: score}    Returns:        float: Score composite normalise sur 100    """    weights = np.array(list(criteria_weights.values()))    scores = np.array([evaluation_scores.get(k, 0) for k in criteria_weights.keys()])        # Verification coherence des poids    assert abs(weights.sum() - 1.0) < 1e-6, "Les poids doivent sommer a 1.0"        composite_score = np.dot(weights, scores)    return round(composite_score, 2)
+Annexe C : Configuration Apache - Fichier .htaccess
+Configuration .htaccess
+Options -IndexesRewriteEngine OnRewriteBase /sefad/# Protection fichiers sensibles<FilesMatch "\.(env|ini|log|sh)$">  Order allow,deny  Deny from all</FilesMatch># Redirection vers HTTPSRewriteCond %{HTTPS} offRewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]# Routage MVCRewriteCond %{REQUEST_FILENAME} !-fRewriteCond %{REQUEST_FILENAME} !-dRewriteRule ^(.*)$ index.php?url=$1 [QSA,L]# Headers securiteHeader always set X-Content-Type-Options nosniffHeader always set X-Frame-Options DENYHeader always set X-XSS-Protection "1; mode=block"
+Annexe D : Glossaire
+Terme
+Definition
+API REST
+Interface de programmation suivant le style architectural REST (Representational State Transfer) utilisant le protocole HTTP pour l'echange de données.
+Aide a la décision
+Ensemble de méthodes et d'outils informatiques permettant d'analyser des données complexes pour aider les decideurs dans leurs choix strategiques.
+Evaluation a chaud
+Evaluation réalisée immediatement après la formation pour mesurer la satisfaction immediate des participants.
+Evaluation a froid
+Evaluation différée (generalement 3 a 6 mois après) mesurant le transfert des acquis en situation professionnelle.
+JWT
+JSON Web Token - Standard de transmission securisee d'informations entre parties sous forme de token signe cryptographiquement.
+KPI
+Key Performance Indicator - Indicateur cle de performance permettant de mesurer l'atteinte des objectifs.
+MVC
+Patron de conception separant l'application en trois composants : Modelé (données), Vue (interface) et Contrôleur (logique).

@@ -31,6 +31,13 @@ public partial class SidebarViewModel : ViewModelBase
     public bool IsStatistiquesActive => ActivePage == "Statistiques";
 
     public bool CanManageUsers => Role == "Administrateur" || Role == "ResponsableFormation";
+    public bool CanSeeDashboard => Role is "Administrateur" or "ChefDepartement" or "Formateur" or "ResponsableFormation" or "Decideur";
+    public bool CanSeeFormations => Role is "Administrateur" or "ChefDepartement" or "ResponsableFormation";
+    public bool CanSeeSessions => Role is "Administrateur" or "ResponsableFormation";
+    public bool CanSeeUtilisateurs => Role == "Administrateur";
+    public bool CanSeeQuestionnaires => Role is "Administrateur" or "Formateur" or "ResponsableFormation";
+    public bool CanSeeEvaluations => true;
+    public bool CanSeeStatistiques => Role is "Administrateur" or "ResponsableFormation" or "Decideur";
 
     public SidebarViewModel(
         string role,
@@ -76,6 +83,13 @@ public partial class SidebarViewModel : ViewModelBase
     partial void OnRoleChanged(string value)
     {
         OnPropertyChanged(nameof(CanManageUsers));
+        OnPropertyChanged(nameof(CanSeeDashboard));
+        OnPropertyChanged(nameof(CanSeeFormations));
+        OnPropertyChanged(nameof(CanSeeSessions));
+        OnPropertyChanged(nameof(CanSeeUtilisateurs));
+        OnPropertyChanged(nameof(CanSeeQuestionnaires));
+        OnPropertyChanged(nameof(CanSeeEvaluations));
+        OnPropertyChanged(nameof(CanSeeStatistiques));
     }
 
     partial void OnUserNameChanged(string value)

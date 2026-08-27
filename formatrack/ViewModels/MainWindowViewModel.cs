@@ -32,6 +32,8 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _currentUserRole = "Administrateur";
     [ObservableProperty] private string _currentUserEmail = "admin@sefad.local";
     [ObservableProperty] private int _currentUserId = 1;
+    [ObservableProperty] private string _currentUserDepartement = "";
+    [ObservableProperty] private string _currentUserPromotion = "";
     [ObservableProperty] private bool _isMobile;
 
     partial void OnIsMobileChanged(bool value)
@@ -74,34 +76,66 @@ public partial class MainWindowViewModel : ViewModelBase
         Sidebar.UserEmail = CurrentUserEmail;
     }
 
-    public void OpenDashboard(string role, string email = "")
+    public async void OpenDashboard(string role, string email = "")
     {
         IsLoggedIn = true;
         CurrentUserRole = string.IsNullOrWhiteSpace(role) ? "Administrateur" : role;
         CurrentUserEmail = string.IsNullOrWhiteSpace(email) ? $"{CurrentUserRole.ToLowerInvariant()}@sefad.local" : email;
 
-        if (CurrentUserEmail.Contains("admin") || CurrentUserRole == "Administrateur")
+        // Fetch user details from database
+        var user = await _utilisateurService.GetUtilisateurParEmailAsync(CurrentUserEmail);
+        if (user != null)
         {
-            CurrentUserName = "Colonel H. Mansour";
-            CurrentUserRole = "Administrateur";
-            CurrentUserId = 1;
-        }
-        else if (CurrentUserEmail.Contains("format") || CurrentUserRole == "Formateur")
-        {
-            CurrentUserName = "Cdt. Y. Mansouri";
-            CurrentUserRole = "Formateur";
-            CurrentUserId = 2;
-        }
-        else if (CurrentUserEmail.Contains("stagiaire") || CurrentUserRole == "Stagiaire")
-        {
-            CurrentUserName = "Cpt. K. Ben Ali";
-            CurrentUserRole = "Stagiaire";
-            CurrentUserId = 3;
+            CurrentUserName = user.NomComplet;
+            CurrentUserRole = user.Role;
+            CurrentUserId = user.IdUtilisateur;
+            CurrentUserDepartement = user.Departement;
+            CurrentUserPromotion = user.Promotion;
         }
         else
         {
-            CurrentUserName = "Utilisateur EMS";
-            CurrentUserId = 1;
+            // Fallback for unknown users
+            if (CurrentUserEmail.Contains("admin") || CurrentUserRole == "Administrateur")
+            {
+                CurrentUserName = "Colonel H. Mansour";
+                CurrentUserRole = "Administrateur";
+                CurrentUserId = 1;
+            }
+            else if (CurrentUserEmail.Contains("chefdep") || CurrentUserRole == "ChefDepartement")
+            {
+                CurrentUserName = "Cdt. A. Harbi";
+                CurrentUserRole = "ChefDepartement";
+                CurrentUserId = 4;
+            }
+            else if (CurrentUserEmail.Contains("format") || CurrentUserRole == "Formateur")
+            {
+                CurrentUserName = "Cdt. Y. Mansouri";
+                CurrentUserRole = "Formateur";
+                CurrentUserId = 2;
+            }
+            else if (CurrentUserEmail.Contains("stagiaire") || CurrentUserRole == "Stagiaire")
+            {
+                CurrentUserName = "Cpt. K. Ben Ali";
+                CurrentUserRole = "Stagiaire";
+                CurrentUserId = 3;
+            }
+            else if (CurrentUserEmail.Contains("resp.formation") || CurrentUserRole == "ResponsableFormation")
+            {
+                CurrentUserName = "Cdt. A. Hadj";
+                CurrentUserRole = "ResponsableFormation";
+                CurrentUserId = 7;
+            }
+            else if (CurrentUserEmail.Contains("decideur") || CurrentUserRole == "Decideur")
+            {
+                CurrentUserName = "Maj. M. Bouzid";
+                CurrentUserRole = "Decideur";
+                CurrentUserId = 8;
+            }
+            else
+            {
+                CurrentUserName = "Utilisateur EMS";
+                CurrentUserId = 1;
+            }
         }
 
         CurrentBreadcrumb = "Accueil / Tableau de bord";
@@ -110,7 +144,10 @@ public partial class MainWindowViewModel : ViewModelBase
 
         CurrentPage = new DashboardViewModel(_statistiqueService, _sessionService,
             OpenFormations, OpenUtilisateurs, OpenSessions,
-            OpenEvaluations, OpenQuestionnaires, OpenStatistiques, Logout, CurrentUserRole, CurrentUserId)
+            OpenEvaluations, OpenQuestionnaires, OpenStatistiques, Logout, CurrentUserRole, CurrentUserId,
+            utilisateurService: _utilisateurService,
+            departement: CurrentUserDepartement,
+            promotion: CurrentUserPromotion)
         {
             IsMobile = IsMobile
         };
@@ -303,9 +340,15 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentPage = vm;
     }
 
-    private void DeleteFormation(int idFormation)
+    private async void DeleteFormation(int idFormation)
     {
-        _ = _formationService.SupprimerFormationAsync(idFormation);
+        var formation = await _formationService.GetFormationAsync(idFormation);
+        var nom = formation?.Titre ?? idFormation.ToString();
+        var ok = await _formationService.SupprimerFormationAsync(idFormation);
+        if (ok)
+        {
+            await formatrack.Services.CompositionRoot.Journal.JournalerAsync(null, $"Suppression de la formation {nom}", $"ID: {idFormation}");
+        }
         OpenFormations();
     }
 

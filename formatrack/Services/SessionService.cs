@@ -26,6 +26,9 @@ public class SessionService : ISessionService
     public async Task<IReadOnlyList<Session>> GetProchainesSessionsAsync(int limite = 5)
         => await _sessions.GetUpcomingAsync(limite);
 
+    public async Task<IReadOnlyList<Session>> GetSessionsParAnneeAsync(int annee)
+        => await _sessions.GetByAnneeAsync(annee);
+
     public async Task<Session?> GetSessionAsync(int idSession)
         => await _sessions.GetByIdAsync(idSession);
 

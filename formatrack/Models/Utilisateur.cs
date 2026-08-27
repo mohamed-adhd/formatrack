@@ -10,6 +10,8 @@ public class Utilisateur
     public string Email { get; set; } = string.Empty;
     public string MotDePasseHash { get; set; } = string.Empty;
     public string Role { get; set; } = "Stagiaire";
+    public string Departement { get; set; } = string.Empty;
+    public string Promotion { get; set; } = string.Empty;
     public DateTime DateCreation { get; set; } = DateTime.Now;
     public bool Actif { get; set; } = true;
     public string NomComplet => $"{Prenom} {Nom}".Trim();

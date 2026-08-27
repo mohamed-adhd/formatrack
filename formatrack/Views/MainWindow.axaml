@@ -111,42 +111,54 @@
                 <Border Grid.Row="1" Background="{StaticResource NavyDarkBrush}" BorderBrush="#1E3355" BorderThickness="0,1,0,0" Padding="4,4">
                     <Grid ColumnDefinitions="*,*,*,*,*,*">
                         <!-- Dashboard -->
-                        <Button Grid.Column="0" Classes="ghost" Command="{Binding Sidebar.NavigateDashboardCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                        <Button Grid.Column="0" Classes="ghost" Command="{Binding Sidebar.NavigateDashboardCommand}"
+                                IsVisible="{Binding Sidebar.CanSeeDashboard}"
+                                HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
                             <StackPanel Spacing="2">
                                 <PathIcon Data="{StaticResource IconDashboard}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
                                 <TextBlock Text="Accueil" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <!-- Formations -->
-                        <Button Grid.Column="1" Classes="ghost" Command="{Binding Sidebar.NavigateFormationsCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                        <Button Grid.Column="1" Classes="ghost" Command="{Binding Sidebar.NavigateFormationsCommand}"
+                                IsVisible="{Binding Sidebar.CanSeeFormations}"
+                                HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
                             <StackPanel Spacing="2">
                                 <PathIcon Data="{StaticResource IconFormations}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
                                 <TextBlock Text="Cours" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <!-- Sessions -->
-                        <Button Grid.Column="2" Classes="ghost" Command="{Binding Sidebar.NavigateSessionsCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                        <Button Grid.Column="2" Classes="ghost" Command="{Binding Sidebar.NavigateSessionsCommand}"
+                                IsVisible="{Binding Sidebar.CanSeeSessions}"
+                                HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
                             <StackPanel Spacing="2">
                                 <PathIcon Data="{StaticResource IconSessions}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
                                 <TextBlock Text="Sessions" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <!-- Questionnaires -->
-                        <Button Grid.Column="3" Classes="ghost" Command="{Binding Sidebar.NavigateQuestionnairesCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                        <Button Grid.Column="3" Classes="ghost" Command="{Binding Sidebar.NavigateQuestionnairesCommand}"
+                                IsVisible="{Binding Sidebar.CanSeeQuestionnaires}"
+                                HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
                             <StackPanel Spacing="2">
                                 <PathIcon Data="{StaticResource IconQuestionnaires}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
                                 <TextBlock Text="Quests" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <!-- Evaluations -->
-                        <Button Grid.Column="4" Classes="ghost" Command="{Binding Sidebar.NavigateEvaluationsCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                        <Button Grid.Column="4" Classes="ghost" Command="{Binding Sidebar.NavigateEvaluationsCommand}"
+                                IsVisible="{Binding Sidebar.CanSeeEvaluations}"
+                                HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
                             <StackPanel Spacing="2">
                                 <PathIcon Data="{StaticResource IconEvaluations}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
                                 <TextBlock Text="Évals" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <!-- Statistiques -->
-                        <Button Grid.Column="5" Classes="ghost" Command="{Binding Sidebar.NavigateStatistiquesCommand}" HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                        <Button Grid.Column="5" Classes="ghost" Command="{Binding Sidebar.NavigateStatistiquesCommand}"
+                                IsVisible="{Binding Sidebar.CanSeeStatistiques}"
+                                HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
                             <StackPanel Spacing="2">
                                 <PathIcon Data="{StaticResource IconStatistiques}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
                                 <TextBlock Text="Stats" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>

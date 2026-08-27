@@ -9,6 +9,7 @@ public interface ISessionService
     Task<IReadOnlyList<Session>> GetSessionsAsync();
     Task<IReadOnlyList<Session>> GetSessionsFormationAsync(int idFormation);
     Task<IReadOnlyList<Session>> GetProchainesSessionsAsync(int limite = 5);
+    Task<IReadOnlyList<Session>> GetSessionsParAnneeAsync(int annee);
     Task<Session?> GetSessionAsync(int idSession);
     Task<int> EnregistrerSessionAsync(Session session);
     Task<bool> SupprimerSessionAsync(int idSession);

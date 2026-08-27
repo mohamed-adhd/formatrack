@@ -72,7 +72,11 @@ public partial class FormationDetailViewModel : ViewModelBase
             var result = true; // Placeholder for actual dialog result
             if (result)
             {
-                await _formationService.SupprimerFormationAsync(Formation.IdFormation);
+                var ok = await _formationService.SupprimerFormationAsync(Formation.IdFormation);
+                if (ok)
+                {
+                    await formatrack.Services.CompositionRoot.Journal.JournalerAsync(null, $"Suppression de la formation {Formation.Titre}", $"ID: {Formation.IdFormation}");
+                }
                 _backToDashboard();
             }
         }

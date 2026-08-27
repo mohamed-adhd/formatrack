@@ -113,6 +113,8 @@ public partial class FormationFormViewModel : ViewModelBase
             int result = await _formationService.EnregistrerFormationAsync(formation);
             if (result > 0)
             {
+                var actionStr = _idFormation.HasValue ? $"Modification de la formation {formation.Titre}" : $"Création de la formation {formation.Titre}";
+                await formatrack.Services.CompositionRoot.Journal.JournalerAsync(null, actionStr, $"ID: {result}, Durée: {formation.DureeHeures}h, Type: {formation.TypeFormation}");
                 _onCompleted?.Invoke(true); // Saved successfully
             }
             else

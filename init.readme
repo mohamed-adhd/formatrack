@@ -1,0 +1,62 @@
+# SEFAD (FormaTrack) - Initial Agent Readme
+
+This document outlines the fixes applied to the C# Avalonia project to resolve existing build errors and compilation warnings, and describes the remaining tasks to complete the UI refactoring.
+
+---
+
+## 🛠️ What Was Done
+
+1. **Fixed XAML Parsing Error**:
+   - **File**: `formatrack/Views/Dashboard/DashboardView.axaml`
+   - **Action**: Removed invalid git diff indicators (`-` and `+`) from the XML attributes of the `UserControl`. This resolved Avalonia error `AVLN1001`.
+
+2. **Fixed Sidebar Property Binding**:
+   - **File**: `formatrack/ViewModels/MainWindowViewModel.cs`
+   - **Action**: Removed the non-existent property assignment `Sidebar.UserRole = CurrentUserRole;`. The `SidebarViewModel` uses the generated `Role` property. This resolved compilation error `CS1061`.
+
+3. **Resolved Nullability Warnings (CS8625)**:
+   - **Files**:
+     - `formatrack/ViewModels/Formations/FormationFormViewModel.cs`
+     - `formatrack/ViewModels/Questionnaires/QuestionnaireEditorViewModel.cs`
+     - `formatrack/ViewModels/Utilisateurs/UtilisateurFormViewModel.cs`
+     - `formatrack/ViewModels/Sessions/SessionFormViewModel.cs`
+   - **Action**: Converted constructor parameters that accept default `null` actions from `Action` to `Action?`.
+
+4. **Build & Run Verification**:
+   - Ran `dotnet build` successfully with **0 errors** and **0 app-specific warnings**.
+   - Verified that `dotnet run` initializes and boots correctly.
+
+---
+
+## 📋 Remaining Work & Task for the Next Agent
+
+The next coding agent must execute a comprehensive refactor of the UI based on the user's specified guidelines below:
+
+### 1. Architecture de l'Information & Navigation
+- **Tableau de bord centralisé**: Affichage immédiat des alertes du jour, des prochains cours et des dernières notes dès la connexion.
+- **Navigation persistante**: Menu latéral gauche fixe pour les écrans d'ordinateurs, et barre de navigation basse (Bottom Navigation) sur mobile.
+- **Structure logique par onglets**: Séparation claire des modules: Notes & Évaluations, Absences & Retards, Emploi du temps, Messagerie.
+- **Fil d'ariane (Breadcrumbs)**: Indication systématique du chemin de navigation pour permettre un retour rapide aux niveaux supérieurs.
+- **Règle des 3 clics**: Toute information essentielle (ex: justificatif d'absence, détail d'une note) doit être accessible en 3 actions maximum.
+
+### 2. Identité Visuelle & Accessibilité (Normes WCAG)
+- **Code couleur sémantique**: Vert pour les validations/présences, Rouge pour les alertes/absences critiques, Orange pour les retards/avertissements.
+- **Contraste réglementaire**: Respect strict du ratio de contraste minimal de 4.5:1 pour tous les textes afin de garantir la lisibilité.
+- **Typographie universelle**: Utilisation exclusive de polices Sans-Serif hautement lisibles sur écran (ex: Inter, Roboto, Open Sans).
+- **Taille de texte adaptative**: Taille minimale de 16px pour le corps de texte principal et de 14px pour les métadonnées ou légendes.
+
+### 3. Saisie de Données & Formulaires (Espace Enseignants/Admin)
+- **Libellés explicites**: Placer les étiquettes au-dessus des champs. Ne jamais utiliser le texte d'exemple (placeholder) comme seul libellé.
+- **Saisie prédictive & Filtres**: Intégration de l'autocomplétion pour la recherche rapide d'un étudiant, d'une classe ou d'une matière.
+- **Sauvegarde automatique**: Implémentation d'un enregistrement automatique en arrière-plan lors de la saisie des notes pour éviter toute perte de données.
+- **Gestion des erreurs en temps réel**: Identification visuelle immédiate du champ incorrect avec un message d'aide textuel explicite.
+
+### 4. Adaptabilité (Conception Responsive)
+- **Approche Mobile-First**: Priorisation des interfaces smartphones, usages majoritaires pour les parents d'élèves et les étudiants.
+- **Cibles tactiles ergonomiques**: Boutons et éléments cliquables d'une taille minimale de 44x44 pixels pour éviter les erreurs de saisie sur mobile.
+- **Tableaux de données responsables**: Transformation automatique des grands tableaux de notes en listes de cartes verticales sur petit écran.
+
+### 5. Clarté Informative & Vocabulaire
+- **Vulgarisation administrative**: Remplacement du jargon technique ou académique complexe par des termes simples et universels.
+- **Contextualisation des performances**: Accompagnement systématique d'une note par la moyenne de la classe, la note la plus haute et la note la plus basse.
+- **Statuts explicites**: Distinction visuelle et textuelle immédiate entre une absence 'Justifiée' (badge vert/gris) et 'Non justifiée' (badge rouge).

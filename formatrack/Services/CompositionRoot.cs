@@ -21,4 +21,5 @@ public static class CompositionRoot
     public static IRapportService Rapport { get; } = new RapportService();
     public static IJournalActiviteService Journal { get; } = new JournalActiviteService();
     public static INotificationService Notification { get; } = new NotificationService();
+    public static IAbsenceService Absence { get; } = new AbsenceService();
 }

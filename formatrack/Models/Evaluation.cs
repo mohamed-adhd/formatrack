@@ -14,6 +14,7 @@ public class Evaluation
     public string Statut { get; set; } = "EnCours";
     public string UtilisateurNom { get; set; } = string.Empty;
     public string QuestionnaireTitre { get; set; } = string.Empty;
+    public string TypeEvaluation { get; set; } = string.Empty;
     
     // Performance Context Details
     public double MoyenneClasse { get; set; } = 13.5;

@@ -46,6 +46,9 @@ lieu=$lieu, capacite=$capacite, statut=$statut WHERE id_session=$id";
     public Task<IReadOnlyList<Session>> GetUpcomingAsync(int limite = 5) =>
         QueryAsync("ORDER BY date(s.date_debut) ASC LIMIT $limite", c => c.Parameters.AddWithValue("$limite", limite));
 
+    public Task<IReadOnlyList<Session>> GetByAnneeAsync(int annee) =>
+        QueryAsync("WHERE strftime('%Y', s.date_debut) = $annee ORDER BY date(s.date_debut) DESC", c => c.Parameters.AddWithValue("$annee", annee.ToString()));
+
     private async Task<IReadOnlyList<Session>> QueryAsync(string clause, Action<SqliteCommand> bind)
     {
         await AppDbContext.InitializeAsync();

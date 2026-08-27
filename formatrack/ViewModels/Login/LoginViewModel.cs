@@ -66,6 +66,30 @@ public partial class LoginViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void FillChefDepartement()
+    {
+        Identifiant = "chefdep@sefad.local";
+        MotDePasse = "admin123";
+        IsErrorVisible = false;
+    }
+
+    [RelayCommand]
+    private void FillResponsableFormation()
+    {
+        Identifiant = "resp.formation@sefad.local";
+        MotDePasse = "admin123";
+        IsErrorVisible = false;
+    }
+
+    [RelayCommand]
+    private void FillDecideur()
+    {
+        Identifiant = "decideur@sefad.local";
+        MotDePasse = "admin123";
+        IsErrorVisible = false;
+    }
+
+    [RelayCommand]
     private async Task SeConnecterAsync()
     {
         IsErrorVisible = false;

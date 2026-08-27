@@ -16,6 +16,15 @@ public class UtilisateurService : IUtilisateurService
     public async Task<IReadOnlyList<Utilisateur>> GetUtilisateursAsync()
         => await _repository.GetAllAsync();
 
+    public async Task<IReadOnlyList<Utilisateur>> GetUtilisateursParDepartementAsync(string departement)
+        => await _repository.GetByDepartementAsync(departement);
+
+    public async Task<IReadOnlyList<Utilisateur>> GetUtilisateursParPromotionAsync(string promotion)
+        => await _repository.GetByPromotionAsync(promotion);
+
+    public async Task<IReadOnlyList<Utilisateur>> GetFormateursParDepartementAsync(string departement)
+        => await _repository.GetFormateursByDepartementAsync(departement);
+
     public async Task<Utilisateur?> GetUtilisateurAsync(int idUtilisateur)
         => await _repository.GetByIdAsync(idUtilisateur);
 

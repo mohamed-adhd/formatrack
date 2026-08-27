@@ -58,6 +58,11 @@ public partial class EvaluationPasserViewModel : ViewModelBase
             if (TotalQuestions > 0)
             {
                 _idEvaluation = await _evaluationService.DemarrerEvaluationAsync(idUtilisateur, idQuestionnaire);
+                if (_idEvaluation > 0)
+                {
+                    var title = Questionnaire?.Titre ?? _idEvaluation.ToString();
+                    await formatrack.Services.CompositionRoot.Journal.JournalerAsync(null, $"Démarrage de l'évaluation {title}", $"ID Évaluation: {_idEvaluation}, Utilisateur: {idUtilisateur}");
+                }
                 CurrentIndex = 0;
                 CurrentQuestion = _questions[0];
                 Message = $"Question {CurrentIndex + 1} sur {TotalQuestions}";
@@ -150,7 +155,12 @@ public partial class EvaluationPasserViewModel : ViewModelBase
         }
 
         await _evaluationService.EnregistrerReponsesAsync(_idEvaluation, reponses);
-        await _evaluationService.TerminerEvaluationAsync(_idEvaluation);
+        var ok = await _evaluationService.TerminerEvaluationAsync(_idEvaluation);
+        if (ok)
+        {
+            var title = Questionnaire?.Titre ?? _idEvaluation.ToString();
+            await formatrack.Services.CompositionRoot.Journal.JournalerAsync(null, $"Soumission de l'évaluation {title}", $"ID Évaluation: {_idEvaluation}, Nombre de réponses: {reponses.Count}");
+        }
 
         IsCompleted = true;
         Message = "Évaluation finalisée avec succès.";

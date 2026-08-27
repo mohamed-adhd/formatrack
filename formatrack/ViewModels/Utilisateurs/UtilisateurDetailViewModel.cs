@@ -54,7 +54,11 @@ public partial class UtilisateurDetailViewModel : ViewModelBase
     {
         if (Utilisateur != null)
         {
-            await _utilisateurService.SupprimerUtilisateurAsync(Utilisateur.IdUtilisateur);
+            var ok = await _utilisateurService.SupprimerUtilisateurAsync(Utilisateur.IdUtilisateur);
+            if (ok)
+            {
+                await formatrack.Services.CompositionRoot.Journal.JournalerAsync(null, $"Suppression de l'utilisateur {Utilisateur.Prenom} {Utilisateur.Nom}", $"ID: {Utilisateur.IdUtilisateur}, Rôle: {Utilisateur.Role}");
+            }
             _backToList();
         }
     }

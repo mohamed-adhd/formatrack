@@ -20,6 +20,8 @@ public partial class UtilisateurFormViewModel : ViewModelBase
     [ObservableProperty] private string _email = string.Empty;
     [ObservableProperty] private string _motDePasse = string.Empty;
     [ObservableProperty] private string _role = string.Empty;
+    [ObservableProperty] private string _departement = string.Empty;
+    [ObservableProperty] private string _promotion = string.Empty;
     [ObservableProperty] private bool _actif = true;
     [ObservableProperty] private string _message = string.Empty;
 
@@ -31,6 +33,13 @@ public partial class UtilisateurFormViewModel : ViewModelBase
         "Formateur",
         "Stagiaire",
         "Decideur"
+    };
+
+    public ObservableCollection<string> DepartementOptions { get; } = new()
+    {
+        "Air",
+        "Mer",
+        "Terre"
     };
 
     public UtilisateurFormViewModel(
@@ -57,6 +66,8 @@ public partial class UtilisateurFormViewModel : ViewModelBase
                 Prenom = user.Prenom;
                 Email = user.Email;
                 Role = user.Role;
+                Departement = user.Departement;
+                Promotion = user.Promotion;
                 Actif = user.Actif;
                 Message = "Modification d'utilisateur";
             }
@@ -97,6 +108,8 @@ public partial class UtilisateurFormViewModel : ViewModelBase
                 Prenom = Prenom.Trim(),
                 Email = Email.Trim(),
                 Role = string.IsNullOrWhiteSpace(Role) ? "Stagiaire" : Role.Trim(),
+                Departement = Departement?.Trim() ?? string.Empty,
+                Promotion = Promotion?.Trim() ?? string.Empty,
                 Actif = Actif
             };
 
@@ -105,9 +118,15 @@ public partial class UtilisateurFormViewModel : ViewModelBase
                 string.IsNullOrWhiteSpace(MotDePasse) ? null : MotDePasse);
 
             if (result > 0)
+            {
+                var actionStr = _idUtilisateur.HasValue ? $"Modification de l'utilisateur {user.Prenom} {user.Nom}" : $"Création de l'utilisateur {user.Prenom} {user.Nom}";
+                await formatrack.Services.CompositionRoot.Journal.JournalerAsync(null, actionStr, $"ID: {result}, Email: {user.Email}, Rôle: {user.Role}");
                 _onCompleted?.Invoke(true);
+            }
             else
+            {
                 Message = "Erreur lors de l'enregistrement";
+            }
         }
         catch (Exception ex)
         {

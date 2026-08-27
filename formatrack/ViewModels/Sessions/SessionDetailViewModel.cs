@@ -54,7 +54,11 @@ public partial class SessionDetailViewModel : ViewModelBase
     {
         if (Session != null)
         {
-            await _sessionService.SupprimerSessionAsync(Session.IdSession);
+            var ok = await _sessionService.SupprimerSessionAsync(Session.IdSession);
+            if (ok)
+            {
+                await formatrack.Services.CompositionRoot.Journal.JournalerAsync(null, $"Suppression de la session {Session.TitreFormation}", $"ID: {Session.IdSession}, Lieu: {Session.Lieu}");
+            }
             _backToList();
         }
     }

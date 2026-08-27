@@ -63,6 +63,21 @@
                         </StackPanel>
                     </Grid>
 
+                    <!-- Departement & Promotion Grid -->
+                    <Grid ColumnDefinitions="*,*">
+                        <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,10,0">
+                            <TextBlock Text="Département" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <ComboBox ItemsSource="{Binding DepartementOptions}"
+                                      SelectedItem="{Binding Departement, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6" Margin="10,0,0,0">
+                            <TextBlock Text="Promotion" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBox Text="{Binding Promotion, Mode=TwoWay}" Watermark="ex: Promotion 2026" />
+                        </StackPanel>
+                    </Grid>
+
                     <Rectangle Height="1" Fill="{StaticResource BorderLightBrush}" HorizontalAlignment="Stretch" Margin="0,8" />
 
                     <!-- Buttons -->
