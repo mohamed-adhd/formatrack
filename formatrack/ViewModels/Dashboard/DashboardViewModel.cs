@@ -99,14 +99,6 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty] private bool _isErrorVisible;
     [ObservableProperty] private string _autoSaveStatus = "Toutes les modifications sont enregistrées automatiquement";
 
-    // Grade entry form (Formateur only)
-    [ObservableProperty] private string _newGradeStudent = "";
-    [ObservableProperty] private string _newGradeSubject = "";
-    [ObservableProperty] private string _newGradeValueString = "";
-    [ObservableProperty] private string _newGradeError = "";
-    [ObservableProperty] private bool _isNewGradeErrorVisible;
-    [ObservableProperty] private string _newGradeAutoSaveStatus = "Sauvegarde automatique active";
-
     public List<string> Motifs { get; } = new() { "Ordre de mission", "Certificat médical", "Permission exceptionnelle", "Raison familiale" };
 
     public DashboardViewModel(IStatistiqueService statistiqueService, ISessionService sessionService,
@@ -590,83 +582,5 @@ public partial class DashboardViewModel : ViewModelBase
             ErrorMessage = "⚠️ Erreur lors de l'enregistrement en base de données.";
             IsErrorVisible = true;
         }
-    }
-
-    // --- Grade entry (Formateur/Admin only) ---
-    partial void OnNewGradeValueStringChanged(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            NewGradeError = "⚠️ La note est requise.";
-            IsNewGradeErrorVisible = true;
-        }
-        else if (!double.TryParse(value, out var note) || note < 0 || note > 20)
-        {
-            NewGradeError = "⚠️ La note doit être un nombre décimal compris entre 0 et 20.";
-            IsNewGradeErrorVisible = true;
-        }
-        else
-        {
-            NewGradeError = "";
-            IsNewGradeErrorVisible = false;
-            NewGradeAutoSaveStatus = "⏳ Sauvegarde automatique de la saisie...";
-            Task.Run(async () =>
-            {
-                await Task.Delay(800);
-                if (NewGradeValueString == value)
-                    NewGradeAutoSaveStatus = "✓ Saisie en cours sécurisée (Sauvegarde auto)";
-            });
-        }
-    }
-
-    [RelayCommand]
-    private async Task EnregistrerNouvelleNote()
-    {
-        if (string.IsNullOrWhiteSpace(NewGradeStudent))
-        {
-            NewGradeError = "⚠️ Le nom de l'étudiant est requis.";
-            IsNewGradeErrorVisible = true;
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(NewGradeSubject))
-        {
-            NewGradeError = "⚠️ La matière / évaluation est requise.";
-            IsNewGradeErrorVisible = true;
-            return;
-        }
-        if (!double.TryParse(NewGradeValueString, out var score) || score < 0 || score > 20)
-        {
-            NewGradeError = "⚠️ Veuillez saisir une note valide entre 0 et 20.";
-            IsNewGradeErrorVisible = true;
-            return;
-        }
-
-        var newEval = new Evaluation
-        {
-            IdUtilisateur = UserId,
-            QuestionnaireTitre = NewGradeSubject,
-            UtilisateurNom = NewGradeStudent,
-            ScoreTotal = score,
-            ScoreMaximum = 20.0,
-            Pourcentage = (score / 20.0) * 100.0,
-            Statut = "Terminee",
-            DatePassage = DateTime.Now,
-            MoyenneClasse = 13.6,
-            NoteMin = 8.5,
-            NoteMax = 18.0
-        };
-
-        await _evaluationService.AjouterEvaluationAsync(newEval);
-        AllEvaluations.Insert(0, newEval);
-        FilterEvaluations();
-
-        _ = formatrack.Services.CompositionRoot.Journal.JournalerAsync(UserId, $"Création d'évaluation via saisie rapide : {newEval.QuestionnaireTitre}", $"Étudiant: {newEval.UtilisateurNom}, Note: {newEval.ScoreTotal}/20");
-
-        NewGradeStudent = "";
-        NewGradeSubject = "";
-        NewGradeValueString = "";
-        NewGradeError = "";
-        IsNewGradeErrorVisible = false;
-        NewGradeAutoSaveStatus = "✓ Note enregistrée et publiée avec succès !";
     }
 }

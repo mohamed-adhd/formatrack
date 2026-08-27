@@ -122,6 +122,32 @@
                                        Foreground="White" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
                         </Grid>
                     </Button>
+
+                    <!-- 8. Emploi du temps -->
+                    <Button Classes="ghost" Command="{Binding NavigateTimetableCommand}"
+                            IsVisible="{Binding CanSeeTimetable}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                            Padding="12,10" CornerRadius="8">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="{StaticResource IconSessions}" Width="18" Height="18"
+                                      Foreground="{StaticResource GoldAccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="Emploi du temps" Margin="12,0,0,0"
+                                       Foreground="White" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
+
+                    <!-- 9. Notes -->
+                    <Button Classes="ghost" Command="{Binding NavigateGradesCommand}"
+                            IsVisible="{Binding CanSeeGrades}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                            Padding="12,10" CornerRadius="8">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Data="{StaticResource IconEvaluations}" Width="18" Height="18"
+                                      Foreground="{StaticResource GoldAccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="Notes" Margin="12,0,0,0"
+                                       Foreground="White" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
                 </StackPanel>
             </ScrollViewer>
 

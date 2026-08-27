@@ -9,6 +9,8 @@ using formatrack.ViewModels.Sessions;
 using formatrack.ViewModels.Evaluations;
 using formatrack.ViewModels.Questionnaires;
 using formatrack.ViewModels.Statistiques;
+using formatrack.ViewModels.Timetable;
+using formatrack.ViewModels.Grades;
 using formatrack.ViewModels.Shared;
 
 namespace formatrack.ViewModels;
@@ -62,7 +64,9 @@ public partial class MainWindowViewModel : ViewModelBase
             string.Empty, string.Empty,
             OpenDashboardAction, OpenUtilisateurs, OpenFormations,
             OpenSessions, OpenEvaluations, OpenQuestionnaires,
-            OpenStatistiques, Logout);
+            OpenStatistiques, Logout,
+            openTimetable: OpenTimetable,
+            openGrades: OpenGrades);
 
         CurrentPage = new LoginViewModel(_authService, (role, email) => OpenDashboard(role, email));
     }
@@ -262,6 +266,38 @@ public partial class MainWindowViewModel : ViewModelBase
             OpenSessions,
             OpenEvaluations,
             OpenQuestionnaires);
+    }
+
+    public void OpenTimetable()
+    {
+        CurrentBreadcrumb = "Accueil / Emploi du Temps";
+        CurrentPageTitle = "Emploi du Temps & Chronogramme";
+        UpdateSidebar("Timetable", "Emploi du temps");
+
+        CurrentPage = new TimetableViewModel(
+            departement: CurrentUserDepartement,
+            promotion: CurrentUserPromotion,
+            userId: CurrentUserId,
+            role: CurrentUserRole)
+        {
+            IsMobile = IsMobile
+        };
+    }
+
+    public void OpenGrades()
+    {
+        CurrentBreadcrumb = "Accueil / Notes";
+        CurrentPageTitle = "Notes & Saisie des Bulletins";
+        UpdateSidebar("Grades", "Gestion des notes");
+
+        CurrentPage = new GradesViewModel(
+            departement: CurrentUserDepartement,
+            promotion: CurrentUserPromotion,
+            userId: CurrentUserId,
+            role: CurrentUserRole)
+        {
+            IsMobile = IsMobile
+        };
     }
 
     private void OpenDashboardAction()

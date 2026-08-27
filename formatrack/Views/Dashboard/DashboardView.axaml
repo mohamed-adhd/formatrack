@@ -227,23 +227,22 @@
 
                 <!-- Tab 2: Notes & Évaluations -->
                 <TabItem Header="📝 Notes &amp; Évaluations">
-                    <Grid ColumnDefinitions="2*,*" Margin="0,10,0,0" RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="*" Margin="0,10,0,0" RowDefinitions="Auto,*">
                         <!-- Search Filters -->
-                        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,14">
-                            <Grid ColumnDefinitions="*,Auto,Auto">
+                        <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,14">
+                            <Grid ColumnDefinitions="*,Auto">
                                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
                                     <TextBlock Text="Filtrer les notes :" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" />
                                     <TextBox Width="300" Height="36" Watermark="Rechercher par stagiaire ou matière..." Text="{Binding StudentFilter, Mode=TwoWay}" />
                                 </StackPanel>
-                                <TextBlock Grid.Column="1" Text="Contextualisation des performances par rapport à la classe" FontSize="12" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" FontStyle="Italic" />
-                                <Button Grid.Column="2" Classes="outline" Content="Exporter CSV" MinHeight="32" Padding="12,6" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0"
+                                <Button Grid.Column="1" Classes="outline" Content="Exporter CSV" MinHeight="32" Padding="12,6" FontSize="13" VerticalAlignment="Center"
                                         IsVisible="{Binding CanExport}" />
                             </Grid>
                         </Border>
 
                         <!-- Evaluations List -->
-                        <Border Grid.Row="1" Grid.Column="0" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" Margin="0,0,16,0">
-                            <ScrollViewer MaxHeight="450">
+                        <Border Grid.Row="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                            <ScrollViewer MaxHeight="500">
                                 <ItemsControl ItemsSource="{Binding FilteredEvaluations}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="models:Evaluation">
@@ -273,83 +272,6 @@
                                                             <TextBlock Text="{Binding NoteMax, StringFormat='Note Max: {0:0.0}/20'}" FontSize="12" Foreground="{StaticResource SuccessGreenBrush}" />
                                                         </Border>
                                                     </StackPanel>
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </ScrollViewer>
-                        </Border>
-
-                        <!-- Add Note Form (Formateur only - Admin is read-only) -->
-                        <Border Grid.Row="1" Grid.Column="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20"
-                                IsVisible="{Binding IsFormateurView}">
-                            <StackPanel Spacing="12">
-                                <TextBlock Text="Saisie de note (Formateur)" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" Margin="0,0,0,4" />
-                                <StackPanel Spacing="4">
-                                    <TextBlock Text="Nom du Stagiaire" FontSize="14" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
-                                    <TextBox Text="{Binding NewGradeStudent, Mode=TwoWay}" Watermark="ex: Cpt. K. Ben Ali" />
-                                </StackPanel>
-                                <StackPanel Spacing="4">
-                                    <TextBlock Text="Matière / Évaluation" FontSize="14" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
-                                    <TextBox Text="{Binding NewGradeSubject, Mode=TwoWay}" Watermark="ex: Logistique Opérationnelle" />
-                                </StackPanel>
-                                <StackPanel Spacing="4">
-                                    <TextBlock Text="Note (sur 20)" FontSize="14" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
-                                    <TextBox Text="{Binding NewGradeValueString, Mode=TwoWay}" Watermark="ex: 15.5" />
-                                </StackPanel>
-                                <Border Background="#FEE2E2" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="6" Padding="10,6" IsVisible="{Binding IsNewGradeErrorVisible}">
-                                    <TextBlock Text="{Binding NewGradeError}" Foreground="{StaticResource DangerRedBrush}" FontSize="13" TextWrapping="Wrap" />
-                                </Border>
-                                <TextBlock Text="{Binding NewGradeAutoSaveStatus}" Foreground="{StaticResource SuccessGreenBrush}" FontSize="12" FontStyle="Italic" HorizontalAlignment="Right" />
-                                <Button Classes="primary" Content="Publier la note" Command="{Binding EnregistrerNouvelleNoteCommand}" HorizontalAlignment="Stretch" Margin="0,10,0,0" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </TabItem>
-
-                <!-- Tab 2b: Formateur Students (Formateur only) -->
-                <TabItem Header="👨‍🎓 Étudiants" IsVisible="{Binding IsFormateurView}">
-                    <Grid ColumnDefinitions="Auto,2*,*" Margin="0,10,0,0">
-                        <!-- Promotion + Session selectors -->
-                        <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,16,0" Width="220">
-                            <StackPanel Spacing="14">
-                                <TextBlock Text="Filtres" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" />
-                                <StackPanel Spacing="4">
-                                    <TextBlock Text="Promotion" FontSize="13" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
-                                    <ComboBox ItemsSource="{Binding AvailablePromotions}" SelectedItem="{Binding SelectedPromotion}" HorizontalAlignment="Stretch" />
-                                </StackPanel>
-                                <StackPanel Spacing="4">
-                                    <TextBlock Text="Session" FontSize="13" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
-                                    <ComboBox ItemsSource="{Binding AvailableSessions}" SelectedItem="{Binding SelectedSession}" HorizontalAlignment="Stretch">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate x:DataType="models:Session">
-                                                <TextBlock Text="{Binding TitreFormation}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Students ranking -->
-                        <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
-                            <ScrollViewer MaxHeight="500">
-                                <ItemsControl ItemsSource="{Binding ClassementStagiaires}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate x:DataType="si:ClassementStagiaire">
-                                            <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,12">
-                                                <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                                                    <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" Background="{StaticResource NavyPrimaryBrush}" Margin="0,0,12,0">
-                                                        <TextBlock Text="S" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                    </Border>
-                                                    <StackPanel Grid.Column="1" Spacing="2">
-                                                        <TextBlock Text="{Binding NomComplet}" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" FontSize="15" />
-                                                        <TextBlock Text="{Binding NbEvaluations, StringFormat='{}{0} évaluation(s)'}" Foreground="{StaticResource TextMutedBrush}" FontSize="13" />
-                                                    </StackPanel>
-                                                    <Border Grid.Column="2" Background="#F1F5F9" CornerRadius="4" Padding="8,4" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                        <TextBlock Text="{Binding Moyenne, StringFormat='{}{0:0.0}%'}" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource NavyPrimaryBrush}" />
-                                                    </Border>
                                                 </Grid>
                                             </Border>
                                         </DataTemplate>

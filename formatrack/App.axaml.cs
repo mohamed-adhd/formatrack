@@ -4,6 +4,7 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
+using formatrack.Data;
 using formatrack.Services;
 using formatrack.ViewModels;
 using formatrack.Views;
@@ -17,6 +18,7 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        _ = AppDbContext.InitializeAsync();
     }
 
     public override void OnFrameworkInitializationCompleted()

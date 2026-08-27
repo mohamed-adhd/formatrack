@@ -13,6 +13,8 @@ public partial class SidebarViewModel : ViewModelBase
     private readonly Action _openEvaluations;
     private readonly Action _openQuestionnaires;
     private readonly Action _openStatistiques;
+    private readonly Action _openTimetable;
+    private readonly Action _openGrades;
     private readonly Action _logout;
 
     [ObservableProperty] private string _role = "Administrateur";
@@ -38,6 +40,8 @@ public partial class SidebarViewModel : ViewModelBase
     public bool CanSeeQuestionnaires => Role is "Administrateur" or "Formateur" or "ResponsableFormation";
     public bool CanSeeEvaluations => true;
     public bool CanSeeStatistiques => Role is "Administrateur" or "ResponsableFormation" or "Decideur";
+    public bool CanSeeTimetable => Role is "Administrateur" or "ChefDepartement" or "Formateur" or "Stagiaire" or "ResponsableFormation" or "Decideur";
+    public bool CanSeeGrades => Role is "Administrateur" or "Formateur";
 
     public SidebarViewModel(
         string role,
@@ -50,6 +54,8 @@ public partial class SidebarViewModel : ViewModelBase
         Action openQuestionnaires,
         Action openStatistiques,
         Action logout,
+        Action? openTimetable = null,
+        Action? openGrades = null,
         string userName = "Utilisateur",
         string userEmail = "")
     {
@@ -62,6 +68,8 @@ public partial class SidebarViewModel : ViewModelBase
         _openEvaluations = openEvaluations;
         _openQuestionnaires = openQuestionnaires;
         _openStatistiques = openStatistiques;
+        _openTimetable = openTimetable ?? (() => { });
+        _openGrades = openGrades ?? (() => { });
         _logout = logout;
 
         UserName = string.IsNullOrWhiteSpace(userName) ? (Role == "Administrateur" ? "Colonel Direction" : "Utilisateur") : userName;
@@ -90,6 +98,8 @@ public partial class SidebarViewModel : ViewModelBase
         OnPropertyChanged(nameof(CanSeeQuestionnaires));
         OnPropertyChanged(nameof(CanSeeEvaluations));
         OnPropertyChanged(nameof(CanSeeStatistiques));
+        OnPropertyChanged(nameof(CanSeeTimetable));
+        OnPropertyChanged(nameof(CanSeeGrades));
     }
 
     partial void OnUserNameChanged(string value)
@@ -112,6 +122,8 @@ public partial class SidebarViewModel : ViewModelBase
     [RelayCommand] private void NavigateEvaluations() { ActivePage = "Evaluations"; _openEvaluations(); }
     [RelayCommand] private void NavigateQuestionnaires() { ActivePage = "Questionnaires"; _openQuestionnaires(); }
     [RelayCommand] private void NavigateStatistiques() { ActivePage = "Statistiques"; _openStatistiques(); }
+    [RelayCommand] private void NavigateTimetable() { ActivePage = "Timetable"; _openTimetable(); }
+    [RelayCommand] private void NavigateGrades() { ActivePage = "Grades"; _openGrades(); }
     [RelayCommand] private void Logout() => _logout();
 }
 

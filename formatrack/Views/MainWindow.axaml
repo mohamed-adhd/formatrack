@@ -109,7 +109,7 @@
 
                 <!-- Bottom Navigation Bar -->
                 <Border Grid.Row="1" Background="{StaticResource NavyDarkBrush}" BorderBrush="#1E3355" BorderThickness="0,1,0,0" Padding="4,4">
-                    <Grid ColumnDefinitions="*,*,*,*,*,*">
+                    <Grid ColumnDefinitions="*,*,*,*,*,*,*,*">
                         <!-- Dashboard -->
                         <Button Grid.Column="0" Classes="ghost" Command="{Binding Sidebar.NavigateDashboardCommand}"
                                 IsVisible="{Binding Sidebar.CanSeeDashboard}"
@@ -162,6 +162,24 @@
                             <StackPanel Spacing="2">
                                 <PathIcon Data="{StaticResource IconStatistiques}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
                                 <TextBlock Text="Stats" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Emploi du temps -->
+                        <Button Grid.Column="6" Classes="ghost" Command="{Binding Sidebar.NavigateTimetableCommand}"
+                                IsVisible="{Binding Sidebar.CanSeeTimetable}"
+                                HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                            <StackPanel Spacing="2">
+                                <PathIcon Data="{StaticResource IconSessions}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Horaires" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Notes -->
+                        <Button Grid.Column="7" Classes="ghost" Command="{Binding Sidebar.NavigateGradesCommand}"
+                                IsVisible="{Binding Sidebar.CanSeeGrades}"
+                                HorizontalAlignment="Center" MinWidth="44" MinHeight="44" Padding="4">
+                            <StackPanel Spacing="2">
+                                <PathIcon Data="{StaticResource IconEvaluations}" Width="16" Height="16" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="Notes" Foreground="White" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </Grid>

@@ -22,4 +22,7 @@ public static class CompositionRoot
     public static IJournalActiviteService Journal { get; } = new JournalActiviteService();
     public static INotificationService Notification { get; } = new NotificationService();
     public static IAbsenceService Absence { get; } = new AbsenceService();
+    public static IEmploiDuTempsService EmploiDuTemps { get; } = new EmploiDuTempsService();
+    public static IModuleService Module { get; } = new ModuleService();
+    public static INoteService Note { get; } = new NoteService();
 }
