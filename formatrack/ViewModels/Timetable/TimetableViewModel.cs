@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -20,7 +23,6 @@ public partial class TimetableViewModel : ViewModelBase
     private readonly IEmploiDuTempsService _emploiService;
     private readonly IFormationService _formationService;
     private readonly IUtilisateurService _utilisateurService;
-    private bool _suppressToggle;
 
     [ObservableProperty] private string _role = "";
     [ObservableProperty] private string _departement = "";
@@ -37,11 +39,22 @@ public partial class TimetableViewModel : ViewModelBase
     public bool IsDecideurView => Role == "Decideur";
     public bool CanManage => Role is "Administrateur" or "ResponsableFormation";
 
-    [ObservableProperty] private bool _showWeekly = true;
-    [ObservableProperty] private bool _showYearly;
+    private bool _isWeekly = true;
+    public bool IsWeekly
+    {
+        get => _isWeekly;
+        set
+        {
+            if (_isWeekly == value) return;
+            _isWeekly = value;
+            OnPropertyChanged(nameof(IsWeekly));
+            FilterByType();
+        }
+    }
 
     [ObservableProperty] private EmploiDuTemps? _selectedEmploi;
     [ObservableProperty] private string _selectedImagePath = "";
+    [ObservableProperty] private Bitmap? _selectedEmploiImage;
     [ObservableProperty] private double _zoomLevel = 1.0;
 
     [ObservableProperty] private Formation? _selectedFormation;
@@ -75,30 +88,48 @@ public partial class TimetableViewModel : ViewModelBase
         _ = LoadAsync();
     }
 
-    partial void OnShowWeeklyChanged(bool value)
-    {
-        if (_suppressToggle) return;
-        _suppressToggle = true;
-        ShowYearly = !value;
-        FilterByType();
-        _suppressToggle = false;
-    }
+    [RelayCommand]
+    private void SetWeekly() => IsWeekly = true;
 
-    partial void OnShowYearlyChanged(bool value)
-    {
-        if (_suppressToggle) return;
-        _suppressToggle = true;
-        ShowWeekly = !value;
-        FilterByType();
-        _suppressToggle = false;
-    }
+    [RelayCommand]
+    private void SetYearly() => IsWeekly = false;
 
     partial void OnSelectedEmploiChanged(EmploiDuTemps? value)
     {
-        if (value != null && !string.IsNullOrEmpty(value.CheminImage) && File.Exists(value.CheminImage))
-            SelectedImagePath = value.CheminImage;
-        else
-            SelectedImagePath = "";
+        SelectedEmploiImage?.Dispose();
+        SelectedEmploiImage = null;
+        SelectedImagePath = "";
+
+        if (value == null) return;
+
+        var path = value.CheminImage;
+        if (string.IsNullOrWhiteSpace(path)) return;
+
+        try
+        {
+            if (path.StartsWith("avares://", StringComparison.OrdinalIgnoreCase))
+            {
+                var uri = new Uri(path);
+                var localPath = uri.LocalPath.TrimStart('/');
+                var fullPath = Path.Combine(AppContext.BaseDirectory, localPath);
+                if (File.Exists(fullPath))
+                {
+                    using var stream = File.OpenRead(fullPath);
+                    SelectedEmploiImage = new Bitmap(stream);
+                }
+            }
+            else if (File.Exists(path))
+            {
+                using var stream = File.OpenRead(path);
+                SelectedEmploiImage = new Bitmap(stream);
+            }
+
+            SelectedImagePath = path;
+        }
+        catch
+        {
+            SelectedEmploiImage = null;
+        }
     }
 
     private async Task LoadAsync()
@@ -150,7 +181,7 @@ public partial class TimetableViewModel : ViewModelBase
     private void FilterByType()
     {
         FilteredEmplois.Clear();
-        var type = ShowWeekly ? "Hebdomadaire" : "Annuel";
+        var type = _isWeekly ? "Hebdomadaire" : "Annuel";
         if (EmploisList.Count > 0)
         {
             foreach (var e in EmploisList.Where(x => x.TypeEmploi == type))
@@ -174,6 +205,64 @@ public partial class TimetableViewModel : ViewModelBase
 
     [RelayCommand]
     private void ResetZoom() => ZoomLevel = 1.0;
+
+    [RelayCommand]
+    private void PrintImage()
+    {
+        if (SelectedEmploiImage == null) return;
+
+        try
+        {
+            var tempDir = Path.Combine(Path.GetTempPath(), "formatrack");
+            Directory.CreateDirectory(tempDir);
+            var tempFile = Path.Combine(tempDir, $"emploi_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+            SelectedEmploiImage.Save(tempFile);
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = tempFile,
+                UseShellExecute = true
+            });
+
+            Message = $"Image ouverte pour impression : {tempFile}";
+        }
+        catch (Exception ex)
+        {
+            Message = $"Erreur impression : {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void ExportImage()
+    {
+        if (SelectedEmploiImage == null) return;
+        var desktop = App.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+        var topLevel = desktop?.MainWindow;
+        if (topLevel == null) return;
+
+        _ = ExportToFile(topLevel);
+    }
+
+    private async Task ExportToFile(Window topLevel)
+    {
+        var result = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Exporter l'emploi du temps",
+            SuggestedFileName = $"emploi_du_temps_{DateTime.Now:yyyyMMdd}.png",
+            FileTypeChoices = new[]
+            {
+                new FilePickerFileType("PNG Image") { Patterns = new[] { "*.png" } },
+                new FilePickerFileType("JPEG Image") { Patterns = new[] { "*.jpg", "*.jpeg" } },
+                new FilePickerFileType("Bitmap") { Patterns = new[] { "*.bmp" } }
+            }
+        });
+
+        if (result == null || SelectedEmploiImage == null) return;
+
+        var ext = Path.GetExtension(result.Path.LocalPath).ToLowerInvariant();
+        SelectedEmploiImage.Save(result.Path.LocalPath);
+        Message = $"Image exportée : {result.Path.LocalPath}";
+    }
 
     [RelayCommand]
     private async Task PickImageAsync()

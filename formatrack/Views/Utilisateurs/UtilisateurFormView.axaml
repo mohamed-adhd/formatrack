@@ -40,7 +40,7 @@
                     <!-- Email -->
                     <StackPanel Spacing="6">
                         <TextBlock Text="Email institutionnel *" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-                        <TextBox Text="{Binding Email, Mode=TwoWay}" Watermark="ex: h.mansour@sefad.local" />
+                        <TextBox Text="{Binding Email, Mode=TwoWay}" Watermark="ex: h.mansour@cmfpo.local" />
                     </StackPanel>
 
                     <!-- Mot de passe -->

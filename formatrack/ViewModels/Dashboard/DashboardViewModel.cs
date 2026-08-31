@@ -18,6 +18,7 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly INotificationService _notificationService;
     private readonly IEvaluationService _evaluationService;
     private readonly IUtilisateurService _utilisateurService;
+    private readonly ISuggestionAideService _suggestionService = formatrack.Services.CompositionRoot.SuggestionAide;
     private readonly IAbsenceService _absenceService = formatrack.Services.CompositionRoot.Absence;
     
     private readonly Action _openFormations;
@@ -26,6 +27,8 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly Action _openEvaluations;
     private readonly Action _openQuestionnaires;
     private readonly Action _openStatistiques;
+    private readonly Action _openGrades;
+    private readonly Action _openTimetable;
     private readonly Action _logout;
 
     [ObservableProperty] private int _userId = 1;
@@ -87,6 +90,11 @@ public partial class DashboardViewModel : ViewModelBase
     public ObservableCollection<Evaluation> FilteredEvaluations { get; } = new();
     public ObservableCollection<AbsenceRetard> AbsenceRetardList { get; } = new();
 
+    // Decision support suggestions
+    public ObservableCollection<SuggestionAide> Suggestions { get; } = new();
+    [ObservableProperty] private bool _isSuggestionsLoading;
+    [ObservableProperty] private string _suggestionsStatus = "";
+
     // Filters
     [ObservableProperty] private string _searchText = "";
     [ObservableProperty] private string _studentFilter = "";
@@ -108,7 +116,8 @@ public partial class DashboardViewModel : ViewModelBase
                              INotificationService? notificationService = null,
                              IEvaluationService? evaluationService = null,
                              IUtilisateurService? utilisateurService = null,
-                             string departement = "", string promotion = "")
+                             string departement = "", string promotion = "",
+                             Action? openGrades = null, Action? openTimetable = null)
     {
         _statistiqueService = statistiqueService;
         _sessionService = sessionService;
@@ -118,6 +127,8 @@ public partial class DashboardViewModel : ViewModelBase
         _openEvaluations = openEvaluations;
         _openQuestionnaires = openQuestionnaires;
         _openStatistiques = openStatistiques;
+        _openGrades = openGrades ?? (() => { });
+        _openTimetable = openTimetable ?? (() => { });
         _logout = logout;
         Role = role;
         UserId = currentUserId;
@@ -141,6 +152,36 @@ public partial class DashboardViewModel : ViewModelBase
     [RelayCommand] private void OpenStatistiques() => _openStatistiques();
     [RelayCommand] private void Logout() => _logout();
 
+    [RelayCommand]
+    private async Task RefreshSuggestionsAsync()
+    {
+        if (!IsAdminView && !IsDecideurView) return;
+        await LoadSuggestionsAsync(forceRefresh: true);
+    }
+
+    [RelayCommand]
+    private async Task DismissSuggestionAsync(SuggestionAide? suggestion)
+    {
+        if (suggestion == null) return;
+        await _suggestionService.MarkAsReadAsync(suggestion.Id);
+        suggestion.EstLu = true;
+    }
+
+    public void NavigateToSuggestionPage(string page)
+    {
+        switch (page)
+        {
+            case "Grades": _openGrades(); break;
+            case "Formations": _openFormations(); break;
+            case "Sessions": _openSessions(); break;
+            case "Evaluations": _openEvaluations(); break;
+            case "Questionnaires": _openQuestionnaires(); break;
+            case "Timetable": _openTimetable(); break;
+            case "Dashboard": break;
+            case "Utilisateurs": _openUtilisateurs(); break;
+        }
+    }
+
     private async Task LoadAsync()
     {
         try
@@ -148,6 +189,10 @@ public partial class DashboardViewModel : ViewModelBase
             // Load common data
             await LoadNotificationsAsync();
             await LoadAbsencesAsync();
+
+            // Load suggestions for admin/decideur
+            if (IsAdminView || IsDecideurView)
+                await LoadSuggestionsAsync();
 
             // Role-specific loading
             if (IsStagiaireView)
@@ -177,8 +222,15 @@ public partial class DashboardViewModel : ViewModelBase
         UtilisateursCount = stats.Utilisateurs;
         QuestionnairesCount = stats.Questionnaires;
         TauxReussite = stats.TauxReussite > 0 ? $"{stats.TauxReussite:0.#} %" : "—";
-        AhpCompositeScore = "88.6 / 100";
-        RecommendationText = "Optimiser les volumes horaires d'exercices sur simulateur tactique pour la session suivante.";
+
+        var promotionRate = !string.IsNullOrEmpty(Promotion)
+            ? await _statistiqueService.GetTauxReussiteParPromotionAsync(Promotion)
+            : stats.TauxReussite;
+        AhpCompositeScore = promotionRate > 0 ? $"{promotionRate:0.#} / 100" : "— / 100";
+        RecommendationText = promotionRate > 0
+            ? $"Taux de réussite global pour « {Promotion} » : {promotionRate:0.#}%. "
+              + (promotionRate < 50 ? "Action corrective recommandée." : "Performance satisfaisante.")
+            : "Aucune donnée d'évaluation disponible pour cette promotion.";
 
         ProchainesSessions.Clear();
         var sessions = await _sessionService.GetProchainesSessionsAsync();
@@ -334,8 +386,15 @@ public partial class DashboardViewModel : ViewModelBase
         UtilisateursCount = stats.Utilisateurs;
         QuestionnairesCount = stats.Questionnaires;
         TauxReussite = stats.TauxReussite > 0 ? $"{stats.TauxReussite:0.#} %" : "—";
-        AhpCompositeScore = "88.6 / 100";
-        RecommendationText = "Analyse decisionnelle : orientation strategique basee sur les indicateurs de performance.";
+
+        var promotionRate = !string.IsNullOrEmpty(Promotion)
+            ? await _statistiqueService.GetTauxReussiteParPromotionAsync(Promotion)
+            : stats.TauxReussite;
+        AhpCompositeScore = promotionRate > 0 ? $"{promotionRate:0.#} / 100" : "— / 100";
+        RecommendationText = promotionRate > 0
+            ? $"Analyse décisionnelle — Taux de réussite « {Promotion} » : {promotionRate:0.#}%. "
+              + (promotionRate < 50 ? "Recommandation : renforcer l'accompagnement pédagogique." : "Orientation stratégique confirmée.")
+            : "Aucune donnée d'évaluation disponible pour cette promotion.";
 
         ProchainesSessions.Clear();
         var sessions = await _sessionService.GetProchainesSessionsAsync();
@@ -453,6 +512,37 @@ public partial class DashboardViewModel : ViewModelBase
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Erreur chargement absences : {ex.Message}");
+        }
+    }
+
+    private async Task LoadSuggestionsAsync(bool forceRefresh = false)
+    {
+        try
+        {
+            IsSuggestionsLoading = true;
+            SuggestionsStatus = "Analyse en cours...";
+
+            if (forceRefresh)
+                await _suggestionService.RunEngineAsync();
+
+            var suggestions = await _suggestionService.GetAllSuggestionsAsync();
+            Suggestions.Clear();
+            foreach (var s in suggestions)
+                Suggestions.Add(s);
+
+            var unread = suggestions.Count(s => !s.EstLu);
+            SuggestionsStatus = suggestions.Count == 0
+                ? "Aucune suggestion pour le moment."
+                : $"{suggestions.Count} suggestion(s), {unread} non lue(s).";
+        }
+        catch (Exception ex)
+        {
+            SuggestionsStatus = $"Erreur : {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"Erreur chargement suggestions : {ex.Message}");
+        }
+        finally
+        {
+            IsSuggestionsLoading = false;
         }
     }
 

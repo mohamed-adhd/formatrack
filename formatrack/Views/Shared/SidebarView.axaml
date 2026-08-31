@@ -20,8 +20,8 @@
                     </Border>
 
                     <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="SEFAD" Foreground="White" FontSize="22" FontWeight="SemiBold" LetterSpacing="1" />
-                        <TextBlock Text="ÉCOLE D'ÉTAT-MAJOR" Foreground="{StaticResource GoldAccentBrush}" FontSize="14" FontWeight="SemiBold" LetterSpacing="1.2" />
+                        <TextBlock Text="CMFPO" Foreground="White" FontSize="22" FontWeight="SemiBold" LetterSpacing="1" />
+                        <TextBlock Text="CENTRE MILITAIRE DE FORMATION PROFESSIONNEL" Foreground="{StaticResource GoldAccentBrush}" FontSize="14" FontWeight="SemiBold" LetterSpacing="1.2" />
                     </StackPanel>
                 </Grid>
             </Border>

@@ -151,7 +151,9 @@ public partial class MainWindowViewModel : ViewModelBase
             OpenEvaluations, OpenQuestionnaires, OpenStatistiques, Logout, CurrentUserRole, CurrentUserId,
             utilisateurService: _utilisateurService,
             departement: CurrentUserDepartement,
-            promotion: CurrentUserPromotion)
+            promotion: CurrentUserPromotion,
+            openGrades: OpenGrades,
+            openTimetable: OpenTimetable)
         {
             IsMobile = IsMobile
         };

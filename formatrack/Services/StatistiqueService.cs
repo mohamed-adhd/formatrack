@@ -145,6 +145,23 @@ WHERE q.id_session = $sid AND u.promotion = $promo AND e.statut = 'Terminee';";
         return Convert.ToDouble(await command.ExecuteScalarAsync() ?? 0d);
     }
 
+    public async Task<double> GetTauxReussiteParPromotionAsync(string promotion)
+    {
+        await AppDbContext.InitializeAsync();
+        await using var connection = new SqliteConnection(AppDbContext.ConnectionString);
+        await connection.OpenAsync();
+
+        const string sql = @"
+SELECT COALESCE(AVG(e.pourcentage), 0)
+FROM evaluations e
+JOIN utilisateurs u ON u.id_utilisateur = e.id_utilisateur
+WHERE u.promotion = $promo AND e.statut = 'Terminee';";
+
+        await using var command = new SqliteCommand(sql, connection);
+        command.Parameters.AddWithValue("$promo", promotion);
+        return Convert.ToDouble(await command.ExecuteScalarAsync() ?? 0d);
+    }
+
     private static async Task<int> CountFormationsDepartementAsync(SqliteConnection connection, string departement)
     {
         const string sql = @"

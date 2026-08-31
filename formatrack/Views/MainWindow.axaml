@@ -8,7 +8,7 @@
         x:Class="formatrack.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="SEFAD - École d'État-Major (FormaTrack)"
+        Title="CMFPO - Centre Militaire de Formation Professionnel (FormaTrack)"
         Width="1280"
         Height="760"
         MinWidth="380"

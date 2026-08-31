@@ -3,6 +3,7 @@
              xmlns:vm="using:formatrack.ViewModels.Dashboard"
              xmlns:si="using:formatrack.Services.Interfaces"
              xmlns:models="using:formatrack.Models"
+             xmlns:local="using:formatrack.Views.Dashboard"
              x:Class="formatrack.Views.Dashboard.DashboardView"
              x:DataType="vm:DashboardViewModel"
              Background="#F5F7FA">
@@ -92,19 +93,19 @@
                 <!-- AHP Panel (Admin only) -->
                 <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" IsVisible="{Binding IsAdminView}">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="Aide à la décision (AHP)" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                        <TextBlock Text="📊 Taux de Réussite par Promotion" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
                         <Grid ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Score composite :" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                                <TextBlock Text="Taux global :" Foreground="{StaticResource MutedBrush}" FontSize="14" />
                                 <TextBlock Text="{Binding AhpCompositeScore}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource GoldBrush}" />
                             </StackPanel>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="Taux réussite :" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                                <TextBlock Text="Toutes formations :" Foreground="{StaticResource MutedBrush}" FontSize="12" />
                                 <TextBlock Text="{Binding TauxReussite}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
                             </StackPanel>
                         </Grid>
                         <Separator Height="1" Background="{StaticResource BorderBrush}" Margin="0,4" />
-                        <TextBlock Text="Recommandation automatique :" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                        <TextBlock Text="Analyse automatique :" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
                         <TextBlock Text="{Binding RecommendationText}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="14" TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
@@ -150,24 +151,92 @@
                 <!-- Decideur: Decision-making panel -->
                 <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20" IsVisible="{Binding IsDecideurView}">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="🎯 Aide à la Décision" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                        <TextBlock Text="📊 Taux de Réussite par Promotion" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
                         <Grid ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Score composite :" Foreground="{StaticResource MutedBrush}" FontSize="14" />
+                                <TextBlock Text="Taux global :" Foreground="{StaticResource MutedBrush}" FontSize="14" />
                                 <TextBlock Text="{Binding AhpCompositeScore}" FontSize="28" FontWeight="SemiBold" Foreground="{StaticResource GoldBrush}" />
                             </StackPanel>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="Taux réussite :" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                                <TextBlock Text="Toutes formations :" Foreground="{StaticResource MutedBrush}" FontSize="12" />
                                 <TextBlock Text="{Binding TauxReussite}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
                             </StackPanel>
                         </Grid>
                         <Separator Height="1" Background="{StaticResource BorderBrush}" Margin="0,4" />
-                        <TextBlock Text="Recommandation :" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                        <TextBlock Text="Analyse décisionnelle :" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
                         <TextBlock Text="{Binding RecommendationText}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="14" TextWrapping="Wrap" />
                         <Button Classes="outline" Content="Exporter le rapport" HorizontalAlignment="Stretch" Margin="0,8,0,0" />
                     </StackPanel>
                 </Border>
             </Grid>
+
+            <!-- ===== Decision Support: Suggestions Panel (Admin + Decideur) ===== -->
+            <Border IsVisible="{Binding IsAdminView}" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                            <TextBlock Text="💡 Système d'Aide à la Décision" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
+                            <Border Background="#F1F5F9" CornerRadius="10" Padding="8,3">
+                                <TextBlock Text="{Binding SuggestionsStatus}" FontSize="12" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                            </Border>
+                        </StackPanel>
+                        <Button Grid.Column="1" Classes="outline" Content="↻ Actualiser" Command="{Binding RefreshSuggestionsCommand}"
+                                IsEnabled="{Binding !IsSuggestionsLoading}" MinHeight="32" Padding="12,4" FontSize="13" />
+                    </Grid>
+
+                    <Border Background="#FEF2F2" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="6" Padding="10,6"
+                            IsVisible="{Binding IsSuggestionsLoading}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="⏳" FontSize="14" VerticalAlignment="Center" />
+                            <TextBlock Text="Analyse de la base de données en cours..." FontSize="13" Foreground="#B91C1C" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <ScrollViewer MaxHeight="400">
+                        <ItemsControl ItemsSource="{Binding Suggestions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:SuggestionAide">
+                                    <Border x:CompileBindings="False"
+                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
+                                            Padding="14,12" Cursor="Hand" Background="White"
+                                            PointerPressed="OnSuggestionClick" Tag="{Binding}">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                                            <!-- Priority indicator -->
+                                            <Border Grid.Column="0" Grid.RowSpan="2" Width="6" CornerRadius="3"
+                                                    Margin="0,0,12,0" VerticalAlignment="Stretch"
+                                                    Background="{Binding Priorite, Converter={x:Static local:SuggestionPriorityConverter.Instance}}" />
+
+                                            <!-- Title -->
+                                            <TextBlock Grid.Column="1" Grid.Row="0"
+                                                       Text="{Binding Titre}" FontWeight="SemiBold" FontSize="14"
+                                                       Foreground="{Binding EstLu, Converter={x:Static local:SuggestionTextConverter.Instance}}"
+                                                       TextTrimming="CharacterEllipsis" MaxWidth="500" />
+
+                                            <!-- Description -->
+                                            <TextBlock Grid.Column="1" Grid.Row="1"
+                                                       Text="{Binding Description}" FontSize="12"
+                                                       Foreground="{StaticResource MutedBrush}"
+                                                       TextWrapping="Wrap" MaxWidth="500" Margin="0,4,0,0"
+                                                       Opacity="{Binding EstLu, Converter={x:Static local:SuggestionDescOpacityConverter.Instance}}" />
+
+                                            <!-- Action badge -->
+                                            <StackPanel Grid.Column="2" Grid.RowSpan="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                <Border Background="{Binding Priorite, Converter={x:Static local:SuggestionBadgeConverter.Instance}}"
+                                                        CornerRadius="4" Padding="8,3">
+                                                    <TextBlock Text="{Binding PrioriteLabel}" FontSize="11" FontWeight="Medium" Foreground="White" />
+                                                </Border>
+                                                <Border Background="#F1F5F9" CornerRadius="4" Padding="8,3">
+                                                    <TextBlock Text="{Binding ActionPage}" FontSize="11" Foreground="{StaticResource MutedBrush}" />
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
 
             <!-- ===== Formateur: Class stats row ===== -->
             <Border IsVisible="{Binding IsFormateurView}" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">

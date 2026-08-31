@@ -59,11 +59,11 @@
                             </Border>
 
                             <StackPanel Spacing="3">
-                                <TextBlock Text="SEFAD"
+                                <TextBlock Text="CMFPO"
                                            FontSize="26" FontWeight="SemiBold"
                                            Foreground="White"
                                            LetterSpacing="1.5" />
-                                <TextBlock Text="ÉCOLE D'ÉTAT-MAJOR"
+                                <TextBlock Text="CENTRE MILITAIRE DE FORMATION PROFESSIONNEL DE L'OMRAN"
                                            FontSize="14" FontWeight="SemiBold"
                                            Foreground="{StaticResource GoldAccentBrush}"
                                            LetterSpacing="2" />
@@ -134,7 +134,7 @@
                         <TextBlock Text="Identifiant / Email institutionnel" FontSize="16" FontWeight="SemiBold"
                                    Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,6" />
                         <TextBox Text="{Binding Identifiant, Mode=TwoWay}"
-                                 Watermark="ex: admin@sefad.local" />
+                                 Watermark="ex: admin@cmfpo.local" />
 
                         <!-- Mot de passe Input -->
                         <TextBlock Text="Mot de passe" FontSize="16" FontWeight="SemiBold"
@@ -165,7 +165,7 @@
 
                         <!-- Submit Button -->
                         <Button Classes="primary"
-                                Content="Se connecter à SEFAD"
+                                 Content="Se connecter à CMFPO"
                                 Command="{Binding SeConnecterCommand}"
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Center"

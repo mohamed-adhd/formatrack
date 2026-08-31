@@ -97,6 +97,13 @@ CREATE TABLE IF NOT EXISTS emplois_du_temps (
  FOREIGN KEY (id_formation) REFERENCES formations(id_formation) ON DELETE CASCADE,
  FOREIGN KEY (uploaded_by) REFERENCES utilisateurs(id_utilisateur));
 CREATE INDEX IF NOT EXISTS idx_emplois_formation ON emplois_du_temps (id_formation);
+CREATE TABLE IF NOT EXISTS suggestions_aide (
+ id INTEGER PRIMARY KEY AUTOINCREMENT, titre TEXT NOT NULL,
+ description TEXT NOT NULL, priorite INTEGER NOT NULL DEFAULT 3,
+ categorie TEXT NOT NULL, action_page TEXT NOT NULL,
+ action_params TEXT DEFAULT '', est_lu INTEGER NOT NULL DEFAULT 0,
+ date_generation TEXT NOT NULL DEFAULT (datetime('now'))
+);
 CREATE TABLE IF NOT EXISTS modules (
  id_module INTEGER PRIMARY KEY AUTOINCREMENT, id_formation INTEGER NOT NULL,
  titre TEXT NOT NULL, credit_horaire INTEGER NOT NULL DEFAULT 0,
@@ -331,6 +338,20 @@ INSERT INTO notes (id_stagiaire, id_module, id_session, note, saisi_par) VALUES
  (12,16,1,13.0,4),(12,17,1,10.5,4),(12,18,1,7.0,4),(12,19,1,12.0,4),(12,20,1,11.5,4);";
                 await using var seedNotes = new SqliteCommand(sqlNotes, connection);
                 await seedNotes.ExecuteNonQueryAsync();
+            }
+        }
+
+        // ===== EMPLOIS DU TEMPS (2 sample) =====
+        await using (var countEmplois = new SqliteCommand("SELECT COUNT(*) FROM emplois_du_temps;", connection))
+        {
+            if ((long)(await countEmplois.ExecuteScalarAsync() ?? 0L) == 0)
+            {
+                var sqlEmplois = @"
+INSERT INTO emplois_du_temps (id_formation, type_emploi, annee, promotion, chemin_image, uploaded_by, statut, description) VALUES
+ (1,'Hebdomadaire','2025-2026','Promotion 2026','avares://formatrack/Assets/emplois_du_temps/timetable.jpg',1,'Publie','Emploi du temps hebdomadaire - Classe 2GT12'),
+ (1,'Annuel','2025-2026','Promotion 2026','avares://formatrack/Assets/emplois_du_temps/timetable-mensuel.jpg',1,'Publie','Chronogramme annuel - Semaines type GS/MS');";
+                await using var seedEmplois = new SqliteCommand(sqlEmplois, connection);
+                await seedEmplois.ExecuteNonQueryAsync();
             }
         }
 

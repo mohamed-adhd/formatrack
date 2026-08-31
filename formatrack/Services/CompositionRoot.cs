@@ -25,4 +25,5 @@ public static class CompositionRoot
     public static IEmploiDuTempsService EmploiDuTemps { get; } = new EmploiDuTempsService();
     public static IModuleService Module { get; } = new ModuleService();
     public static INoteService Note { get; } = new NoteService();
+    public static ISuggestionAideService SuggestionAide { get; } = new SuggestionAideService();
 }

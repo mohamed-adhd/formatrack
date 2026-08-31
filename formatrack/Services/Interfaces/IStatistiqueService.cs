@@ -15,4 +15,5 @@ public interface IStatistiqueService
     Task<StatistiqueDepartement> GetStatistiquesDepartementAsync(string departement);
     Task<IReadOnlyList<ClassementStagiaire>> GetClassementParSessionAsync(int idSession);
     Task<double> GetMoyenneParSessionEtPromotionAsync(int idSession, string promotion);
+    Task<double> GetTauxReussiteParPromotionAsync(string promotion);
 }

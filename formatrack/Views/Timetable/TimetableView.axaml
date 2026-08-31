@@ -12,62 +12,61 @@
         <SolidColorBrush x:Key="CellBorderBrush" Color="#E3E6EC" />
     </UserControl.Resources>
 
-    <Border Background="#F5F7FA">
-        <DockPanel>
-            <StackPanel DockPanel.Dock="Top" Margin="34,34,34,0" Spacing="16">
-                <StackPanel>
-                    <Rectangle Width="42" Height="3" Fill="{StaticResource GoldBrush}" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" />
-                    <TextBlock Text="Emploi du Temps &amp; Chronogramme" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="SemiBold" Margin="0,14,0,0" />
-                    <TextBlock Text="{Binding Message}" Foreground="{StaticResource MutedBrush}" FontSize="15" />
-                </StackPanel>
-
-                <Border Background="White" BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
-                    <Grid ColumnDefinitions="Auto,Auto,*,Auto">
-                        <TextBlock Grid.Column="0" Text="Affichage :" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" Margin="0,0,16,0" />
-                        <RadioButton Grid.Column="1" Content="Hebdomadaire" IsChecked="{Binding ShowWeekly}" GroupName="ViewMode" FontSize="14" VerticalAlignment="Center" Margin="0,0,20,0" />
-                        <RadioButton Grid.Column="2" Content="Annuel (Chronogramme)" IsChecked="{Binding ShowYearly}" GroupName="ViewMode" FontSize="14" VerticalAlignment="Center" />
-                        <Button Grid.Column="3" Classes="outline" Content="Ajouter" Command="{Binding PickImageCommand}" FontSize="14" MinHeight="34" Padding="12,4"
-                                IsVisible="{Binding CanManage}" />
-                    </Grid>
-                </Border>
-
-                <Border IsVisible="{Binding CanManage}" Background="White" BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="Nouvel Emploi du Temps" FontSize="17" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
-                        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto,Auto,Auto">
-                            <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4" Margin="0,0,12,0">
-                                <TextBlock Text="Formation" FontSize="13" FontWeight="Medium" Foreground="{StaticResource MutedBrush}" />
-                                <ComboBox ItemsSource="{Binding Formations}" SelectedItem="{Binding SelectedFormation}" HorizontalAlignment="Stretch">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate x:DataType="models:Formation">
-                                            <TextBlock Text="{Binding Titre}" />
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Grid.Row="0" Spacing="4" Margin="0,0,12,0">
-                                <TextBlock Text="Type" FontSize="13" FontWeight="Medium" Foreground="{StaticResource MutedBrush}" />
-                                <ComboBox ItemsSource="{Binding TypesEmploi}" SelectedItem="{Binding SelectedTypeEmploi}" HorizontalAlignment="Stretch" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="2" Grid.Row="0" Spacing="4">
-                                <TextBlock Text="Annee cible" FontSize="13" FontWeight="Medium" Foreground="{StaticResource MutedBrush}" />
-                                <ComboBox ItemsSource="{Binding Annees}" SelectedItem="{Binding SelectedAnnee}" HorizontalAlignment="Stretch" />
-                            </StackPanel>
-                            <TextBox Grid.ColumnSpan="3" Grid.Row="1" Text="{Binding UploadDescription}" Watermark="Description (optionnel)" Margin="0,8,0,0" />
-                            <Border Grid.ColumnSpan="3" Grid.Row="2" Background="#FEE2E2" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="6" Padding="10,6" IsVisible="{Binding IsUploadErrorVisible}" Margin="0,4,0,0">
-                                <TextBlock Text="{Binding UploadError}" Foreground="#B91C1C" FontSize="13" TextWrapping="Wrap" />
-                            </Border>
-                            <Button Grid.ColumnSpan="3" Grid.Row="3" Classes="primary" Content="Publier l'emploi du temps" Command="{Binding UploadEmploiCommand}" HorizontalAlignment="Left" Margin="0,8,0,0" />
-                        </Grid>
-                    </StackPanel>
-                </Border>
+    <ScrollViewer>
+        <StackPanel Margin="34" Spacing="16">
+            <StackPanel>
+                <Rectangle Width="42" Height="3" Fill="{StaticResource GoldBrush}" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" />
+                <TextBlock Text="Emploi du Temps &amp; Chronogramme" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="SemiBold" Margin="0,14,0,0" />
+                <TextBlock Text="{Binding Message}" Foreground="{StaticResource MutedBrush}" FontSize="15" />
             </StackPanel>
 
-            <Border Margin="34,0,34,34">
-                <Grid ColumnDefinitions="300,*">
-                    <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,16,0">
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="Liste des emplois du temps" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+            <Border Background="White" BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto">
+                    <TextBlock Grid.Column="0" Text="Affichage :" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" Margin="0,0,16,0" />
+                    <RadioButton Grid.Column="1" Content="Hebdomadaire" Command="{Binding SetWeeklyCommand}" GroupName="ViewMode" FontSize="14" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <RadioButton Grid.Column="2" Content="Annuel (Chronogramme)" Command="{Binding SetYearlyCommand}" GroupName="ViewMode" FontSize="14" VerticalAlignment="Center" />
+                    <Panel Grid.Column="3" />
+                    <Button Grid.Column="4" Classes="outline" Content="Ajouter" Command="{Binding PickImageCommand}" FontSize="14" MinHeight="34" Padding="12,4"
+                            IsVisible="{Binding CanManage}" />
+                </Grid>
+            </Border>
+
+            <Border IsVisible="{Binding CanManage}" Background="White" BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Nouvel Emploi du Temps" FontSize="17" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                    <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                        <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4" Margin="0,0,12,0">
+                            <TextBlock Text="Formation" FontSize="13" FontWeight="Medium" Foreground="{StaticResource MutedBrush}" />
+                            <ComboBox ItemsSource="{Binding Formations}" SelectedItem="{Binding SelectedFormation}" HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Formation">
+                                        <TextBlock Text="{Binding Titre}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Grid.Row="0" Spacing="4" Margin="0,0,12,0">
+                            <TextBlock Text="Type" FontSize="13" FontWeight="Medium" Foreground="{StaticResource MutedBrush}" />
+                            <ComboBox ItemsSource="{Binding TypesEmploi}" SelectedItem="{Binding SelectedTypeEmploi}" HorizontalAlignment="Stretch" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Grid.Row="0" Spacing="4">
+                            <TextBlock Text="Annee cible" FontSize="13" FontWeight="Medium" Foreground="{StaticResource MutedBrush}" />
+                            <ComboBox ItemsSource="{Binding Annees}" SelectedItem="{Binding SelectedAnnee}" HorizontalAlignment="Stretch" />
+                        </StackPanel>
+                        <TextBox Grid.ColumnSpan="3" Grid.Row="1" Text="{Binding UploadDescription}" Watermark="Description (optionnel)" Margin="0,8,0,0" />
+                        <Border Grid.ColumnSpan="3" Grid.Row="2" Background="#FEE2E2" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="6" Padding="10,6" IsVisible="{Binding IsUploadErrorVisible}" Margin="0,4,0,0">
+                            <TextBlock Text="{Binding UploadError}" Foreground="#B91C1C" FontSize="13" TextWrapping="Wrap" />
+                        </Border>
+                        <Button Grid.ColumnSpan="3" Grid.Row="3" Classes="primary" Content="Publier l'emploi du temps" Command="{Binding UploadEmploiCommand}" HorizontalAlignment="Left" Margin="0,8,0,0" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Grid ColumnDefinitions="300,*" RowDefinitions="Auto">
+                <Border Grid.Column="0" Background="White" BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,16,0">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Liste des emplois du temps" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                        <ScrollViewer MaxHeight="500">
                             <ItemsControl ItemsSource="{Binding FilteredEmplois}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="models:EmploiDuTemps">
@@ -95,33 +94,55 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                        </StackPanel>
-                    </Border>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Border>
 
-                    <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
-                        <StackPanel Spacing="12">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Border Grid.Column="1" Background="White" BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto" RowDefinitions="Auto">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
                                 <TextBlock Text="Zoom :" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
                                 <Button Classes="outline" Content="-" Command="{Binding ZoomOutCommand}" FontSize="16" MinWidth="36" MinHeight="30" Padding="0" />
                                 <TextBlock Text="{Binding ZoomLevel, StringFormat='{}{0:0%}'}" FontSize="14" VerticalAlignment="Center" MinWidth="50" TextAlignment="Center" />
                                 <Button Classes="outline" Content="+" Command="{Binding ZoomInCommand}" FontSize="16" MinWidth="36" MinHeight="30" Padding="0" />
-                                <Button Classes="outline" Content="Reinitialiser" Command="{Binding ResetZoomCommand}" FontSize="13" MinHeight="30" Padding="10,0" />
+                                <Button Classes="outline" Content="Réinitialiser" Command="{Binding ResetZoomCommand}" FontSize="13" MinHeight="30" Padding="10,0" />
                             </StackPanel>
+                            <Panel Grid.Column="1" Width="12" />
+                            <Button Grid.Column="2" Classes="outline" Content="🖨 Imprimer" Command="{Binding PrintImageCommand}" FontSize="13" MinHeight="30" Padding="10,4" />
+                            <Panel Grid.Column="3" />
+                            <Button Grid.Column="4" Classes="outline" Content="💾 Exporter" Command="{Binding ExportImageCommand}" FontSize="13" MinHeight="30" Padding="10,4" />
+                            <Panel Grid.Column="5" Width="4" />
+                        </Grid>
 
-                            <Border Background="#F8FAFC" CornerRadius="8" Padding="20" MinHeight="300">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-                                    <TextBlock Text="Apercu de l'emploi du temps" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
-                                    <TextBlock Text="{Binding SelectedEmploi.FormationTitre, FallbackValue=''}" FontSize="14" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" />
-                                    <TextBlock Text="{Binding SelectedEmploi.TypeEmploi, FallbackValue=''}" FontSize="13" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" />
-                                    <TextBlock Text="{Binding SelectedEmploi.Annee, FallbackValue=''}" FontSize="13" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" />
-                                    <TextBlock Text="{Binding SelectedEmploi.CheminImage, FallbackValue='Aucun fichier selectionne'}" FontSize="11" Foreground="{StaticResource MutedBrush}"
-                                               HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="400" />
-                                </StackPanel>
+                        <Border Background="#F8FAFC" CornerRadius="8" Padding="8" MinHeight="400">
+                            <Border ClipToBounds="True">
+                                <Panel>
+                                    <TextBlock Text="Sélectionnez un emploi du temps dans la liste"
+                                               IsVisible="{Binding !SelectedEmploiImage}"
+                                               FontSize="16" Foreground="{StaticResource MutedBrush}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                                                  IsVisible="{Binding SelectedEmploiImage}">
+                                        <Panel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Border Background="White" BorderBrush="{StaticResource CellBorderBrush}" BorderThickness="1" CornerRadius="4">
+                                                <Image Source="{Binding SelectedEmploiImage}"
+                                                       RenderTransformOrigin="0.5,0.5"
+                                                       Stretch="Uniform"
+                                                       MinWidth="400" MinHeight="300">
+                                                    <Image.RenderTransform>
+                                                        <ScaleTransform ScaleX="{Binding ZoomLevel}" ScaleY="{Binding ZoomLevel}" />
+                                                    </Image.RenderTransform>
+                                                </Image>
+                                            </Border>
+                                        </Panel>
+                                    </ScrollViewer>
+                                </Panel>
                             </Border>
-                        </StackPanel>
-                    </Border>
-                </Grid>
-            </Border>
-        </DockPanel>
-    </Border>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

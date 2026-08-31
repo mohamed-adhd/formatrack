@@ -77,7 +77,7 @@
                         <PathIcon Data="{StaticResource IconShield}" Width="18" Height="18" Foreground="{StaticResource GoldAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Contrôle Pédagogique &amp; Assurance Qualité SEFAD" FontSize="16" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                        <TextBlock Text="Contrôle Pédagogique &amp; Assurance Qualité CMFPO" FontSize="16" FontWeight="Bold" Foreground="{StaticResource NavyPrimaryBrush}" />
                         <TextBlock Text="Ce module de formation est soumis aux questionnaires d'évaluation à chaud et à froid, et est pris en compte dans le scoring multicritères AHP pour les décisions de reconduction."
                                    FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
                     </StackPanel>
