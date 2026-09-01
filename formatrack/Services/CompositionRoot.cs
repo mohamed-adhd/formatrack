@@ -26,4 +26,5 @@ public static class CompositionRoot
     public static IModuleService Module { get; } = new ModuleService();
     public static INoteService Note { get; } = new NoteService();
     public static ISuggestionAideService SuggestionAide { get; } = new SuggestionAideService();
+    public static IChatbotRagService ChatbotRag { get; } = new ChatbotRagService();
 }

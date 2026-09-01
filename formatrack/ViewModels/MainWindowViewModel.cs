@@ -25,6 +25,8 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IEvaluationService _evaluationService;
     private readonly IQuestionnaireService _questionnaireService;
 
+    public ChatbotViewModel Chatbot { get; } = new();
+
     [ObservableProperty] private bool _isLoggedIn;
     [ObservableProperty] private ViewModelBase _currentPage;
     [ObservableProperty] private SidebarViewModel _sidebar;
@@ -146,6 +148,8 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentPageTitle = "Tableau de bord";
         UpdateSidebar("Dashboard", "Tableau de bord");
 
+        Chatbot.SetUserContext(CurrentUserRole, CurrentUserPromotion, CurrentUserDepartement, CurrentUserName);
+
         CurrentPage = new DashboardViewModel(_statistiqueService, _sessionService,
             OpenFormations, OpenUtilisateurs, OpenSessions,
             OpenEvaluations, OpenQuestionnaires, OpenStatistiques, Logout, CurrentUserRole, CurrentUserId,
@@ -230,7 +234,9 @@ public partial class MainWindowViewModel : ViewModelBase
             OpenUtilisateurs,
             OpenSessions,
             OpenQuestionnaires,
-            OpenStatistiques);
+            OpenStatistiques,
+            CurrentUserRole,
+            CurrentUserId);
     }
 
     public void OpenQuestionnaires()

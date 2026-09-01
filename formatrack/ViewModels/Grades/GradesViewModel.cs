@@ -28,9 +28,10 @@ public partial class GradesViewModel : ViewModelBase
 
     public bool IsFormateurView => Role == "Formateur";
     public bool IsAdminView => Role == "Administrateur";
+    public bool IsStagiaireView => Role == "Stagiaire";
     public bool CanEdit => Role == "Formateur";
 
-    // Cascade selectors
+    // Cascade selectors (Formateur/Admin only)
     [ObservableProperty] private Formation? _selectedFormation;
     [ObservableProperty] private string _selectedPromotion = "";
     [ObservableProperty] private Session? _selectedSession;
@@ -42,11 +43,16 @@ public partial class GradesViewModel : ViewModelBase
     [ObservableProperty] private int _nbEtudiants;
     [ObservableProperty] private int _nbNotes;
 
+    // Stagiaire personal grades
+    [ObservableProperty] private double _stagiaireMoyenne;
+    [ObservableProperty] private int _stagiaireNbNotes;
+
     public ObservableCollection<Formation> Formations { get; } = new();
     public ObservableCollection<string> Promotions { get; } = new();
     public ObservableCollection<Session> Sessions { get; } = new();
     public ObservableCollection<Module> Modules { get; } = new();
     public ObservableCollection<StudentGradeRow> StudentGrades { get; } = new();
+    public ObservableCollection<StagiaireGradeRow> MyGrades { get; } = new();
 
     public List<string> PromotionOptions { get; } = new() { "Promotion 2025", "Promotion 2026" };
 
@@ -67,7 +73,43 @@ public partial class GradesViewModel : ViewModelBase
         Departement = departement;
         Promotion = promotion;
         UserId = userId;
-        _ = LoadAsync();
+
+        if (IsStagiaireView)
+            _ = LoadMyGradesAsync();
+        else
+            _ = LoadAsync();
+    }
+
+    // Stagiaire: load personal grades
+    private async Task LoadMyGradesAsync()
+    {
+        try
+        {
+            MyGrades.Clear();
+            var notes = await _noteService.GetByStagiaireAsync(UserId);
+
+            foreach (var n in notes)
+            {
+                MyGrades.Add(new StagiaireGradeRow
+                {
+                    ModuleTitre = n.ModuleTitre ?? $"Module #{n.IdModule}",
+                    NoteValeur = n.NoteValeur,
+                    Coefficient = n.ModuleCoefficient,
+                    IdSession = n.IdSession
+                });
+            }
+
+            var withValues = MyGrades.Where(g => g.NoteValeur > 0).ToList();
+            StagiaireNbNotes = withValues.Count;
+            StagiaireMoyenne = withValues.Count > 0
+                ? withValues.Sum(g => g.NoteValeur * g.Coefficient) / withValues.Sum(g => g.Coefficient)
+                : 0;
+
+            Message = StagiaireNbNotes > 0
+                ? $"{StagiaireNbNotes} note(s) • Moyenne: {StagiaireMoyenne:0.00}/20"
+                : "Aucune note enregistrée.";
+        }
+        catch (Exception ex) { Message = $"Erreur : {ex.Message}"; }
     }
 
     private async Task LoadAsync()

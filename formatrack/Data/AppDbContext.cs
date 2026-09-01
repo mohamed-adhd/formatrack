@@ -43,7 +43,12 @@ CREATE TABLE IF NOT EXISTS sessions (
  id_session INTEGER PRIMARY KEY AUTOINCREMENT, id_formation INTEGER NOT NULL,
  date_debut TEXT NOT NULL, date_fin TEXT NOT NULL, lieu TEXT, capacite INTEGER,
  statut TEXT NOT NULL DEFAULT 'Planifiee');
-CREATE TABLE IF NOT EXISTS questionnaires (
+DROP TABLE IF EXISTS reponses;
+DROP TABLE IF EXISTS evaluations;
+DROP TABLE IF EXISTS questions;
+DROP TABLE IF EXISTS criteres;
+DROP TABLE IF EXISTS questionnaires;
+CREATE TABLE questionnaires (
  id_questionnaire INTEGER PRIMARY KEY AUTOINCREMENT, id_session INTEGER NOT NULL,
  titre TEXT NOT NULL, description TEXT, type_evaluation TEXT, date_creation TEXT NOT NULL DEFAULT (datetime('now')),
  statut TEXT NOT NULL DEFAULT 'Brouillon');
@@ -130,6 +135,17 @@ CREATE INDEX IF NOT EXISTS idx_notes_session ON notes (id_session);";
             await SeedAsync(connection);
 
             _initialized = true;
+
+            // Auto-index RAG knowledge base in background after seeding
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    var ragService = new Services.ChatbotRagService();
+                    await ragService.IndexKnowledgeBaseAsync();
+                }
+                catch { }
+            });
         }
         finally
         {
@@ -168,33 +184,49 @@ CREATE INDEX IF NOT EXISTS idx_notes_session ON notes (id_session);";
 
     private static async Task SeedAsync(SqliteConnection connection)
     {
-        await using (var count = new SqliteCommand("SELECT COUNT(*) FROM utilisateurs;", connection))
-        {
-            if ((long)(await count.ExecuteScalarAsync() ?? 0L) == 0)
-            {
-                var hash = PasswordHasher.Hash("admin123");
+        var hash = PasswordHasher.Hash("admin123");
 
-                // ===== UTILISATEURS (18) =====
-                var sqlUsers = @"
+        async Task<bool> IsEmpty(string table)
+        {
+            await using var cmd = new SqliteCommand($"SELECT COUNT(*) FROM {table};", connection);
+            return (long)(await cmd.ExecuteScalarAsync() ?? 0L) == 0;
+        }
+
+        // ===== UTILISATEURS (30) =====
+        if (await IsEmpty("utilisateurs"))
+        {
+            var sqlUsers = @"
 INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe_hash, role, departement, promotion) VALUES
  ('Admin','SEFAD','admin@sefad.local',$hash,'Administrateur','',''),
  ('Harbi','Ali','chefdep@sefad.local',$hash,'ChefDepartement','Terre',''),
  ('Nacer','Djamel','chefdep2@sefad.local',$hash,'ChefDepartement','Air',''),
+ ('Bouchamaoui','Sami','chefdep3@sefad.local',$hash,'ChefDepartement','Marine',''),
  ('Mansouri','Yasmine','formatrice@sefad.local',$hash,'Formateur','Terre','Promotion 2026'),
  ('Tlemcani','Omar','formateur2@sefad.local',$hash,'Formateur','Terre','Promotion 2025'),
  ('Bensalem','Rania','formateur3@sefad.local',$hash,'Formateur','Air','Promotion 2026'),
+ ('Ferjani','Walid','formateur4@sefad.local',$hash,'Formateur','Air','Promotion 2025'),
+ ('Mejri','Sonia','formateur5@sefad.local',$hash,'Formateur','Terre','Promotion 2026'),
  ('Hadj','Ahmed','resp.formation@sefad.local',$hash,'ResponsableFormation','',''),
  ('Bouzid','Mourad','decideur@sefad.local',$hash,'Decideur','',''),
  ('Ben Ali','Karim','stagiaire@sefad.local',$hash,'Stagiaire','Terre','Promotion 2026'),
  ('Khelifi','Ahmed','stagiaire2@sefad.local',$hash,'Stagiaire','Terre','Promotion 2026'),
  ('Bouazizi','Fatma','stagiaire3@sefad.local',$hash,'Stagiaire','Terre','Promotion 2026'),
  ('Mansour','Sami','stagiaire4@sefad.local',$hash,'Stagiaire','Terre','Promotion 2026'),
+ ('Ben Salah','Imed','stagiaire11@sefad.local',$hash,'Stagiaire','Terre','Promotion 2026'),
+ ('Chatti','Amira','stagiaire12@sefad.local',$hash,'Stagiaire','Terre','Promotion 2026'),
+ ('Mebarki','Tarek','stagiaire9@sefad.local',$hash,'Stagiaire','Air','Promotion 2026'),
+ ('Cherif','Amina','stagiaire10@sefad.local',$hash,'Stagiaire','Air','Promotion 2026'),
+ ('Drissi','Rachid','stagiaire13@sefad.local',$hash,'Stagiaire','Air','Promotion 2026'),
+ ('Zayeni','Houda','stagiaire14@sefad.local',$hash,'Stagiaire','Air','Promotion 2026'),
  ('Zouari','Mohamed','stagiaire5@sefad.local',$hash,'Stagiaire','Terre','Promotion 2025'),
  ('Trabelsi','Souad','stagiaire6@sefad.local',$hash,'Stagiaire','Terre','Promotion 2025'),
  ('Gharbi','Youssef','stagiaire7@sefad.local',$hash,'Stagiaire','Terre','Promotion 2025'),
  ('Jaziri','Nadia','stagiaire8@sefad.local',$hash,'Stagiaire','Terre','Promotion 2025'),
- ('Mebarki','Tarek','stagiaire9@sefad.local',$hash,'Stagiaire','Air','Promotion 2026'),
- ('Cherif','Amina','stagiaire10@sefad.local',$hash,'Stagiaire','Air','Promotion 2026');";
+ ('Neji','Fathi','stagiaire15@sefad.local',$hash,'Stagiaire','Terre','Promotion 2025'),
+ ('Soltani','Yassine','stagiaire16@sefad.local',$hash,'Stagiaire','Air','Promotion 2025'),
+ ('Brahmi','Leila','stagiaire17@sefad.local',$hash,'Stagiaire','Air','Promotion 2025'),
+ ('Khemiri','Anis','stagiaire18@sefad.local',$hash,'Stagiaire','Air','Promotion 2025'),
+ ('Guesmi','Nabil','stagiaire19@sefad.local',$hash,'Stagiaire','Air','Promotion 2025');";
                 await using var seedUsers = new SqliteCommand(sqlUsers, connection);
                 seedUsers.Parameters.AddWithValue("$hash", hash);
                 await seedUsers.ExecuteNonQueryAsync();
@@ -211,17 +243,17 @@ INSERT INTO formations (titre, description, objectifs, duree_heures, type_format
                 // ===== SESSIONS (6) =====
                 var sqlSessions = @"
 INSERT INTO sessions (id_formation, date_debut, date_fin, lieu, capacite, statut) VALUES
- (1,'2026-09-01','2026-12-15','Salle Telecoms A',18,'EnCours'),
- (1,'2027-01-10','2027-04-30','Salle Telecoms A',18,'Planifiee'),
+ (1,'2026-09-01','2026-12-15','Salle Telecoms A',20,'EnCours'),
+ (1,'2027-01-10','2027-04-30','Salle Telecoms A',20,'Planifiee'),
  (2,'2026-09-01','2026-12-15','Salle Maintenance B',20,'EnCours'),
  (2,'2027-01-10','2027-04-30','Salle Maintenance B',20,'Planifiee'),
- (3,'2026-09-01','2026-12-15','Salle Info C',16,'Planifiee'),
- (3,'2027-01-10','2027-04-30','Salle Info C',16,'Planifiee');";
+ (3,'2026-09-01','2026-12-15','Salle Info C',18,'Planifiee'),
+ (3,'2027-01-10','2027-04-30','Salle Info C',18,'Planifiee');";
                 await using var seedSessions = new SqliteCommand(sqlSessions, connection);
                 await seedSessions.ExecuteNonQueryAsync();
 
-                // ===== MODULES COMMUNS (10) =====
-                var sqlModulesCommuns = @"
+                // ===== MODULES — COMMON (10 per formation) =====
+                var sqlModCommuns = @"
 INSERT INTO modules (id_formation, titre, credit_horaire, nb_examen, coefficient, est_commum) VALUES
  (1,'Arabe',30,1,1.0,1),(1,'Francais',30,1,1.0,1),(1,'Anglais',30,1,1.0,1),
  (1,'Gestion 1',20,1,2.0,1),(1,'Gestion 2',20,1,2.0,1),
@@ -238,10 +270,10 @@ INSERT INTO modules (id_formation, titre, credit_horaire, nb_examen, coefficient
  (3,'Legislation',15,1,1.0,1),(3,'Securite et sante au travail',10,1,1.0,1),
  (3,'Concepts qualite',10,1,1.0,1),(3,'Education environnementale',10,1,1.0,1),
  (3,'Education physique',20,1,1.0,1);";
-                await using var seedMC = new SqliteCommand(sqlModulesCommuns, connection);
+                await using var seedMC = new SqliteCommand(sqlModCommuns, connection);
                 await seedMC.ExecuteNonQueryAsync();
 
-                // ===== MODULES FORMATION 1 — Telecoms/Reseaux (34) =====
+                // ===== MODULES FORMATION 1 — Telecoms (id 11-44) =====
                 var sqlMod1 = @"
 INSERT INTO modules (id_formation, titre, credit_horaire, nb_examen, coefficient, est_commum) VALUES
  (1,'Profession et Formation',15,1,2.0,0),(1,'Electricite Electromagnatisme',30,2,3.0,0),
@@ -249,7 +281,7 @@ INSERT INTO modules (id_formation, titre, credit_horaire, nb_examen, coefficient
  (1,'Reseaux Operationnels Tunisiens',30,2,4.0,0),(1,'Microprocesseurs',30,2,3.0,0),
  (1,'Systemes AFV',25,1,3.0,0),(1,'Securite Informatique',20,1,2.0,0),
  (1,'Maintenance des Equipements',30,2,3.0,0),(1,'Deploiement Reseaux Cellulaire',35,2,4.0,0),
- (1,'Anglais Technique',15,1,1.0,0),(1,'Projet Pédagogique PPI',40,1,15.0,0),
+ (1,'Anglais Technique',15,1,1.0,0),(1,'Projet Pedagogique PPI',40,1,15.0,0),
  (1,'Stage',200,1,15.0,0),(1,'Topographie',20,1,2.0,0),
  (1,'Transmission Numerique',25,1,3.0,0),(1,'Optique et Fibre Optique',20,1,2.0,0),
  (1,'Systemes Embarques',25,1,3.0,0),(1,'Programmation Reseaux',30,2,3.0,0),
@@ -264,7 +296,7 @@ INSERT INTO modules (id_formation, titre, credit_horaire, nb_examen, coefficient
                 await using var seedM1 = new SqliteCommand(sqlMod1, connection);
                 await seedM1.ExecuteNonQueryAsync();
 
-                // ===== MODULES FORMATION 2 — Maintenance Micro-ordinateurs (22) =====
+                // ===== MODULES FORMATION 2 — Maintenance (id 55-76) =====
                 var sqlMod2 = @"
 INSERT INTO modules (id_formation, titre, credit_horaire, nb_examen, coefficient, est_commum) VALUES
  (2,'Metier et Formation',15,1,2.0,0),(2,'Electricite de base',25,1,2.0,0),
@@ -274,14 +306,14 @@ INSERT INTO modules (id_formation, titre, credit_horaire, nb_examen, coefficient
  (2,'Microprocesseurs',30,2,3.0,0),(2,'Microcontroleurs',20,1,2.0,0),
  (2,'Maintenance Hard des PC',35,2,4.0,0),(2,'Maintenance Soft des PC',35,2,4.0,0),
  (2,'Reseaux poste-a-poste',20,1,2.0,0),(2,'Depannage bureautique',25,1,3.0,0),
- (2,'Stage en milieu de travail',200,1,15.0,0),(2,'Soudure et CABlage',15,1,1.0,0),
+ (2,'Stage en milieu de travail',200,1,15.0,0),(2,'Soudure et Cablage',15,1,1.0,0),
  (2,'Alimentations a impulsions',20,1,2.0,0),(2,'Impression et Peripheriques',15,1,2.0,0),
  (2,'Onduleurs et Protection',15,1,2.0,0),(2,'Diagnostic Puce',20,1,2.0,0),
  (2,'Techniques de Mesure',15,1,1.0,0),(2,'Documentation Technique',10,1,1.0,0);";
                 await using var seedM2 = new SqliteCommand(sqlMod2, connection);
                 await seedM2.ExecuteNonQueryAsync();
 
-                // ===== MODULES FORMATION 3 — Informatique de Gestion (32) =====
+                // ===== MODULES FORMATION 3 — Info (id 81-112) =====
                 var sqlMod3 = @"
 INSERT INTO modules (id_formation, titre, credit_horaire, nb_examen, coefficient, est_commum) VALUES
  (3,'Fonction de travail',15,1,2.0,0),(3,'Algorithmes et Programmation',40,2,4.0,0),
@@ -303,102 +335,266 @@ INSERT INTO modules (id_formation, titre, credit_horaire, nb_examen, coefficient
                 await using var seedM3 = new SqliteCommand(sqlMod3, connection);
                 await seedM3.ExecuteNonQueryAsync();
 
-                // ===== QUESTIONNAIRES (6) =====
-                var sqlQuestionnaires = @"
-INSERT INTO questionnaires (id_session, titre, description, type_evaluation, statut) VALUES
- (1,'Eval a chaud - Telecoms Session 1','Satisfaction et comprehension immediate.','AChaud','Publie'),
- (1,'Eval a froid - Telecoms Session 1','Retention des acquis 3 mois apres.','AFroid','Brouillon'),
- (3,'Eval a chaud - Maintenance Session 1','Satisfaction et comprehension immediate.','AChaud','Publie'),
- (3,'Eval a froid - Maintenance Session 1','Retention des acquis 3 mois apres.','AFroid','Brouillon'),
- (5,'Eval a chaud - Info Session 1','Satisfaction et comprehension immediate.','AChaud','Publie'),
- (5,'Eval a froid - Info Session 1','Retention des acquis 3 mois apres.','AFroid','Brouillon');";
-                await using var seedQ = new SqliteCommand(sqlQuestionnaires, connection);
-                await seedQ.ExecuteNonQueryAsync();
-
-                // ===== PARTICIPATION (18) =====
+                // ===== PARTICIPATIONS (68) =====
                 var sqlPart = @"
 INSERT INTO participation (id_utilisateur, id_session, role_participation) VALUES
- (4,1,'Formateur'), (9,1,'Stagiaire'), (10,1,'Stagiaire'), (11,1,'Stagiaire'), (12,1,'Stagiaire'),
- (5,1,'Formateur'), (13,1,'Stagiaire'), (14,1,'Stagiaire'), (15,1,'Stagiaire'), (16,1,'Stagiaire'),
- (6,3,'Formateur'), (9,3,'Stagiaire'), (10,3,'Stagiaire'), (17,3,'Stagiaire'), (18,3,'Stagiaire'),
- (4,5,'Formateur'), (13,5,'Stagiaire'), (14,5,'Stagiaire'), (15,5,'Stagiaire'), (16,5,'Stagiaire');";
+ (5,1,'Formateur'),(6,1,'Formateur'),
+ (12,1,'Stagiaire'),(13,1,'Stagiaire'),(14,1,'Stagiaire'),(15,1,'Stagiaire'),(16,1,'Stagiaire'),(17,1,'Stagiaire'),
+ (18,1,'Stagiaire'),(19,1,'Stagiaire'),(20,1,'Stagiaire'),(21,1,'Stagiaire'),
+ (6,2,'Formateur'),
+ (22,2,'Stagiaire'),(23,2,'Stagiaire'),(24,2,'Stagiaire'),(25,2,'Stagiaire'),(26,2,'Stagiaire'),
+ (27,2,'Stagiaire'),(28,2,'Stagiaire'),(29,2,'Stagiaire'),(30,2,'Stagiaire'),
+ (7,3,'Formateur'),(8,3,'Formateur'),
+ (18,3,'Stagiaire'),(19,3,'Stagiaire'),(20,3,'Stagiaire'),(21,3,'Stagiaire'),
+ (22,3,'Stagiaire'),(23,3,'Stagiaire'),(24,3,'Stagiaire'),(25,3,'Stagiaire'),
+ (9,5,'Formateur'),
+ (12,5,'Stagiaire'),(13,5,'Stagiaire'),(14,5,'Stagiaire'),(15,5,'Stagiaire'),
+ (26,5,'Stagiaire'),(27,5,'Stagiaire'),(28,5,'Stagiaire'),(29,5,'Stagiaire');";
                 await using var seedPart = new SqliteCommand(sqlPart, connection);
                 await seedPart.ExecuteNonQueryAsync();
-
-                // ===== NOTES / GRADES (sample grades for Formation 1, Session 1, modules 11-20) =====
-                var sqlNotes = @"
-INSERT INTO notes (id_stagiaire, id_module, id_session, note, saisi_par) VALUES
- (9,11,1,14.5,4),(9,12,1,16.0,4),(9,13,1,12.0,4),(9,14,1,15.5,4),(9,15,1,13.0,4),
- (9,16,1,17.0,4),(9,17,1,14.0,4),(9,18,1,11.5,4),(9,19,1,16.5,4),(9,20,1,15.0,4),
- (10,11,1,12.0,4),(10,12,1,14.5,4),(10,13,1,10.5,4),(10,14,1,13.0,4),(10,15,1,11.0,4),
- (10,16,1,15.5,4),(10,17,1,12.5,4),(10,18,1,9.0,4),(10,19,1,14.0,4),(10,20,1,13.5,4),
- (11,11,1,16.0,4),(11,12,1,18.0,4),(11,13,1,14.0,4),(11,14,1,17.5,4),(11,15,1,15.0,4),
- (11,16,1,19.0,4),(11,17,1,16.0,4),(11,18,1,13.5,4),(11,19,1,18.5,4),(11,20,1,17.0,4),
- (12,11,1,10.0,4),(12,12,1,12.5,4),(12,13,1,8.5,4),(12,14,1,11.0,4),(12,15,1,9.5,4),
- (12,16,1,13.0,4),(12,17,1,10.5,4),(12,18,1,7.0,4),(12,19,1,12.0,4),(12,20,1,11.5,4);";
-                await using var seedNotes = new SqliteCommand(sqlNotes, connection);
-                await seedNotes.ExecuteNonQueryAsync();
-            }
         }
 
-        // ===== EMPLOIS DU TEMPS (2 sample) =====
+        if (await IsEmpty("questionnaires"))
+        {
+                // ===== QUESTIONNAIRES (8) =====
+                var sqlQ = @"
+INSERT INTO questionnaires (id_session, titre, description, type_evaluation, note_maximale, duree_minutes, statut) VALUES
+ (1,'Examen Partiel Telecoms - Octobre 2026','Evaluation mi-parcours sur les modules fondamentaux.','Partielle',20.0,120,'Publie'),
+ (1,'Examen Final Telecoms - Decembre 2026','Evaluation finale couvrant l''ensemble du programme.','Finale',20.0,180,'Brouillon'),
+ (3,'Examen Partiel Maintenance - Octobre 2026','Evaluation mi-parcours maintenance.','Partielle',20.0,120,'Publie'),
+ (3,'Examen Final Maintenance - Decembre 2026','Evaluation finale maintenance.','Finale',20.0,180,'Brouillon'),
+ (1,'Quiz Telecoms - Reseaux NGN','Quiz rapide sur les reseaux de nouvelle generation.','Quiz',10.0,30,'Publie'),
+ (1,'Evaluation a chaud - Telecoms','Satisfaction et comprehension immediate.','AChaud',20.0,60,'Publie'),
+ (3,'Evaluation a chaud - Maintenance','Satisfaction et comprehension immediate.','AChaud',20.0,60,'Publie'),
+ (5,'Evaluation a chaud - Informatique','Satisfaction et comprehension immediate.','AChaud',20.0,60,'Publie');";
+                await using var seedQ = new SqliteCommand(sqlQ, connection);
+                await seedQ.ExecuteNonQueryAsync();
+
+                // ===== CRITERES =====
+                var sqlCrit = @"
+INSERT INTO criteres (id_questionnaire, libelle, description, coefficient) VALUES
+ (1,'QCM','Questions a choix multiple',2.0),(1,'Exercices pratiques','Mise en situation equipements',3.0),(1,'Dissertation','Developpement ecrit',1.0),
+ (3,'QCM Maintenance','Questions theoriques',2.0),(3,'Diagnostic pratique','Diagnostic sur PC reel',3.0),(3,'Rapport technique','Compte-rendu intervention',1.0),
+ (5,'Quiz Reseaux','Questions rapides NGN',1.0);";
+                await using var seedCrit = new SqliteCommand(sqlCrit, connection);
+                await seedCrit.ExecuteNonQueryAsync();
+
+                // ===== QUESTIONS =====
+                var sqlQuest = @"
+INSERT INTO questions (id_questionnaire, id_critere, enonce, type_question, bareme, ordre) VALUES
+ (1,1,'Quel protocole est utilise pour l''adressage IP v4?','QCM',2.0,1),
+ (1,1,'Combien de couches contient le modele OSI?','QCM',2.0,2),
+ (1,1,'Quel est le role principal d''un switch?','QCM',2.0,3),
+ (1,1,'Bande passante maximale Ethernet Gigabit?','QCM',2.0,4),
+ (1,2,'Configurer un reseau local avec 3 sous-reseaux.','Exercice',6.0,5),
+ (1,2,'Diagnostiquer un probleme de connectivite reseau.','Exercice',6.0,6),
+ (1,3,'Avantages et inconvenients des topologies maillage vs etoile.','Dissertation',4.0,7),
+ (3,4,'Quel composant gere l''allocation des ressources CPU?','QCM',2.0,1),
+ (3,4,'Que signifie le sigle BIOS?','QCM',2.0,2),
+ (3,4,'Quel outil permet de tester la memoire RAM?','QCM',2.0,3),
+ (3,5,'Diagnostiquer un PC qui ne demarre pas.','Exercice',8.0,4),
+ (3,5,'Remplacer un disque dur et reinstallere le systeme.','Exercice',6.0,5),
+ (3,6,'Rapport de maintenance pour remplacement de carte mere.','Rapport',4.0,6),
+ (5,8,'Qu''est-ce qu''un reseau NGN?','QCM',2.0,1),
+ (5,8,'Quel protocole VoIP est le plus utilise?','QCM',2.0,2),
+ (5,8,'Difference circuit switching et packet switching?','QCM',2.0,3),
+ (5,8,'Citez 3 services convergents d''un NGN.','QCM',2.0,4),
+ (5,8,'Role du SIP dans la telephonie IP?','QCM',2.0,5);";
+                await using var seedQuest = new SqliteCommand(sqlQuest, connection);
+                await seedQuest.ExecuteNonQueryAsync();
+
+                // ===== NOTES / GRADES (bulk) =====
+                var sqlNotes = @"
+INSERT INTO notes (id_stagiaire, id_module, id_session, note, saisi_par) VALUES
+ (12,11,1,14.5,5),(12,12,1,16.0,5),(12,13,1,12.0,5),(12,14,1,15.5,5),(12,15,1,13.0,5),
+ (12,16,1,17.0,5),(12,17,1,14.0,5),(12,18,1,11.5,5),(12,19,1,16.5,5),(12,20,1,15.0,5),
+ (13,11,1,12.0,5),(13,12,1,14.5,5),(13,13,1,10.5,5),(13,14,1,13.0,5),(13,15,1,11.0,5),
+ (13,16,1,15.5,5),(13,17,1,12.5,5),(13,18,1,9.0,5),(13,19,1,14.0,5),(13,20,1,13.5,5),
+ (14,11,1,16.0,5),(14,12,1,18.0,5),(14,13,1,14.0,5),(14,14,1,17.5,5),(14,15,1,15.0,5),
+ (14,16,1,19.0,5),(14,17,1,16.0,5),(14,18,1,13.5,5),(14,19,1,18.5,5),(14,20,1,17.0,5),
+ (15,11,1,10.0,5),(15,12,1,12.5,5),(15,13,1,8.5,5),(15,14,1,11.0,5),(15,15,1,9.5,5),
+ (15,16,1,13.0,5),(15,17,1,10.5,5),(15,18,1,7.0,5),(15,19,1,12.0,5),(15,20,1,11.5,5),
+ (16,11,1,15.5,5),(16,12,1,17.0,5),(16,13,1,13.0,5),(16,14,1,16.0,5),(16,15,1,14.0,5),
+ (16,16,1,18.0,5),(16,17,1,15.5,5),(16,18,1,12.5,5),(16,19,1,17.5,5),(16,20,1,16.0,5),
+ (17,11,1,13.0,5),(17,12,1,15.5,5),(17,13,1,11.5,5),(17,14,1,14.0,5),(17,15,1,12.0,5),
+ (17,16,1,16.5,5),(17,17,1,13.5,5),(17,18,1,10.5,5),(17,19,1,15.0,5),(17,20,1,14.5,5),
+ (18,11,1,17.0,5),(18,12,1,18.5,5),(18,13,1,15.0,5),(18,14,1,17.0,5),(18,15,1,16.0,5),
+ (18,16,1,19.5,5),(18,17,1,17.5,5),(18,18,1,14.0,5),(18,19,1,18.0,5),(18,20,1,17.5,5),
+ (19,11,1,11.5,5),(19,12,1,13.0,5),(19,13,1,9.5,5),(19,14,1,12.0,5),(19,15,1,10.5,5),
+ (19,16,1,14.0,5),(19,17,1,11.0,5),(19,18,1,8.5,5),(19,19,1,13.0,5),(19,20,1,12.0,5),
+ (20,11,1,14.0,5),(20,12,1,16.0,5),(20,13,1,12.5,5),(20,14,1,15.0,5),(20,15,1,13.5,5),
+ (20,16,1,17.5,5),(20,17,1,14.5,5),(20,18,1,11.0,5),(20,19,1,16.0,5),(20,20,1,15.5,5),
+ (21,11,1,16.5,5),(21,12,1,18.0,5),(21,13,1,14.5,5),(21,14,1,17.0,5),(21,15,1,15.5,5),
+ (21,16,1,19.0,5),(21,17,1,16.5,5),(21,18,1,13.0,5),(21,19,1,18.0,5),(21,20,1,17.0,5),
+ (22,11,2,13.5,6),(22,12,2,15.0,6),(22,13,2,11.0,6),(22,14,2,14.0,6),(22,15,2,12.5,6),
+ (22,16,2,16.5,6),(22,17,2,13.0,6),(22,18,2,10.0,6),(22,19,2,15.5,6),(22,20,2,14.5,6),
+ (23,11,2,11.0,6),(23,12,2,13.5,6),(23,13,2,9.0,6),(23,14,2,12.0,6),(23,15,2,10.0,6),
+ (23,16,2,14.5,6),(23,17,2,11.5,6),(23,18,2,8.0,6),(23,19,2,13.0,6),(23,20,2,12.0,6),
+ (24,11,2,15.0,6),(24,12,2,17.0,6),(24,13,2,13.0,6),(24,14,2,16.0,6),(24,15,2,14.5,6),
+ (24,16,2,18.0,6),(24,17,2,15.0,6),(24,18,2,12.0,6),(24,19,2,17.0,6),(24,20,2,16.5,6),
+ (25,11,2,12.5,6),(25,12,2,14.0,6),(25,13,2,10.5,6),(25,14,2,13.0,6),(25,15,2,11.5,6),
+ (25,16,2,15.5,6),(25,17,2,12.0,6),(25,18,2,9.5,6),(25,19,2,14.0,6),(25,20,2,13.0,6),
+ (26,11,2,16.0,6),(26,12,2,18.5,6),(26,13,2,14.0,6),(26,14,2,17.5,6),(26,15,2,16.0,6),
+ (26,16,2,19.5,6),(26,17,2,16.5,6),(26,18,2,13.5,6),(26,19,2,18.0,6),(26,20,2,17.5,6),
+ (27,11,2,14.5,8),(27,12,2,16.5,8),(27,13,2,12.0,8),(27,14,2,15.0,8),(27,15,2,13.5,8),
+ (27,16,2,17.0,8),(27,17,2,14.0,8),(27,18,2,11.5,8),(27,19,2,16.0,8),(27,20,2,15.0,8),
+ (28,11,2,12.0,8),(28,12,2,14.0,8),(28,13,2,10.0,8),(28,14,2,13.0,8),(28,15,2,11.0,8),
+ (28,16,2,15.0,8),(28,17,2,12.5,8),(28,18,2,9.0,8),(28,19,2,14.0,8),(28,20,2,13.5,8),
+ (29,11,2,15.5,8),(29,12,2,17.5,8),(29,13,2,13.5,8),(29,14,2,16.5,8),(29,15,2,15.0,8),
+ (29,16,2,18.5,8),(29,17,2,15.5,8),(29,18,2,12.5,8),(29,19,2,17.5,8),(29,20,2,16.0,8),
+ (30,11,2,13.0,8),(30,12,2,15.5,8),(30,13,2,11.0,8),(30,14,2,14.0,8),(30,15,2,12.0,8),
+ (30,16,2,16.5,8),(30,17,2,13.5,8),(30,18,2,10.0,8),(30,19,2,15.0,8),(30,20,2,14.5,8),
+ (18,55,3,13.0,7),(18,56,3,15.0,7),(18,57,3,11.0,7),(18,58,3,14.0,7),(18,59,3,12.5,7),
+ (18,60,3,16.5,7),(18,61,3,13.0,7),(18,62,3,10.0,7),(18,63,3,15.5,7),(18,64,3,14.5,7),
+ (19,55,3,15.0,8),(19,56,3,17.0,8),(19,57,3,13.0,8),(19,58,3,16.0,8),(19,59,3,14.5,8),
+ (19,60,3,18.0,8),(19,61,3,15.0,8),(19,62,3,12.0,8),(19,63,3,17.0,8),(19,64,3,16.5,8),
+ (20,55,3,10.5,7),(20,56,3,12.0,7),(20,57,3,8.5,7),(20,58,3,11.0,7),(20,59,3,9.5,7),
+ (20,60,3,13.0,7),(20,61,3,10.5,7),(20,62,3,7.5,7),(20,63,3,12.0,7),(20,64,3,11.0,7),
+ (21,55,3,16.5,8),(21,56,3,18.0,8),(21,57,3,14.5,8),(21,58,3,17.0,8),(21,59,3,15.5,8),
+ (21,60,3,19.0,8),(21,61,3,16.5,8),(21,62,3,13.0,8),(21,63,3,18.0,8),(21,64,3,17.0,8),
+ (22,55,3,14.0,7),(22,56,3,16.0,7),(22,57,3,12.0,7),(22,58,3,15.0,7),(22,59,3,13.5,7),
+ (22,60,3,17.5,7),(22,61,3,14.0,7),(22,62,3,11.0,7),(22,63,3,16.0,7),(22,64,3,15.0,7),
+ (23,55,3,9.5,8),(23,56,3,11.0,8),(23,57,3,7.5,8),(23,58,3,10.0,8),(23,59,3,8.5,8),
+ (23,60,3,12.5,8),(23,61,3,9.5,8),(23,62,3,6.5,8),(23,63,3,11.0,8),(23,64,3,10.0,8),
+ (24,55,3,12.5,7),(24,56,3,14.5,7),(24,57,3,10.5,7),(24,58,3,13.0,7),(24,59,3,12.0,7),
+ (24,60,3,16.0,7),(24,61,3,12.5,7),(24,62,3,9.5,7),(24,63,3,14.5,7),(24,64,3,13.5,7),
+ (25,55,3,15.5,8),(25,56,3,17.5,8),(25,57,3,13.5,8),(25,58,3,16.5,8),(25,59,3,15.0,8),
+ (25,60,3,18.5,8),(25,61,3,15.5,8),(25,62,3,12.5,8),(25,63,3,17.5,8),(25,64,3,16.0,8);";
+                await using var seedNotes = new SqliteCommand(sqlNotes, connection);
+                await seedNotes.ExecuteNonQueryAsync();
+
+                // ===== EVALUATIONS (18) =====
+                var sqlEval = @"
+INSERT INTO evaluations (id_utilisateur, id_questionnaire, date_passage, score_total, pourcentage, score_maximum, statut) VALUES
+ (12,1,'2026-10-15 09:00:00',14.5,72.5,20.0,'Terminee'),
+ (13,1,'2026-10-15 09:00:00',12.0,60.0,20.0,'Terminee'),
+ (14,1,'2026-10-15 09:00:00',16.0,80.0,20.0,'Terminee'),
+ (15,1,'2026-10-15 09:00:00',11.0,55.0,20.0,'Terminee'),
+ (16,1,'2026-10-15 09:00:00',15.5,77.5,20.0,'Terminee'),
+ (17,1,'2026-10-15 09:00:00',13.5,67.5,20.0,'Terminee'),
+ (18,1,'2026-10-15 09:00:00',17.0,85.0,20.0,'Terminee'),
+ (19,1,'2026-10-15 09:00:00',10.5,52.5,20.0,'Terminee'),
+ (20,1,'2026-10-15 09:00:00',14.0,70.0,20.0,'Terminee'),
+ (21,1,'2026-10-15 09:00:00',16.5,82.5,20.0,'Terminee'),
+ (18,3,'2026-10-16 09:00:00',13.0,65.0,20.0,'Terminee'),
+ (19,3,'2026-10-16 09:00:00',15.0,75.0,20.0,'Terminee'),
+ (20,3,'2026-10-16 09:00:00',11.0,55.0,20.0,'Terminee'),
+ (21,3,'2026-10-16 09:00:00',16.5,82.5,20.0,'Terminee'),
+ (12,5,'2026-09-20 10:00:00',8.0,80.0,10.0,'Terminee'),
+ (13,5,'2026-09-20 10:00:00',7.0,70.0,10.0,'Terminee'),
+ (14,5,'2026-09-20 10:00:00',9.0,90.0,10.0,'Terminee'),
+ (15,5,'2026-09-20 10:00:00',6.0,60.0,10.0,'Terminee');";
+                await using var seedEval = new SqliteCommand(sqlEval, connection);
+                await seedEval.ExecuteNonQueryAsync();
+
+                // ===== REPONSES =====
+                var sqlRep = @"
+INSERT INTO reponses (id_evaluation, id_question, contenu, est_correcte, score_obtenu) VALUES
+ (1,1,'IPv4',1,2.0),(1,2,'7 couches',1,2.0),(1,3,'Filtrage et routage',0,0.0),(1,4,'1 Gbps',1,2.0),
+ (1,5,'Config reussie',1,6.0),(1,6,'Diagnostic termine',0,1.5),(1,7,'Bon developpement',1,1.0),
+ (2,1,'IPv4',1,2.0),(2,2,'7 couches',1,2.0),(2,3,'Connexion',0,0.0),(2,4,'100 Mbps',0,0.0),
+ (2,5,'Exercice partiel',1,4.0),(2,6,'Diagnostic partiel',0,2.0),(2,7,'Incomplet',0,2.0),
+ (3,1,'IPv4',1,2.0),(3,2,'7 couches',1,2.0),(3,3,'Filtrage et routage',1,2.0),(3,4,'1 Gbps',1,2.0),
+ (3,5,'Config excellente',1,6.0),(3,6,'Diagnostic complet',1,1.0),(3,7,'Bon developpement',0,1.0);";
+                await using var seedRep = new SqliteCommand(sqlRep, connection);
+                await seedRep.ExecuteNonQueryAsync();
+        }
+
+        // ===== EMPLOIS DU TEMPS (4) =====
         await using (var countEmplois = new SqliteCommand("SELECT COUNT(*) FROM emplois_du_temps;", connection))
         {
             if ((long)(await countEmplois.ExecuteScalarAsync() ?? 0L) == 0)
             {
                 var sqlEmplois = @"
 INSERT INTO emplois_du_temps (id_formation, type_emploi, annee, promotion, chemin_image, uploaded_by, statut, description) VALUES
- (1,'Hebdomadaire','2025-2026','Promotion 2026','avares://formatrack/Assets/emplois_du_temps/timetable.jpg',1,'Publie','Emploi du temps hebdomadaire - Classe 2GT12'),
- (1,'Annuel','2025-2026','Promotion 2026','avares://formatrack/Assets/emplois_du_temps/timetable-mensuel.jpg',1,'Publie','Chronogramme annuel - Semaines type GS/MS');";
+ (1,'Hebdomadaire','2026-2027','Promotion 2026','avares://formatrack/Assets/emplois_du_temps/timetable.jpg',1,'Publie','Emploi du temps hebdomadaire - Telecoms Promo 2026'),
+ (1,'Annuel','2026-2027','Promotion 2026','avares://formatrack/Assets/emplois_du_temps/timetable-mensuel.jpg',1,'Publie','Chronogramme annuel - Telecoms Promo 2026'),
+ (2,'Hebdomadaire','2026-2027','Promotion 2026','avares://formatrack/Assets/emplois_du_temps/timetable.jpg',1,'Publie','Emploi du temps hebdomadaire - Maintenance Promo 2026'),
+ (2,'Annuel','2026-2027','Promotion 2025','avares://formatrack/Assets/emplois_du_temps/timetable-mensuel.jpg',1,'Publie','Chronogramme annuel - Maintenance Promo 2025');";
                 await using var seedEmplois = new SqliteCommand(sqlEmplois, connection);
                 await seedEmplois.ExecuteNonQueryAsync();
             }
         }
 
-        // ===== ABSENCES & RETARDS (12) =====
+        // ===== ABSENCES & RETARDS (30) =====
         await using (var countAbs = new SqliteCommand("SELECT COUNT(*) FROM absences_retards;", connection))
         {
             if ((long)(await countAbs.ExecuteScalarAsync() ?? 0L) == 0)
             {
                 var sqlAbs = @"
 INSERT INTO absences_retards (utilisateur_id, session_id, cours, date, type, duree, justifiee, motif) VALUES
- (9,1,'Electricite Electromagnatisme','24/08/2026','Absence','1 jour',0,''),
- (9,1,'Reseaux NGN','20/08/2026','Absence','1 jour',1,'Certificat medical valide'),
- (10,1,'Microprocesseurs','22/08/2026','Retard','30 min',1,'Retard transport'),
- (11,1,'Systemes de Cablage','25/08/2026','Absence','1 jour',1,'Permission accordee'),
- (12,1,'Profession et Formation','19/08/2026','Absence','1 jour',0,''),
- (17,3,'Electricite de base','18/08/2026','Retard','20 min',1,'Embouteillage'),
- (18,3,'Semi-conducteurs','17/08/2026','Absence','1 jour',0,''),
- (13,5,'Algorithmes','03/09/2026','Retard','15 min',1,'Retard justifie'),
- (14,5,'Bases de Donnees','05/09/2026','Absence','1 jour',1,'Certificat medical'),
- (15,5,'Reseaux Locaux','07/09/2026','Absence','1 jour',0,''),
- (16,5,'Administration reseau','09/09/2026','Retard','25 min',1,'Convoyage'),
- (9,3,'Montage et configuration PC','25/08/2026','Retard','10 min',1,'Retard mineur');";
+ (12,1,'Electricite Electromagnatisme','2026-09-15','Absence','1 jour',1,'Certificat medical'),
+ (12,1,'Reseaux NGN','2026-10-01','Retard','30 min',1,'Retard transport'),
+ (13,1,'Microprocesseurs','2026-09-22','Absence','1 jour',0,''),
+ (13,1,'Systemes de Cablage','2026-10-05','Retard','20 min',1,'Embouteillage'),
+ (14,1,'Profession et Formation','2026-09-18','Absence','1 jour',1,'Permission accordee'),
+ (15,1,'Reseaux Operationnels','2026-09-25','Absence','1 jour',0,''),
+ (15,1,'Securite Informatique','2026-10-08','Retard','15 min',1,'Retard mineur'),
+ (16,1,'Deploiement Reseaux','2026-09-20','Absence','1 jour',1,'Certificat medical'),
+ (17,1,'Programmation Reseaux','2026-10-03','Retard','25 min',1,'Convoyage'),
+ (18,1,'Protocoles IP','2026-09-28','Absence','1 jour',0,''),
+ (19,1,'Switching et Routing','2026-10-10','Retard','10 min',1,'Retard mineur'),
+ (20,1,'Cloud Computing','2026-10-02','Absence','1 jour',1,'Permission'),
+ (21,1,'IoT et Objets Connectes','2026-09-30','Absence','1 jour',0,''),
+ (22,2,'Electricite Electromagnatisme','2026-09-16','Retard','20 min',1,'Transport'),
+ (23,2,'Reseaux NGN','2026-09-23','Absence','1 jour',0,''),
+ (24,2,'Microprocesseurs','2026-10-01','Retard','15 min',1,'Retard justifie'),
+ (25,2,'Systemes de Cablage','2026-09-19','Absence','1 jour',1,'Certificat medical'),
+ (26,2,'Profession et Formation','2026-10-07','Retard','30 min',1,'Embouteillage'),
+ (27,2,'Reseaux Operationnels','2026-09-26','Absence','1 jour',0,''),
+ (28,2,'Securite Informatique','2026-10-04','Retard','20 min',1,'Retard mineur'),
+ (29,2,'Deploiement Reseaux','2026-09-21','Absence','1 jour',1,'Permission'),
+ (30,2,'Programmation Reseaux','2026-10-09','Retard','15 min',1,'Convoyage'),
+ (18,3,'Electricite de base','2026-09-17','Absence','1 jour',0,''),
+ (19,3,'Semi-conducteurs','2026-09-24','Retard','25 min',1,'Transport'),
+ (20,3,'Electronique Analogique','2026-10-02','Absence','1 jour',1,'Certificat medical'),
+ (21,3,'Electronique Numerique','2026-09-29','Retard','10 min',1,'Retard mineur'),
+ (22,3,'Informatique generale','2026-10-06','Absence','1 jour',0,''),
+ (23,3,'Microprocesseurs','2026-09-30','Retard','20 min',1,'Embouteillage'),
+ (24,3,'Microcontroleurs','2026-10-03','Absence','1 jour',1,'Permission'),
+ (25,3,'Maintenance Hard','2026-10-08','Retard','15 min',1,'Retard justifie');";
                 await using var seedAbs = new SqliteCommand(sqlAbs, connection);
                 await seedAbs.ExecuteNonQueryAsync();
             }
         }
 
-        // ===== NOTIFICATIONS =====
+        // ===== NOTIFICATIONS (24) =====
         await using (var countNotif = new SqliteCommand("SELECT COUNT(*) FROM notifications;", connection))
         {
             if ((long)(await countNotif.ExecuteScalarAsync() ?? 0L) == 0)
             {
                 var sqlNotif = @"
 INSERT INTO notifications (id_utilisateur, message, lue, date_creation) VALUES
- (9,'Note publiee : 14.5/20 en Electricite Electromagnatisme (Telecoms - Session 1).',0,'2026-08-22 16:30:00'),
- (9,'Note publiee : 16.0/20 en Reseaux NGN.',0,'2026-08-22 16:35:00'),
- (10,'Alerte : Absence non justifiee le 22/08/2026 - Microprocesseurs.',0,'2026-08-22 10:00:00'),
- (12,'Note en Tactique : 9.5/20 - Cours de renforcement proposes.',0,'2026-08-27 15:30:00'),
- (4,'Nouvelles inscriptions : 4 stagiaires dans Telecoms Session 1.',1,'2026-08-15 09:00:00'),
- (2,'Rapport mensuel : 2 absences non justifiees dans le departement Terre.',0,'2026-08-31 08:00:00'),
- (8,'Tableau de bord mis a jour : Taux de reussite global a 74.3%.',0,'2026-08-27 18:00:00');";
+ (12,'Note publiee : 14.5/20 en Electricite Electromagnatisme.',1,'2026-10-15 16:30:00'),
+ (12,'Note publiee : 16.0/20 en Reseaux NGN.',1,'2026-10-15 16:35:00'),
+ (12,'Evaluation Partielle Telecoms terminee : 72.5%.',0,'2026-10-15 17:00:00'),
+ (13,'Alerte : Absence non justifiee le 22/09/2026 - Microprocesseurs.',0,'2026-09-22 10:00:00'),
+ (13,'Note publiee : 12.0/20 en Electricite Electromagnatisme.',0,'2026-10-15 16:30:00'),
+ (14,'Note publiee : 16.0/20 en Electricite Electromagnatisme - Excellent!',0,'2026-10-15 16:30:00'),
+ (14,'Quiz NGN : 9/10 - Bravo!',0,'2026-09-20 11:00:00'),
+ (15,'Alerte : Absence non justifiee le 25/09/2026 - Reseaux Op.',0,'2026-09-25 10:00:00'),
+ (15,'Note publiee : 10.0/20 en Electricite Electromagnatisme.',0,'2026-10-15 16:30:00'),
+ (16,'Note publiee : 15.5/20 en Electricite Electromagnatisme.',0,'2026-10-15 16:30:00'),
+ (17,'Note publiee : 13.5/20 en Electricite Electromagnatisme.',0,'2026-10-15 16:30:00'),
+ (18,'Note publiee : 17.0/20 en Electricite Electromagnatisme - Tres bien!',0,'2026-10-15 16:30:00'),
+ (18,'Alerte : Absence non justifiee le 28/09/2026 - Protocoles IP.',0,'2026-09-28 10:00:00'),
+ (19,'Note publiee : 10.5/20 en Electricite Electromagnatisme.',0,'2026-10-15 16:30:00'),
+ (20,'Note publiee : 14.0/20 en Electricite Electromagnatisme.',0,'2026-10-15 16:30:00'),
+ (21,'Note publiee : 16.5/20 en Electricite Electromagnatisme.',0,'2026-10-15 16:30:00'),
+ (21,'Alerte : Absence non justifiee le 30/09/2026 - IoT.',0,'2026-09-30 10:00:00'),
+ (5,'Nouvelles inscriptions : 10 stagiaires dans Telecoms Session 1.',1,'2026-08-15 09:00:00'),
+ (5,'Notes saisies : 40 notes pour Telecoms Session 1.',1,'2026-10-15 16:00:00'),
+ (2,'Rapport mensuel : 5 absences non justifiees dans le departement Terre.',0,'2026-10-01 08:00:00'),
+ (2,'Evaluation Partielle Telecoms terminee - 10 stagiaires.',0,'2026-10-15 18:00:00'),
+ (7,'Notes Maintenance saisies : 8 stagiaires.',0,'2026-10-16 17:00:00'),
+ (10,'Tableau de bord mis a jour : Taux de reussite global a 71.2%.',0,'2026-10-16 18:00:00'),
+ (11,'Alerte : 3 stagiaires en dessous de 10/20 de moyenne generale.',0,'2026-10-16 18:30:00');";
                 await using var seedNotif = new SqliteCommand(sqlNotif, connection);
                 await seedNotif.ExecuteNonQueryAsync();
             }
         }
 
-        // ===== JOURNAL D'ACTIVITE =====
+        // ===== JOURNAL D'ACTIVITE (24) =====
         await using (var countJournal = new SqliteCommand("SELECT COUNT(*) FROM journal_activite;", connection))
         {
             if ((long)(await countJournal.ExecuteScalarAsync() ?? 0L) == 0)
@@ -406,14 +602,48 @@ INSERT INTO notifications (id_utilisateur, message, lue, date_creation) VALUES
                 var sqlJournal = @"
 INSERT INTO journal_activite (id_utilisateur, action, details, date_action) VALUES
  (1,'Connexion administrateur','Connexion reussie depuis le poste Admin-01','2026-08-15 08:00:00'),
- (4,'Publication evaluation','Publication evaluation a chaud Telecoms Session 1','2026-08-15 09:30:00'),
- (4,'Saisie de note','Saisie bulk: 40 notes pour Telecoms Session 1','2026-08-22 16:00:00'),
- (4,'Saisie de note','Note saisie pour Ben Ali Karim : 14.5/20 en Electricite','2026-08-22 16:00:00'),
- (6,'Publication evaluation','Publication evaluation a chaud Maintenance Session 1','2026-08-15 10:00:00'),
- (9,'Justification absence','Justification soumise pour absence du 20/08/2026','2026-08-20 14:00:00'),
- (1,'Configuration systeme','Creation des comptes utilisateurs et attribution des roles','2026-06-01 08:00:00');";
+ (1,'Configuration systeme','Creation des comptes utilisateurs et attribution des roles','2026-06-01 08:00:00'),
+ (1,'Import emplois du temps','Import timetable.jpg et timetable-mensuel.jpg','2026-08-15 08:30:00'),
+ (5,'Connexion formateur','Connexion depuis poste Form-01','2026-09-01 08:15:00'),
+ (5,'Publication evaluation','Publication Examen Partiel Telecoms Octobre 2026','2026-10-10 09:00:00'),
+ (5,'Saisie de notes','Saisie bulk: 100 notes pour Telecoms Session 1','2026-10-15 16:00:00'),
+ (6,'Connexion formateur','Connexion depuis poste Form-02','2026-09-01 08:20:00'),
+ (6,'Publication quiz','Publication Quiz Telecoms Reseaux NGN','2026-09-18 14:00:00'),
+ (7,'Connexion formateur','Connexion depuis poste Form-03','2026-09-01 08:25:00'),
+ (7,'Saisie de notes','Saisie bulk: 80 notes pour Maintenance Session 1','2026-10-16 17:00:00'),
+ (12,'Connexion stagiaire','Connexion depuis poste ST-01','2026-09-01 08:30:00'),
+ (12,'Passage evaluation','Passage Examen Partiel Telecoms - 14.5/20','2026-10-15 09:00:00'),
+ (12,'Justification absence','Justification soumise pour absence du 15/09/2026','2026-09-15 14:00:00'),
+ (13,'Connexion stagiaire','Connexion depuis poste ST-02','2026-09-01 08:35:00'),
+ (13,'Passage evaluation','Passage Examen Partiel Telecoms - 12.0/20','2026-10-15 09:00:00'),
+ (14,'Connexion stagiaire','Connexion depuis poste ST-03','2026-09-01 08:40:00'),
+ (14,'Passage evaluation','Passage Quiz NGN - 9/10','2026-09-20 10:00:00'),
+ (14,'Passage evaluation','Passage Examen Partiel Telecoms - 16.0/20','2026-10-15 09:00:00'),
+ (18,'Passage evaluation','Passage Examen Partiel Maintenance - 13.0/20','2026-10-16 09:00:00'),
+ (22,'Passage evaluation','Passage Examen Partiel Telecoms (Promo 2025)','2026-10-15 09:00:00'),
+ (2,'Analyse absence','Analyse absences departement Terre - 5 non justifiees','2026-10-01 08:00:00'),
+ (10,'Rapport generation','Generation rapport officiel Q3 2026','2026-10-01 09:00:00'),
+ (1,'Mise a jour systeme','Ajout des promotions 2025 et 2026','2026-06-15 08:00:00'),
+ (8,'Publication notes','Publication notes Maintenance Session 1','2026-10-16 17:30:00');";
                 await using var seedJournal = new SqliteCommand(sqlJournal, connection);
                 await seedJournal.ExecuteNonQueryAsync();
+            }
+        }
+
+        // ===== SUGGESTIONS AIDE (5) =====
+        await using (var countSugg = new SqliteCommand("SELECT COUNT(*) FROM suggestions_aide;", connection))
+        {
+            if ((long)(await countSugg.ExecuteScalarAsync() ?? 0L) == 0)
+            {
+                var sqlSugg = @"
+INSERT INTO suggestions_aide (titre, description, priorite, categorie, action_page, action_params, est_lu) VALUES
+ ('Stagiaire en difficulte','Khelifi Ahmed a une moyenne inferieure a 10/20. Soutien pedagogique recommande.',2,'Alerte','Grades','filter=low',0),
+ ('Absences non justifiees elevees','5 absences non justifiees dans le departement Terre ce mois.',3,'Absences','Absences','dept=Terre',0),
+ ('Taux de reussite en baisse','Promotion 2026 a 71.2% de reussite, en baisse.',2,'Statistiques','Statistiques','promo=2026',0),
+ ('Evaluation en attente','Examen final Telecoms Dec 2026 sans questions definies.',1,'Urgence','Questionnaires','id=2',0),
+ ('Module a renforcer','Electricite Electromagnatisme: 62% reussite - hours de renforcement.',2,'Pedagogie','Grades','module=12',0);";
+                await using var seedSugg = new SqliteCommand(sqlSugg, connection);
+                await seedSugg.ExecuteNonQueryAsync();
             }
         }
     }

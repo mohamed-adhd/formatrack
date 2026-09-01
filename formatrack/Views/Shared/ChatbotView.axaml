@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:formatrack.ViewModels.Shared"
+             xmlns:local="using:formatrack.Views.Shared"
+             x:Class="formatrack.Views.Shared.ChatbotView"
+             x:DataType="vm:ChatbotViewModel"
+             IsVisible="{Binding IsOpen}"
+             IsHitTestVisible="{Binding IsOpen}">
+
+    <UserControl.Styles>
+        <Style Selector="Border.msg-bubble-bot">
+            <Setter Property="Background" Value="#F1F5F9" />
+            <Setter Property="CornerRadius" Value="12,12,12,2" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="MaxWidth" Value="280" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+    </UserControl.Styles>
+
+    <!-- Overlay background (click to close) -->
+    <Panel>
+        <Border Background="#40000000" PointerPressed="OnOverlayClick" />
+
+        <!-- Chat window -->
+        <Border Background="White" CornerRadius="16"
+                Width="380" Height="520"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,24,24"
+                BorderBrush="#E3E6EC" BorderThickness="1"
+                BoxShadow="0 8 32 -4 #30000000"
+                ClipToBounds="True">
+
+            <Grid RowDefinitions="Auto,*,Auto,Auto">
+
+                <!-- Header -->
+                <Border Grid.Row="0" Background="#1B2A4A" Padding="16,12" CornerRadius="16,16,0,0">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                        <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18"
+                                Background="#2A3F5F" BorderBrush="#B8935F" BorderThickness="1.5">
+                            <TextBlock Text="🤖" FontSize="18"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Assistant CMFPO" Foreground="White" FontSize="14" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding IsOffline, Converter={x:Static local:StatusTextConverter.Instance}}"
+                                       Foreground="{Binding IsOffline, Converter={x:Static local:StatusColorConverter.Instance}}"
+                                       FontSize="11" />
+                        </StackPanel>
+                        <!-- Refresh index button -->
+                        <Button Grid.Column="2" Classes="ghost" Command="{Binding RefreshIndexCommand}"
+                                Padding="4" MinWidth="28" MinHeight="28" CornerRadius="14"
+                                ToolTip.Tip="Actualiser la base">
+                            <TextBlock Text="↻" Foreground="White" FontSize="14" />
+                        </Button>
+                        <Button Grid.Column="3" Classes="ghost" Command="{Binding ToggleChatCommand}"
+                                Padding="4" MinWidth="28" MinHeight="28" CornerRadius="14">
+                            <TextBlock Text="✕" Foreground="White" FontSize="14" FontWeight="Bold" />
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Messages area -->
+                <ScrollViewer Grid.Row="1" Name="MessagesScroll" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding Messages}" Margin="12,8">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ChatMessage">
+                                    <StackPanel Margin="0,4" HorizontalAlignment="{Binding IsUser, Converter={x:Static local:ChatAlignmentConverter.Instance}}">
+                                        <!-- User bubble -->
+                                        <Border IsVisible="{Binding IsUser}"
+                                                Background="#1B2A4A" CornerRadius="12,12,2,12"
+                                                Padding="12,8" MaxWidth="280">
+                                            <TextBlock Text="{Binding Text}" FontSize="13" TextWrapping="Wrap" Foreground="White" />
+                                        </Border>
+                                        <!-- Bot bubble -->
+                                        <Border IsVisible="{Binding !IsUser}"
+                                                Background="#F1F5F9" CornerRadius="12,12,12,2"
+                                                Padding="12,8" MaxWidth="280">
+                                            <TextBlock Text="{Binding Text}" FontSize="13" TextWrapping="Wrap" Foreground="#1F2937" />
+                                        </Border>
+                                        <TextBlock Text="{Binding TimeString}" FontSize="10"
+                                                   Foreground="#9CA3AF" Margin="4,2,0,0"
+                                                   HorizontalAlignment="{Binding IsUser, Converter={x:Static local:ChatAlignmentConverter.Instance}}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Typing indicator -->
+                        <Border Classes="msg-bubble-bot" Margin="12,4" IsVisible="{Binding IsTyping}">
+                            <TextBlock Text="En train d'écrire..." FontSize="12" FontStyle="Italic" Foreground="#6B7280" />
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Status bar -->
+                <Border Grid.Row="2" Background="#FFF7ED" BorderBrush="#FED7AA" BorderThickness="0,1,0,0"
+                        Padding="10,6" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock Text="{Binding StatusMessage}" FontSize="11" Foreground="#92400E" TextWrapping="Wrap" />
+                </Border>
+
+                <!-- Input area -->
+                <Border Grid.Row="3" Background="White" BorderBrush="#E3E6EC" BorderThickness="0,1,0,0" Padding="10,8">
+                    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+                        <!-- Voice input button -->
+                        <Button Grid.Column="0" Classes="ghost" Padding="6" MinWidth="36" MinHeight="36"
+                                CornerRadius="18" Margin="0,0,4,0"
+                                ToolTip.Tip="Message vocal">
+                            <TextBlock Text="🎤" FontSize="16" />
+                        </Button>
+
+                        <!-- Text input -->
+                        <TextBox Grid.Column="1"
+                                 Text="{Binding UserMessage, Mode=TwoWay}"
+                                 Watermark="Écrivez votre message..."
+                                 FontSize="13"
+                                 MinHeight="36"
+                                 KeyDown="OnMessageKeyDown" />
+
+                        <!-- Send button -->
+                        <Button Grid.Column="2" Classes="primary" Padding="0"
+                                MinWidth="36" MinHeight="36" CornerRadius="18"
+                                Margin="4,0,0,0"
+                                Command="{Binding SendMessageCommand}">
+                            <TextBlock Text="➤" FontSize="16" Foreground="White" />
+                        </Button>
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </Border>
+    </Panel>
+</UserControl>

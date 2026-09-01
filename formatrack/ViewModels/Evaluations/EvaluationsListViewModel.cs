@@ -15,6 +15,8 @@ public partial class EvaluationsListViewModel : ViewModelBase
     private readonly Action _openDashboard;
     private readonly Action<int> _openEvaluationPasser;
     private readonly Action<int> _openEvaluationResultat;
+    private readonly string _role;
+    private readonly int _userId;
 
     [ObservableProperty] private string _recherche = string.Empty;
     [ObservableProperty] private string _message = "Chargement...";
@@ -31,13 +33,17 @@ public partial class EvaluationsListViewModel : ViewModelBase
         Action openUtilisateurs,
         Action openSessions,
         Action openQuestionnaires,
-        Action openStatistiques)
+        Action openStatistiques,
+        string role = "",
+        int userId = 0)
     {
         _evaluationService = evaluationService;
         _questionnaireService = questionnaireService;
         _openDashboard = openDashboard;
         _openEvaluationPasser = openEvaluationPasser;
         _openEvaluationResultat = openEvaluationResultat;
+        _role = role;
+        _userId = userId;
         _ = LoadAsync();
     }
 
@@ -49,7 +55,9 @@ public partial class EvaluationsListViewModel : ViewModelBase
     private async Task LoadAsync()
     {
         Evaluations.Clear();
-        var list = await _evaluationService.GetEvaluationsAsync();
+        var list = _role == "Stagiaire"
+            ? await _evaluationService.GetEvaluationsUtilisateurAsync(_userId)
+            : await _evaluationService.GetEvaluationsAsync();
         if (!string.IsNullOrWhiteSpace(Recherche))
         {
             var term = Recherche.ToLowerInvariant();

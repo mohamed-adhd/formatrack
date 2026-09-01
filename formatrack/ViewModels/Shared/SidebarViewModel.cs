@@ -33,15 +33,15 @@ public partial class SidebarViewModel : ViewModelBase
     public bool IsStatistiquesActive => ActivePage == "Statistiques";
 
     public bool CanManageUsers => Role == "Administrateur" || Role == "ResponsableFormation";
-    public bool CanSeeDashboard => Role is "Administrateur" or "ChefDepartement" or "Formateur" or "ResponsableFormation" or "Decideur";
+    public bool CanSeeDashboard => true;
     public bool CanSeeFormations => Role is "Administrateur" or "ChefDepartement" or "ResponsableFormation";
     public bool CanSeeSessions => Role is "Administrateur" or "ResponsableFormation";
     public bool CanSeeUtilisateurs => Role == "Administrateur";
     public bool CanSeeQuestionnaires => Role is "Administrateur" or "Formateur" or "ResponsableFormation";
     public bool CanSeeEvaluations => true;
     public bool CanSeeStatistiques => Role is "Administrateur" or "ResponsableFormation" or "Decideur";
-    public bool CanSeeTimetable => Role is "Administrateur" or "ChefDepartement" or "Formateur" or "Stagiaire" or "ResponsableFormation" or "Decideur";
-    public bool CanSeeGrades => Role is "Administrateur" or "Formateur";
+    public bool CanSeeTimetable => true;
+    public bool CanSeeGrades => Role is "Administrateur" or "Formateur" or "Stagiaire";
 
     public SidebarViewModel(
         string role,

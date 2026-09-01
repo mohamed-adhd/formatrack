@@ -42,12 +42,18 @@
                         <Grid ColumnDefinitions="*,Auto">
                             <!-- Left: Breadcrumb & Title -->
                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
-                                <TextBlock Text="{Binding CurrentBreadcrumb}"
-                                           Foreground="{StaticResource TextMutedBrush}"
-                                           FontSize="16" FontWeight="Medium" />
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Classes="ghost" Command="{Binding Sidebar.NavigateDashboardCommand}"
+                                            Padding="6,4" MinWidth="32" MinHeight="32" ToolTip.Tip="Retour au tableau de bord">
+                                        <TextBlock Text="←" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource NavyPrimaryBrush}" />
+                                    </Button>
+                                    <TextBlock Text="{Binding CurrentBreadcrumb}"
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
+                                </StackPanel>
                                 <TextBlock Text="{Binding CurrentPageTitle}"
                                            Foreground="{StaticResource NavyPrimaryBrush}"
-                                           FontSize="20" FontWeight="SemiBold" />
+                                           FontSize="20" FontWeight="SemiBold" Margin="40,0,0,0" />
                             </StackPanel>
 
                             <!-- Right: Military Promo Badge & User Tag -->
@@ -56,7 +62,7 @@
                                 <Border Background="#F1F5F9" CornerRadius="6" Padding="10,6" BorderBrush="{StaticResource BorderMediumBrush}" BorderThickness="1">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
                                         <PathIcon Data="{StaticResource IconShield}" Width="13" Height="13" Foreground="{StaticResource GoldAccentBrush}" VerticalAlignment="Center" />
-                                        <TextBlock Text="École d'État-Major • 2026" Foreground="{StaticResource TextSecondaryBrush}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                        <TextBlock Text="CMFPO • 2026" Foreground="{StaticResource TextSecondaryBrush}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </Border>
 
@@ -186,5 +192,20 @@
                 </Border>
             </Grid>
         </Grid>
+
+        <!-- ===== Chatbot Floating Button + Overlay (visible when logged in) ===== -->
+        <Panel IsVisible="{Binding IsLoggedIn}" IsHitTestVisible="{Binding IsLoggedIn}">
+            <!-- Floating button -->
+            <Button HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                    Margin="0,0,24,24" Width="56" Height="56" CornerRadius="28"
+                    Background="#1B2A4A" BorderBrush="#B8935F" BorderThickness="2"
+                    Cursor="Hand" Command="{Binding Chatbot.ToggleChatCommand}"
+                    ToolTip.Tip="Assistant CMFPO">
+                <TextBlock Text="💬" FontSize="24" />
+            </Button>
+
+            <!-- Chatbot overlay -->
+            <shared:ChatbotView DataContext="{Binding Chatbot}" />
+        </Panel>
     </Grid>
 </Window>

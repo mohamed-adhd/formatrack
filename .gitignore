@@ -28,3 +28,4 @@ artifacts/
 *.dmg
 *.pkg
 *.AppImage
+system_aide_decision/.env

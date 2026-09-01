@@ -18,117 +18,174 @@ xmlns:sgr="using:formatrack.ViewModels.Grades"
             <!-- Header -->
             <StackPanel>
                 <Rectangle Width="42" Height="3" Fill="{StaticResource GoldBrush}" HorizontalAlignment="Left" RadiusX="1.5" RadiusY="1.5" />
-                <TextBlock Text="Notes &amp; Saisie des Bulletins" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="SemiBold" Margin="0,14,0,0" />
+                <TextBlock Text="{Binding IsStagiaireView, StringFormat='{}{0}'}" IsVisible="False" />
+                <TextBlock Text="Mes Notes" IsVisible="{Binding IsStagiaireView}" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="SemiBold" Margin="0,14,0,0" />
+                <TextBlock Text="Notes &amp; Saisie des Bulletins" IsVisible="{Binding IsFormateurView}" Foreground="{StaticResource NavyBrush}" FontSize="28" FontWeight="SemiBold" Margin="0,14,0,0" />
                 <TextBlock Text="{Binding Message}" Foreground="{StaticResource MutedBrush}" FontSize="16" />
             </StackPanel>
 
-            <!-- Filter Bar: 4 cascading selectors -->
-            <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
-                <Grid ColumnDefinitions="*,*,*,*,Auto" RowDefinitions="Auto,Auto">
-                    <!-- Row 1: selectors -->
-                    <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4" Margin="0,0,12,0">
-                        <TextBlock Text="Formation" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" />
-                        <ComboBox ItemsSource="{Binding Formations}" SelectedItem="{Binding SelectedFormation}" HorizontalAlignment="Stretch">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="models:Formation">
-                                    <TextBlock Text="{Binding Titre}" />
+            <!-- ═══════════ STAGIAIRE VIEW: Personal Grades ═══════════ -->
+            <StackPanel IsVisible="{Binding IsStagiaireView}" Spacing="16">
+                <!-- Summary cards -->
+                <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                    <StackPanel Orientation="Horizontal" Spacing="24">
+                        <Border Background="#EFF6FF" CornerRadius="8" Padding="20,12" MinWidth="160">
+                            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                <TextBlock Text="MES NOTES" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding StagiaireNbNotes}" FontSize="32" FontWeight="Bold" Foreground="{StaticResource NavyBrush}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <Border Background="#ECFDF5" CornerRadius="8" Padding="20,12" MinWidth="160">
+                            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                <TextBlock Text="MOYENNE" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding StagiaireMoyenne, StringFormat='{}{0:0.00}/20'}" FontSize="32" FontWeight="Bold" Foreground="#059669" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Personal grades table -->
+                <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Notes par module" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" />
+                        <!-- Header -->
+                        <Border Background="#F8FAFC" CornerRadius="6" Padding="12,10">
+                            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                                <TextBlock Grid.Column="0" Text="Module" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="Coefficient" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,24,0" />
+                                <TextBlock Grid.Column="2" Text="Note (/20)" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" MinWidth="80" />
+                                <TextBlock Grid.Column="3" Text="Note x Coef" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" MinWidth="80" />
+                            </Grid>
+                        </Border>
+                        <!-- Rows -->
+                        <ItemsControl ItemsSource="{Binding MyGrades}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="sgr:StagiaireGradeRow">
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="12,10">
+                                        <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                                            <TextBlock Grid.Column="0" Text="{Binding ModuleTitre}" FontSize="14" FontWeight="Medium" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Coefficient, StringFormat='{}{0:0.0}'}" FontSize="14" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" Margin="0,0,24,0" />
+                                            <TextBlock Grid.Column="2" Text="{Binding NoteValeur, StringFormat='{}{0:0.00}'}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" MinWidth="80" />
+                                            <TextBlock Grid.Column="3" Text="{Binding NotePonderee, StringFormat='{}{0:0.00}'}" FontSize="14" FontWeight="SemiBold" Foreground="#059669" VerticalAlignment="Center" MinWidth="80" />
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
-                    <StackPanel Grid.Column="1" Grid.Row="0" Spacing="4" Margin="0,0,12,0">
-                        <TextBlock Text="Promotion" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" />
-                        <ComboBox ItemsSource="{Binding Promotions}" SelectedItem="{Binding SelectedPromotion}" HorizontalAlignment="Stretch" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="2" Grid.Row="0" Spacing="4" Margin="0,0,12,0">
-                        <TextBlock Text="Session" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" />
-                        <ComboBox ItemsSource="{Binding Sessions}" SelectedItem="{Binding SelectedSession}" HorizontalAlignment="Stretch">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="models:Session">
-                                    <TextBlock Text="{Binding Lieu}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                    </StackPanel>
-                    <StackPanel Grid.Column="3" Grid.Row="0" Spacing="4">
-                        <TextBlock Text="Module" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" />
-                        <ComboBox ItemsSource="{Binding Modules}" SelectedItem="{Binding SelectedModule}" HorizontalAlignment="Stretch">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate x:DataType="models:Module">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                </Border>
+            </StackPanel>
+
+            <!-- ═══════════ FORMATEUR / ADMIN VIEW: Grade Entry ═══════════ -->
+            <StackPanel IsVisible="{Binding IsFormateurView}" Spacing="16">
+                <!-- Filter Bar: 4 cascading selectors -->
+                <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                    <Grid ColumnDefinitions="*,*,*,*,Auto" RowDefinitions="Auto,Auto">
+                        <!-- Row 1: selectors -->
+                        <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4" Margin="0,0,12,0">
+                            <TextBlock Text="Formation" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" />
+                            <ComboBox ItemsSource="{Binding Formations}" SelectedItem="{Binding SelectedFormation}" HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Formation">
                                         <TextBlock Text="{Binding Titre}" />
-                                        <TextBlock Text="{Binding Coefficient, StringFormat='(coef {0})'}" Foreground="{StaticResource MutedBrush}" FontSize="12" />
-                                    </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Grid.Row="0" Spacing="4" Margin="0,0,12,0">
+                            <TextBlock Text="Promotion" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" />
+                            <ComboBox ItemsSource="{Binding Promotions}" SelectedItem="{Binding SelectedPromotion}" HorizontalAlignment="Stretch" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Grid.Row="0" Spacing="4" Margin="0,0,12,0">
+                            <TextBlock Text="Session" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" />
+                            <ComboBox ItemsSource="{Binding Sessions}" SelectedItem="{Binding SelectedSession}" HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Session">
+                                        <TextBlock Text="{Binding Lieu}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" Grid.Row="0" Spacing="4">
+                            <TextBlock Text="Module" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" />
+                            <ComboBox ItemsSource="{Binding Modules}" SelectedItem="{Binding SelectedModule}" HorizontalAlignment="Stretch">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Module">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <TextBlock Text="{Binding Titre}" />
+                                            <TextBlock Text="{Binding Coefficient, StringFormat='(coef {0})'}" Foreground="{StaticResource MutedBrush}" FontSize="12" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Row 2: stats + save -->
+                        <StackPanel Grid.ColumnSpan="4" Grid.Row="1" Orientation="Horizontal" Spacing="20" Margin="0,12,0,0">
+                            <Border Background="#F1F5F9" CornerRadius="6" Padding="12,6">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="Étudiants :" Foreground="{StaticResource MutedBrush}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding NbEtudiants}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#F1F5F9" CornerRadius="6" Padding="12,6">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="Notes saisies :" Foreground="{StaticResource MutedBrush}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding NbNotes}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#EFF6FF" CornerRadius="6" Padding="12,6">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="Moyenne classe :" Foreground="{StaticResource MutedBrush}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding MoyenneClasse, StringFormat='{}{0:0.00}/20'}" FontSize="15" FontWeight="SemiBold" Foreground="#1D4ED8" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#ECFDF5" CornerRadius="6" Padding="12,6">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="Moy. pondérée :" Foreground="{StaticResource MutedBrush}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding MoyennePonderee, StringFormat='{}{0:0.00}/20'}" FontSize="15" FontWeight="SemiBold" Foreground="#059669" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                        <Button Grid.Column="4" Grid.RowSpan="2" Classes="primary" Content="Sauvegarder" Command="{Binding SaveAllGradesCommand}"
+                                IsVisible="{Binding CanEdit}" HorizontalAlignment="Right" VerticalAlignment="Center" MinHeight="40" Padding="16,8" FontSize="15" />
+                    </Grid>
+                </Border>
+
+                <!-- Student Grade Table -->
+                <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+                    <StackPanel Spacing="12">
+                        <!-- Table Header -->
+                        <Border Background="#F8FAFC" CornerRadius="6" Padding="12,10">
+                            <Grid ColumnDefinitions="60,2*,*,*,*">
+                                <TextBlock Grid.Column="0" Text="#" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="Nom du Stagiaire" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="Note (/20)" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="3" Text="Coefficient" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="4" Text="Note x Coef" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Student Rows -->
+                        <ItemsControl ItemsSource="{Binding StudentGrades}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="sgr:StudentGradeRow">
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="12,10">
+                                        <Grid ColumnDefinitions="60,2*,*,*,*">
+                                            <TextBlock Grid.Column="0" Text="{Binding IdStagiaire}" FontSize="13" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1" Text="{Binding NomComplet}" FontSize="14" FontWeight="Medium" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
+                                            <TextBox Grid.Column="2" Text="{Binding NoteValeur}" Watermark="0.00" Width="100" Height="36" FontSize="14"
+                                                     HorizontalAlignment="Left" x:CompileBindings="False" />
+                                            <TextBlock Grid.Column="3" Text="{Binding Coefficient, StringFormat='{}{0:0.0}'}" FontSize="14" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="4" Text="{Binding NoteValeur, StringFormat='{}{0:0.00}'}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" x:CompileBindings="False" />
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
-
-                    <!-- Row 2: stats + save -->
-                    <StackPanel Grid.ColumnSpan="4" Grid.Row="1" Orientation="Horizontal" Spacing="20" Margin="0,12,0,0">
-                        <Border Background="#F1F5F9" CornerRadius="6" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="Étudiants :" Foreground="{StaticResource MutedBrush}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding NbEtudiants}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Border>
-                        <Border Background="#F1F5F9" CornerRadius="6" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="Notes saisies :" Foreground="{StaticResource MutedBrush}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding NbNotes}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Border>
-                        <Border Background="#EFF6FF" CornerRadius="6" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="Moyenne classe :" Foreground="{StaticResource MutedBrush}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding MoyenneClasse, StringFormat='{}{0:0.00}/20'}" FontSize="15" FontWeight="SemiBold" Foreground="#1D4ED8" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Border>
-                        <Border Background="#ECFDF5" CornerRadius="6" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="Moy. pondérée :" Foreground="{StaticResource MutedBrush}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding MoyennePonderee, StringFormat='{}{0:0.00}/20'}" FontSize="15" FontWeight="SemiBold" Foreground="#059669" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                    <Button Grid.Column="4" Grid.RowSpan="2" Classes="primary" Content="💾 Sauvegarder" Command="{Binding SaveAllGradesCommand}"
-                            IsVisible="{Binding CanEdit}" HorizontalAlignment="Right" VerticalAlignment="Center" MinHeight="40" Padding="16,8" FontSize="15" />
-                </Grid>
-            </Border>
-
-            <!-- Student Grade Table -->
-            <Border Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
-                <StackPanel Spacing="12">
-                    <!-- Table Header -->
-                    <Border Background="#F8FAFC" CornerRadius="6" Padding="12,10">
-                        <Grid ColumnDefinitions="60,2*,*,*,*">
-                            <TextBlock Grid.Column="0" Text="#" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Text="Nom du Stagiaire" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="2" Text="Note (/20)" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="3" Text="Coefficient" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="4" Text="Note × Coef" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                        </Grid>
-                    </Border>
-
-                    <!-- Student Rows -->
-                    <ItemsControl ItemsSource="{Binding StudentGrades}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="sgr:StudentGradeRow">
-                                <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" Padding="12,10">
-                                    <Grid ColumnDefinitions="60,2*,*,*,*">
-                                        <TextBlock Grid.Column="0" Text="{Binding IdStagiaire}" FontSize="13" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                                        <TextBlock Grid.Column="1" Text="{Binding NomComplet}" FontSize="14" FontWeight="Medium" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" />
-                                        <TextBox Grid.Column="2" Text="{Binding NoteValeur}" Watermark="0.00" Width="100" Height="36" FontSize="14"
-                                                 HorizontalAlignment="Left" x:CompileBindings="False" />
-                                        <TextBlock Grid.Column="3" Text="{Binding Coefficient, StringFormat='{}{0:0.0}'}" FontSize="14" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />
-                                        <TextBlock Grid.Column="4" Text="{Binding NoteValeur, StringFormat='{}{0:0.00}'}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource NavyBrush}" VerticalAlignment="Center" x:CompileBindings="False" />
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </Border>
+                </Border>
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </UserControl>
