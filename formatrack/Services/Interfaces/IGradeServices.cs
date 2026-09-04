@@ -16,6 +16,7 @@ public interface INoteService
     Task<IReadOnlyList<Note>> GetByModuleSessionAsync(int idModule, int idSession);
     Task<IReadOnlyList<Note>> GetByStagiaireAsync(int idStagiaire);
     Task<IReadOnlyList<Note>> GetBySessionAsync(int idSession);
+    Task<IReadOnlyList<Note>> GetAllNotesWithDetailsAsync(int? idFormation = null, string? promotion = null, IEnumerable<int>? sessionIds = null, string? etat = null);
     Task<Note?> GetByIdAsync(int id);
     Task BulkSaveAsync(IEnumerable<Note> notes, int saisiPar);
     Task<bool> SupprimerAsync(int id);

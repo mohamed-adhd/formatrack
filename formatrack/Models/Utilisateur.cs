@@ -12,6 +12,7 @@ public class Utilisateur
     public string Role { get; set; } = "Stagiaire";
     public string Departement { get; set; } = string.Empty;
     public string Promotion { get; set; } = string.Empty;
+    public string Etat { get; set; } = "Militaire";
     public DateTime DateCreation { get; set; } = DateTime.Now;
     public bool Actif { get; set; } = true;
     public string NomComplet => $"{Prenom} {Nom}".Trim();

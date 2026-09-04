@@ -24,6 +24,8 @@ public class NoteService : INoteService
     public async Task<IReadOnlyList<Note>> GetByModuleSessionAsync(int idModule, int idSession) => await _repo.GetByModuleSessionAsync(idModule, idSession);
     public async Task<IReadOnlyList<Note>> GetByStagiaireAsync(int idStagiaire) => await _repo.GetByStagiaireAsync(idStagiaire);
     public async Task<IReadOnlyList<Note>> GetBySessionAsync(int idSession) => await _repo.GetBySessionAsync(idSession);
+    public async Task<IReadOnlyList<Note>> GetAllNotesWithDetailsAsync(int? idFormation = null, string? promotion = null, IEnumerable<int>? sessionIds = null, string? etat = null)
+        => await _repo.GetAllNotesWithDetailsAsync(idFormation, promotion, sessionIds, etat);
     public async Task<Note?> GetByIdAsync(int id) => await _repo.GetByIdAsync(id);
 
     public async Task BulkSaveAsync(IEnumerable<Note> notes, int saisiPar)

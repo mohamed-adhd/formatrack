@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using formatrack.Models;
@@ -103,6 +104,72 @@ public class NoteRepository : Repository<Note>, INoteRepository
             note.StagiaireNom = Text(r, "stagiaire_nom");
             note.ModuleTitre = Text(r, "module_titre");
             note.ModuleCoefficient = Double(r, "module_coef");
+            items.Add(note);
+        }
+        return items;
+    }
+
+    public async Task<IReadOnlyList<Note>> GetAllNotesWithDetailsAsync(int? idFormation = null, string? promotion = null, IEnumerable<int>? sessionIds = null, string? etat = null)
+    {
+        await AppDbContext.InitializeAsync();
+        var items = new List<Note>();
+        await using var conn = new SqliteConnection(AppDbContext.ConnectionString);
+        await conn.OpenAsync();
+
+        var where = new List<string>();
+        var parameters = new Dictionary<string, object>();
+
+        if (idFormation.HasValue)
+        {
+            where.Add("m.id_formation = $formation");
+            parameters["$formation"] = idFormation.Value;
+        }
+        if (!string.IsNullOrEmpty(promotion))
+        {
+            where.Add("u.promotion = $promo");
+            parameters["$promo"] = promotion;
+        }
+        if (sessionIds != null)
+        {
+            var ids = sessionIds.ToList();
+            if (ids.Count > 0)
+            {
+                var placeholders = string.Join(",", ids.Select((_, i) => $"$sess{i}"));
+                where.Add($"n.id_session IN ({placeholders})");
+                for (int i = 0; i < ids.Count; i++)
+                    parameters[$"$sess{i}"] = ids[i];
+            }
+        }
+        if (!string.IsNullOrEmpty(etat))
+        {
+            where.Add("u.etat = $etat");
+            parameters["$etat"] = etat;
+        }
+
+        var whereClause = where.Count > 0 ? "WHERE " + string.Join(" AND ", where) : "";
+        var sql = $@"SELECT n.*, u.nom || ' ' || u.prenom AS stagiaire_nom, u.departement, u.promotion,
+         m.titre AS module_titre, m.coefficient AS module_coef, m.id_formation,
+         f.titre AS formation_titre, s.date_debut, s.date_fin, s.lieu
+         FROM {TableName} n
+         INNER JOIN utilisateurs u ON n.id_stagiaire = u.id_utilisateur
+         INNER JOIN modules m ON n.id_module = m.id_module
+         INNER JOIN formations f ON m.id_formation = f.id_formation
+         INNER JOIN sessions s ON n.id_session = s.id_session
+         {whereClause}
+         ORDER BY u.nom, m.titre;";
+
+        await using var cmd = new SqliteCommand(sql, conn);
+        foreach (var p in parameters)
+            cmd.Parameters.AddWithValue(p.Key, p.Value);
+
+        await using var r = await cmd.ExecuteReaderAsync();
+        while (await r.ReadAsync())
+        {
+            var note = Map(r);
+            note.StagiaireNom = Text(r, "stagiaire_nom");
+            note.ModuleTitre = Text(r, "module_titre");
+            note.ModuleCoefficient = Double(r, "module_coef");
+            note.SessionTitre = Text(r, "lieu");
             items.Add(note);
         }
         return items;

@@ -101,16 +101,39 @@
 
                 <!-- Input area -->
                 <Border Grid.Row="3" Background="White" BorderBrush="#E3E6EC" BorderThickness="0,1,0,0" Padding="10,8">
-                    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+                    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                        <!-- Recording indicator -->
+                        <Border Grid.Row="0" Grid.ColumnSpan="3" Background="#FEF2F2" CornerRadius="8"
+                                Padding="8,6" Margin="0,0,0,6"
+                                IsVisible="{Binding IsRecording}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+                                <Border Width="10" Height="10" CornerRadius="5" Background="#EF4444" />
+                                <TextBlock Text="🎤" FontSize="12" VerticalAlignment="Center" />
+                                <TextBlock Text="Enregistrement en cours..." FontSize="12" FontWeight="SemiBold"
+                                           Foreground="#991B1B" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding RecordingTime}" FontSize="12" FontWeight="Bold"
+                                           Foreground="#DC2626" VerticalAlignment="Center" />
+                                <TextBlock Text=" (max 30s)" FontSize="11" Foreground="#B91C1C" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+
                         <!-- Voice input button -->
-                        <Button Grid.Column="0" Classes="ghost" Padding="6" MinWidth="36" MinHeight="36"
+                        <Button Grid.Row="1" Grid.Column="0" Classes="ghost" Padding="6" MinWidth="36" MinHeight="36"
                                 CornerRadius="18" Margin="0,0,4,0"
+                                Command="{Binding ToggleRecordingCommand}"
                                 ToolTip.Tip="Message vocal">
-                            <TextBlock Text="🎤" FontSize="16" />
+                            <TextBlock FontSize="16">
+                                <TextBlock.Text>
+                                    <Binding Path="IsRecording" Converter="{x:Static local:RecordingIconConverter.Instance}" />
+                                </TextBlock.Text>
+                                <TextBlock.Foreground>
+                                    <Binding Path="IsRecording" Converter="{x:Static local:RecordingColorConverter.Instance}" />
+                                </TextBlock.Foreground>
+                            </TextBlock>
                         </Button>
 
                         <!-- Text input -->
-                        <TextBox Grid.Column="1"
+                        <TextBox Grid.Row="1" Grid.Column="1"
                                  Text="{Binding UserMessage, Mode=TwoWay}"
                                  Watermark="Écrivez votre message..."
                                  FontSize="13"
@@ -118,7 +141,7 @@
                                  KeyDown="OnMessageKeyDown" />
 
                         <!-- Send button -->
-                        <Button Grid.Column="2" Classes="primary" Padding="0"
+                        <Button Grid.Row="1" Grid.Column="2" Classes="primary" Padding="0"
                                 MinWidth="36" MinHeight="36" CornerRadius="18"
                                 Margin="4,0,0,0"
                                 Command="{Binding SendMessageCommand}">

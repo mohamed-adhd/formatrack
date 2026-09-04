@@ -35,7 +35,12 @@ def _get_model(lang: str = "fr"):
     if not VOSK_AVAILABLE:
         raise RuntimeError("Vosk n'est pas installé. Exécutez: pip install vosk")
 
-    model = vosk.Model(model_name)
+    # Try absolute path in vosk cache first
+    cache_path = Path.home() / ".cache" / "vosk" / model_name
+    if cache_path.exists():
+        model = vosk.Model(str(cache_path))
+    else:
+        model = vosk.Model(model_name)
     _model_cache[model_name] = model
     return model
 

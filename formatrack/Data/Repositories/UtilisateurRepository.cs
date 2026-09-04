@@ -11,10 +11,10 @@ public class UtilisateurRepository : Repository<Utilisateur>, IUtilisateurReposi
 {
     protected override string TableName => "utilisateurs";
     protected override string IdColumn => "id_utilisateur";
-    protected override string InsertSql => @"INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe_hash, role, departement, promotion, actif)
-VALUES ($nom, $prenom, $email, $hash, $role, $departement, $promotion, $actif)";
+    protected override string InsertSql => @"INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe_hash, role, departement, promotion, etat, actif)
+VALUES ($nom, $prenom, $email, $hash, $role, $departement, $promotion, $etat, $actif)";
     protected override string UpdateSql => @"UPDATE utilisateurs SET nom=$nom, prenom=$prenom, email=$email,
-mot_de_passe_hash=$hash, role=$role, departement=$departement, promotion=$promotion, actif=$actif WHERE id_utilisateur=$id";
+mot_de_passe_hash=$hash, role=$role, departement=$departement, promotion=$promotion, etat=$etat, actif=$actif WHERE id_utilisateur=$id";
 
     protected override Utilisateur Map(SqliteDataReader r) => new()
     {
@@ -26,6 +26,7 @@ mot_de_passe_hash=$hash, role=$role, departement=$departement, promotion=$promot
         Role = Text(r, "role"),
         Departement = Text(r, "departement"),
         Promotion = Text(r, "promotion"),
+        Etat = Has(r, "etat") ? Text(r, "etat") : "Militaire",
         DateCreation = Date(r, "date_creation"),
         Actif = Int(r, "actif") == 1
     };
@@ -41,6 +42,7 @@ mot_de_passe_hash=$hash, role=$role, departement=$departement, promotion=$promot
         c.Parameters.AddWithValue("$role", string.IsNullOrWhiteSpace(u.Role) ? "Stagiaire" : u.Role);
         c.Parameters.AddWithValue("$departement", u.Departement ?? string.Empty);
         c.Parameters.AddWithValue("$promotion", u.Promotion ?? string.Empty);
+        c.Parameters.AddWithValue("$etat", string.IsNullOrWhiteSpace(u.Etat) ? "Militaire" : u.Etat);
         c.Parameters.AddWithValue("$actif", u.Actif ? 1 : 0);
     }
 
